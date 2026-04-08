@@ -44,16 +44,16 @@ const Navbar = () => {
 
         {/* Mobile dropdown */}
         {open && (
-          <div className="md:hidden border-t border-border bg-card/95 backdrop-blur-sm">
-            <ul className="grid grid-cols-3 gap-2 p-3">
+          <div className="md:hidden border-t border-border bg-card/95 backdrop-blur-sm flex justify-end">
+            <ul className="flex flex-col gap-1 p-3 w-48">
               {navLinks.map((l) => (
                 <li key={l.href}>
                   <a
                     href={l.href}
                     onClick={() => setOpen(false)}
-                    className="flex flex-col items-center gap-1 font-body text-[11px] font-medium text-foreground/70 hover:text-primary bg-secondary/60 hover:bg-secondary border border-border/50 rounded-lg px-2 py-2.5 transition-colors"
+                    className="flex items-center gap-2.5 font-body text-[12px] font-medium text-foreground/70 hover:text-primary bg-secondary/60 hover:bg-secondary border border-border/50 rounded-lg px-3 py-2 transition-colors"
                   >
-                    <l.icon size={16} className="text-primary" />
+                    <l.icon size={15} className="text-primary shrink-0" />
                     {l.label}
                   </a>
                 </li>
