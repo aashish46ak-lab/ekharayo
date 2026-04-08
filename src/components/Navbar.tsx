@@ -19,7 +19,7 @@ const Navbar = () => {
       <div className="container mx-auto flex items-center justify-between py-3 px-4">
         <a href="#home" className="flex items-center gap-2">
           <img src={logo} alt="eKharayo Agro" width={40} height={40} />
-          <span className="font-display text-xl font-bold text-primary">Kharayo</span>
+          <span className="font-display text-xl font-bold text-primary">Kharayo <span className="font-body text-sm font-medium text-muted-foreground">(Great Himalayan Agro)</span></span>
         </a>
 
         {/* Desktop */}
