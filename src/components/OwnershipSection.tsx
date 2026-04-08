@@ -13,11 +13,12 @@ const OwnershipSection = () => {
         <div className="max-w-3xl mx-auto bg-card rounded-2xl border border-border shadow-lg overflow-hidden">
           <div className="md:flex">
             <div className="md:w-2/5">
-              <img src={founderImg} alt="Founder of eKharayo Agro" loading="lazy" width={512} height={512} className="w-full h-64 md:h-full object-cover" />
+              <img src={founderImg} alt="Founder of Great Himalayan Agro" loading="lazy" width={512} height={512} className="w-full h-64 md:h-full object-cover" />
             </div>
             <div className="p-8 md:w-3/5 flex flex-col justify-center">
               <h3 className="font-display text-2xl font-bold text-foreground mb-1">Founder & CEO</h3>
-              <p className="font-body text-muted-foreground mb-6">eKharayo Agro — Bringing Nepal's freshest farm products to your home with trust and quality.</p>
+              <p className="font-body text-primary font-semibold text-lg mb-1">Great Himalayan Agro</p>
+              <p className="font-body text-muted-foreground mb-6">Bringing Nepal's freshest farm products to your home with trust and quality.</p>
 
               <div className="space-y-3">
                 <a href="tel:9852049458" className="flex items-center gap-3 bg-primary text-primary-foreground font-body text-sm font-semibold px-5 py-3 rounded-lg hover:bg-green-glow transition-colors">
