@@ -42,10 +42,17 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Mobile dropdown */}
-        {open && (
-          <div className="md:hidden border-t border-border bg-card/95 backdrop-blur-sm flex justify-end">
-            <ul className="flex flex-col gap-1 p-3 w-48">
+      </nav>
+
+      {/* Mobile slide-in menu from right */}
+      {open && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-foreground/20 backdrop-blur-sm md:hidden"
+            onClick={() => setOpen(false)}
+          />
+          <div className="fixed top-[49px] right-0 bottom-0 z-50 w-52 bg-card/95 backdrop-blur-md border-l border-border shadow-xl md:hidden">
+            <ul className="flex flex-col gap-1 p-3">
               {navLinks.map((l) => (
                 <li key={l.href}>
                   <a
@@ -60,14 +67,13 @@ const Navbar = () => {
               ))}
             </ul>
           </div>
-        )}
-      </nav>
+        </>
+      )}
+    </>
+  );
+};
 
-      {/* Backdrop overlay — closes menu on tap */}
-      {open && (
-        <div
-          className="fixed inset-0 z-40 bg-foreground/20 backdrop-blur-sm md:hidden"
-          onClick={() => setOpen(false)}
+export default Navbar;
         />
       )}
     </>
