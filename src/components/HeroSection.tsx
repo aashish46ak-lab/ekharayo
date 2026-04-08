@@ -3,7 +3,7 @@ import { Leaf, ShieldCheck } from "lucide-react";
 
 const HeroSection = () => {
   return (
-    <section id="home" className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+    <section id="home" className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
       <img src={heroBg} alt="Fresh farms of Nepal" width={1920} height={1080} className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-0 bg-[hsl(var(--hero-overlay)/0.7)]" />
 
