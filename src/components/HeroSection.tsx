@@ -1,5 +1,5 @@
 import heroBg from "@/assets/hero-bg.jpg";
-import { Truck, Leaf, ShieldCheck } from "lucide-react";
+import { Leaf, ShieldCheck } from "lucide-react";
 
 const HeroSection = () => {
   return (
