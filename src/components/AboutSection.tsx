@@ -1,6 +1,4 @@
 import { Sprout, Heart } from "lucide-react";
-import farm1 from "@/assets/farm1.jpg";
-import farm2 from "@/assets/farm2.jpg";
 
 const AboutSection = () => {
   return (
@@ -8,13 +6,7 @@ const AboutSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <p className="font-body text-accent text-sm uppercase tracking-[0.2em] font-semibold mb-2">About Us</p>
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground"><h2 className="font-display text-3xl md:text-5xl font-bold text-foreground">Why Great Himalayan Agro PVT. LTD.?</h2></h2>
-        </div>
-
-        {/* Farm gallery */}
-        <div className="grid grid-cols-2 gap-4 max-w-3xl mx-auto mb-14 rounded-2xl overflow-hidden">
-          <img src={farm1} alt="Our farm facility" loading="lazy" width={640} height={480} className="w-full h-48 md:h-64 object-cover" />
-          <img src={farm2} alt="Our cattle shed" loading="lazy" width={640} height={480} className="w-full h-48 md:h-64 object-cover" />
+          <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground">Why Great Himalayan Agro PVT. LTD.?</h2>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
