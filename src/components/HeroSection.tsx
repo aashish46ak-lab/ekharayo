@@ -26,7 +26,6 @@ const HeroSection = () => {
 
         <div className="mt-16 flex flex-wrap justify-center gap-8 md:gap-16 animate-fade-in-up" style={{ animationDelay: "0.6s" }}>
           {[
-            { icon: Truck, label: "Fast Home Delivery" },
             { icon: Leaf, label: "100% Organic" },
             { icon: ShieldCheck, label: "Quality Guaranteed" },
           ].map(({ icon: Icon, label }) => (

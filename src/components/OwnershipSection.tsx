@@ -13,7 +13,7 @@ const OwnershipSection = () => {
         <div className="max-w-3xl mx-auto bg-card rounded-2xl border border-border shadow-lg overflow-hidden">
           <div className="md:flex">
             <div className="md:w-2/5">
-              <img src={founderImg} alt="Founder of Great Himalayan Agro" loading="lazy" width={512} height={512} className="w-full h-64 md:h-full object-cover" />
+              <img src={founderImg} alt="Founder of Great Himalayan Agro" loading="lazy" width={512} height={512} className="w-full h-64 md:h-full object-contain bg-secondary" />
             </div>
             <div className="p-8 md:w-3/5 flex flex-col justify-center">
               <h3 className="font-display text-2xl font-bold text-foreground mb-1">Founder & CEO</h3>
