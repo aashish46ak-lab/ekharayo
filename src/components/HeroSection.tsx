@@ -13,7 +13,7 @@ const HeroSection = () => {
           Fresh from the Farm,<br />Straight to Your Door
         </h1>
         <p className="font-body text-primary-foreground/80 text-lg md:text-xl max-w-2xl mx-auto mb-10 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
-          Great Himalayan Agro (Kharayo) delivers the freshest dairy, meat, and crop products across Nepal — quality you can taste, service you can trust.
+          Great Himalayan Agro PVT. LTD. (Kharayo) delivers the freshest dairy, meat, and crop products across Nepal — quality you can taste, service you can trust. the freshest dairy, meat, and crop products across Nepal — quality you can taste, service you can trust.
         </p>
         <div className="flex flex-wrap justify-center gap-4 animate-fade-in-up" style={{ animationDelay: "0.45s" }}>
           <a href="#products" className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body font-semibold px-8 py-4 rounded-lg hover:bg-green-glow transition-colors text-base">
