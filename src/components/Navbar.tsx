@@ -51,7 +51,7 @@ const Navbar = () => {
             className="fixed inset-0 z-40 bg-foreground/20 backdrop-blur-sm md:hidden"
             onClick={() => setOpen(false)}
           />
-          <div className="fixed top-[49px] right-0 bottom-0 z-50 w-52 bg-card/95 backdrop-blur-md border-l border-border shadow-xl md:hidden">
+          <div className="fixed top-[49px] right-0 z-50 w-48 bg-card/95 backdrop-blur-md border-l border-b border-border shadow-xl rounded-bl-xl md:hidden">
             <ul className="flex flex-col gap-1 p-3">
               {navLinks.map((l) => (
                 <li key={l.href}>
