@@ -6,6 +6,7 @@ import GallerySection from "@/components/GallerySection";
 import OwnershipSection from "@/components/OwnershipSection";
 import BulkOrderSection from "@/components/BulkOrderSection";
 import ContactFooter from "@/components/ContactFooter";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const Index = () => {
   return (
@@ -18,6 +19,7 @@ const Index = () => {
       <OwnershipSection />
       <BulkOrderSection />
       <ContactFooter />
+      <ScrollToTop />
     </div>
   );
 };

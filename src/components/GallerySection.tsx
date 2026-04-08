@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, ZoomIn, Image } from "lucide-react";
+import { X, ZoomIn } from "lucide-react";
 import gallery1 from "@/assets/gallery1.jpg";
 import gallery2 from "@/assets/gallery2.jpg";
 import gallery3 from "@/assets/gallery3.jpg";
@@ -19,38 +19,25 @@ const GallerySection = () => {
   const [zoomed, setZoomed] = useState(false);
   const [showAll, setShowAll] = useState(false);
 
-  const preview = images.slice(0, 2);
-
   return (
     <section id="gallery" className="py-20 bg-secondary">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <p className="font-body text-accent text-sm uppercase tracking-[0.2em] font-semibold mb-2">Our Farm</p>
           <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground">Gallery</h2>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 max-w-3xl mx-auto">
-          {preview.map((img, i) => (
-            <button
-              key={i}
-              onClick={() => { setSelected(i); setZoomed(false); }}
-              className="group relative overflow-hidden rounded-xl border border-border shadow-sm hover:shadow-lg transition-shadow aspect-[4/3]"
-            >
-              <img src={img.src} alt={img.alt} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-              <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/20 transition-colors flex items-center justify-center">
-                <ZoomIn className="text-primary-foreground opacity-0 group-hover:opacity-100 transition-opacity" size={28} />
-              </div>
-            </button>
-          ))}
-        </div>
-
-        <div className="text-center mt-8">
+        <div className="flex justify-center">
           <button
             onClick={() => setShowAll(true)}
-            className="inline-flex items-center gap-2 font-body text-sm font-semibold text-primary hover:text-accent border border-primary hover:border-accent px-6 py-2.5 rounded-full transition-colors"
+            className="relative group overflow-hidden rounded-2xl border border-border shadow-lg w-72 md:w-96 aspect-[4/3]"
           >
-            <Image size={16} />
-            Click for more ({images.length - 2}+ photos)
+            <img src={gallery1} alt="Farm preview" loading="lazy" className="w-full h-full object-cover blur-sm scale-105" />
+            <div className="absolute inset-0 bg-foreground/40 flex flex-col items-center justify-center gap-2">
+              <ZoomIn className="text-primary-foreground" size={36} />
+              <span className="font-display text-lg font-bold text-primary-foreground">Click to View</span>
+              <span className="font-body text-sm text-primary-foreground/70">{images.length} photos</span>
+            </div>
           </button>
         </div>
       </div>
@@ -101,7 +88,6 @@ const GallerySection = () => {
             <button
               onClick={(e) => { e.stopPropagation(); setSelected((selected - 1 + images.length) % images.length); setZoomed(false); }}
               className="text-primary-foreground text-3xl font-bold hover:text-primary transition-colors shrink-0"
-              aria-label="Previous"
             >‹</button>
 
             <img
@@ -114,7 +100,6 @@ const GallerySection = () => {
             <button
               onClick={(e) => { e.stopPropagation(); setSelected((selected + 1) % images.length); setZoomed(false); }}
               className="text-primary-foreground text-3xl font-bold hover:text-primary transition-colors shrink-0"
-              aria-label="Next"
             >›</button>
           </div>
         </div>
