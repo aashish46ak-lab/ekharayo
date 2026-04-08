@@ -12,7 +12,9 @@ const HeroSection = () => {
         <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-extrabold text-primary-foreground leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
           Fresh from the Farm,<br />Straight to Your Door
         </h1>
-        <p className="font-body text-primary-foreground/80 text-lg md:text-xl max-w-2xl mx-auto mb-10 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
+        <p className="font-body text-muted-foreground/80 text-lg md:text-xl max-w-2xl mx-auto mb-10 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
+          Great Himalayan Agro (Kharayo) delivers the freshest dairy, meat, and crop products across Nepal — quality you can taste, service you can trust.
+        </p>
           eKharayo Agro delivers the freshest dairy, meat, and crop products across Nepal — quality you can taste, service you can trust.
         </p>
         <div className="flex flex-wrap justify-center gap-4 animate-fade-in-up" style={{ animationDelay: "0.45s" }}>

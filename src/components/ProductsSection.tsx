@@ -6,7 +6,6 @@ import cropsImg from "@/assets/crops.jpg";
 interface Product {
   name: string;
   description: string;
-  price: string;
 }
 
 interface Category {
@@ -20,34 +19,33 @@ const categories: Category[] = [
     title: "🥛 Dairy Products",
     image: dairyImg,
     products: [
-      { name: "Fresh Cow Milk", description: "Pure farm-fresh cow milk, delivered daily.", price: "Rs 80/L" },
-      { name: "Homemade Curd (Dahi)", description: "Thick, creamy curd made the traditional way.", price: "Rs 100/L" },
-      { name: "Pure Ghee", description: "Organic clarified butter for rich flavor.", price: "Rs 1,800/kg" },
+      { name: "Fresh Cow Milk", description: "Pure farm-fresh cow milk, delivered daily." },
+      { name: "Homemade Curd (Dahi)", description: "Thick, creamy curd made the traditional way." },
+      { name: "Pure Ghee", description: "Organic clarified butter for rich flavor." },
     ],
   },
   {
     title: "🐐 Goat Products",
     image: goatImg,
     products: [
-      { name: "Fresh Goat Meat (Khasi ko Masu)", description: "Tender, farm-raised goat meat.", price: "Rs 1,200/kg" },
-      { name: "Goat Milk", description: "Nutritious and creamy goat milk.", price: "Rs 120/L" },
+      { name: "Fresh Goat Meat (Khasi ko Masu)", description: "Tender, farm-raised goat meat." },
     ],
   },
   {
     title: "🍗 Chicken Products",
     image: chickenImg,
     products: [
-      { name: "Farm Chicken (Kukhura)", description: "Free-range, antibiotic-free chicken.", price: "Rs 450/kg" },
-      { name: "Farm Eggs (Anda)", description: "Fresh organic eggs from happy hens.", price: "Rs 18/pc" },
+      { name: "Farm Chicken (Kukhura)", description: "Free-range, antibiotic-free chicken." },
+      { name: "Farm Eggs (Anda)", description: "Fresh organic eggs from happy hens." },
     ],
   },
   {
     title: "🌾 Crop Products",
     image: cropsImg,
     products: [
-      { name: "Organic Rice (Chamal)", description: "Premium local rice varieties.", price: "Rs 120/kg" },
-      { name: "Wheat (Gahu)", description: "Freshly harvested whole wheat.", price: "Rs 70/kg" },
-      { name: "Seasonal Vegetables", description: "Daily-picked fresh vegetables.", price: "Rs 60-150/kg" },
+      { name: "Organic Rice (Chamal)", description: "Premium local rice varieties." },
+      { name: "Wheat (Gahu)", description: "Freshly harvested whole wheat." },
+      { name: "Seasonal Vegetables", description: "Daily-picked fresh vegetables." },
     ],
   },
 ];
@@ -76,17 +74,14 @@ const ProductsSection = () => {
                   <div key={p.name} className="bg-card rounded-lg border border-border p-6 shadow-sm hover:shadow-lg transition-shadow group">
                     <h4 className="font-display text-lg font-bold text-foreground mb-1">{p.name}</h4>
                     <p className="font-body text-sm text-muted-foreground mb-4">{p.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="font-body text-lg font-bold text-primary">{p.price}</span>
-                      <a
-                        href={orderUrl(p.name)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 bg-primary text-primary-foreground font-body text-sm font-semibold px-5 py-2 rounded-md hover:bg-green-glow transition-colors"
-                      >
-                        Order Now
-                      </a>
-                    </div>
+                    <a
+                      href={orderUrl(p.name)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 bg-primary text-primary-foreground font-body text-sm font-semibold px-5 py-2 rounded-md hover:bg-green-glow transition-colors"
+                    >
+                      Order Now
+                    </a>
                   </div>
                 ))}
               </div>
