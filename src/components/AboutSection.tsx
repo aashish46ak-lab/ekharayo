@@ -8,7 +8,7 @@ const AboutSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <p className="font-body text-accent text-sm uppercase tracking-[0.2em] font-semibold mb-2">About Us</p>
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground">Why Great Himalayan Agro?</h2>
+          <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground"><h2 className="font-display text-3xl md:text-5xl font-bold text-foreground">Why Great Himalayan Agro PVT. LTD.?</h2></h2>
         </div>
 
         {/* Farm gallery */}
