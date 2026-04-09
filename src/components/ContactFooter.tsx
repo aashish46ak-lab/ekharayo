@@ -2,7 +2,7 @@ import { Phone, Mail, MessageCircle, MapPin } from "lucide-react";
 
 const ContactFooter = () => {
   return (
-    <footer id="contact" className="bg-[hsl(var(--hero-overlay))] text-primary-foreground py-16">
+    <footer className="bg-[hsl(var(--hero-overlay))] text-primary-foreground py-16">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="font-display text-3xl font-bold">Get In Touch</h2>
@@ -34,7 +34,7 @@ const ContactFooter = () => {
         </div>
 
         <div className="border-t border-primary-foreground/20 pt-6 text-center">
-          <p className="font-body text-sm text-primary-foreground/50"><p className="font-body text-sm text-primary-foreground/50">© 2024 Great Himalayan Agro PVT. LTD. (Kharayo). All rights reserved.</p>. All rights reserved.</p>
+          <p className="font-body text-sm text-primary-foreground/50">© 2024 Great Himalayan Agro PVT. LTD. (Kharayo). All rights reserved.</p>
         </div>
       </div>
     </footer>
