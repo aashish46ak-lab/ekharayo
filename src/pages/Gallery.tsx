@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import PageShell from "@/components/PageShell";
-import ContactFooter from "@/components/ContactFooter";
 import ScrollToTop from "@/components/ScrollToTop";
 import GallerySection from "@/components/GallerySection";
 
@@ -10,7 +9,6 @@ const Gallery = () => (
     <PageShell title="Gallery" subtitle="A glimpse into our farms and daily operations">
       <GallerySection />
     </PageShell>
-    <ContactFooter />
     <ScrollToTop />
   </div>
 );
