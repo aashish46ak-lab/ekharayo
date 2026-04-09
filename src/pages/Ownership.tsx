@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import PageShell from "@/components/PageShell";
-import ContactFooter from "@/components/ContactFooter";
 import ScrollToTop from "@/components/ScrollToTop";
 import founderImg from "@/assets/founder.jpg";
 import { Phone, Mail, MessageCircle } from "lucide-react";
@@ -39,7 +38,6 @@ const Ownership = () => (
         </div>
       </div>
     </PageShell>
-    <ContactFooter />
     <ScrollToTop />
   </div>
 );

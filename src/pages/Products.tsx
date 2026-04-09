@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import PageShell from "@/components/PageShell";
-import ContactFooter from "@/components/ContactFooter";
 import ScrollToTop from "@/components/ScrollToTop";
 import dairyImg from "@/assets/dairy.jpg";
 import goatImg from "@/assets/goat.jpg";
@@ -91,7 +90,6 @@ const Products = () => {
           </div>
         </div>
       </PageShell>
-      <ContactFooter />
       <ScrollToTop />
     </div>
   );

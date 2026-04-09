@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import PageShell from "@/components/PageShell";
-import ContactFooter from "@/components/ContactFooter";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useState } from "react";
 import { Send } from "lucide-react";
@@ -42,7 +41,6 @@ const BulkOrder = () => {
           </form>
         </div>
       </PageShell>
-      <ContactFooter />
       <ScrollToTop />
     </div>
   );
