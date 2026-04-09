@@ -22,7 +22,7 @@ const Navbar = () => {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-md border-b border-border shadow-sm">
         <div className="container mx-auto flex items-center justify-between py-2 px-4">
           <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Kharayo" width={40} height={40} />
+            <img src={logo} alt="Kharayo" className="h-8 w-auto" />
             <span className="font-display text-lg font-bold text-primary leading-tight">Kharayo <span className="font-body text-[10px] font-medium text-muted-foreground block leading-tight">(Great Himalayan Agro PVT. LTD.)</span></span>
           </Link>
 

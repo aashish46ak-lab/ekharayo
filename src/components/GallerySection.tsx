@@ -20,13 +20,8 @@ const GallerySection = () => {
   const [showAll, setShowAll] = useState(false);
 
   return (
-    <section id="gallery" className="py-20 bg-secondary">
+    <section className="py-12">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <p className="font-body text-accent text-sm uppercase tracking-[0.2em] font-semibold mb-2">Our Farm</p>
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground">Gallery</h2>
-        </div>
-
         <div className="flex justify-center">
           <button
             onClick={() => setShowAll(true)}
