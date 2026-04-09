@@ -1,9 +1,10 @@
+import { Link } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
 import { Leaf, ShieldCheck } from "lucide-react";
 
 const HeroSection = () => {
   return (
-    <section id="home" className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
       <img src={heroBg} alt="Fresh farms of Nepal" width={1920} height={1080} className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-0 bg-[hsl(var(--hero-overlay)/0.7)]" />
 
@@ -13,13 +14,13 @@ const HeroSection = () => {
           Fresh from the Farm,<br />Straight to Your Door
         </h1>
         <p className="font-body text-primary-foreground/80 text-lg md:text-xl max-w-2xl mx-auto mb-10 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
-          Great Himalayan Agro PVT. LTD. (Kharayo) delivers the freshest dairy, meat, and crop products across Nepal — quality you can taste, service you can trust. the freshest dairy, meat, and crop products across Nepal — quality you can taste, service you can trust.
+          Great Himalayan Agro PVT. LTD. (Kharayo) delivers the freshest dairy, meat, and crop products across Nepal — quality you can taste, service you can trust.
         </p>
         <div className="flex flex-wrap justify-center gap-4 animate-fade-in-up" style={{ animationDelay: "0.45s" }}>
-          <a href="#products" className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body font-semibold px-8 py-4 rounded-lg hover:bg-green-glow transition-colors text-base">
+          <Link to="/products" className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body font-semibold px-8 py-4 rounded-lg hover:bg-green-glow transition-colors text-base">
             Explore Products
-          </a>
-          <a href="https://wa.me/9779852049458?text=Hi%20eKharayo%20Agro!%20I%20want%20to%20place%20an%20order." target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-accent text-accent-foreground font-body font-semibold px-8 py-4 rounded-lg hover:opacity-90 transition-opacity text-base">
+          </Link>
+          <a href="https://wa.me/9779852049458?text=Hi%20Kharayo!%20I%20want%20to%20place%20an%20order." target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-accent text-accent-foreground font-body font-semibold px-8 py-4 rounded-lg hover:opacity-90 transition-opacity text-base">
             Order on WhatsApp
           </a>
         </div>
