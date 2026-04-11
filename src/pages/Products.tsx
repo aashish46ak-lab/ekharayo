@@ -66,12 +66,12 @@ const Products = () => {
             {categories.map((cat) => (
               <div key={cat.title}>
                 <div className="flex items-center gap-4 mb-8">
-                  <img src={cat.image} alt={cat.title} loading="lazy" className="w-16 h-16 rounded-xl object-cover shadow-md ring-2 ring-primary/20" />
+                  <img src={cat.image} alt={cat.title} loading="lazy" className="w-16 h-16 rounded-xl object-cover shadow-md ring-2 ring-primary/30" />
                   <h3 className="font-display text-2xl font-bold text-foreground">{cat.title}</h3>
                 </div>
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {cat.products.map((p) => (
-                    <div key={p.name} className="bg-card rounded-xl border border-border p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                    <div key={p.name} className="bg-card rounded-xl border border-border p-6 shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300 group">
                       <h4 className="font-display text-lg font-bold text-foreground mb-1">{p.name}</h4>
                       <p className="font-body text-sm text-muted-foreground mb-4">{p.description}</p>
                       <a
