@@ -9,10 +9,10 @@ const Ownership = () => (
     <Navbar />
     <PageShell title="Meet the Founder" subtitle="The vision behind Great Himalayan Agro PVT. LTD.">
       <div className="container mx-auto px-4 py-16">
-        <div className="max-w-3xl mx-auto bg-card rounded-2xl border border-border shadow-xl overflow-hidden">
+        <div className="max-w-3xl mx-auto bg-card rounded-2xl border border-border shadow-xl shadow-primary/5 overflow-hidden">
           <div className="md:flex">
             <div className="md:w-2/5 flex items-center justify-center p-8 bg-gradient-to-br from-primary/10 to-secondary">
-              <img src={founderImg} alt="Founder of Great Himalayan Agro PVT. LTD." loading="lazy" className="w-60 h-68 md:w-64 md:h-76 rounded-2xl object-cover border-4 border-primary shadow-lg" />
+              <img src={founderImg} alt="Founder of Great Himalayan Agro PVT. LTD." loading="lazy" className="w-60 h-68 md:w-64 md:h-76 rounded-2xl object-cover border-4 border-primary/30 shadow-lg" />
             </div>
             <div className="p-8 md:w-3/5 flex flex-col justify-center">
               <h3 className="font-display text-2xl font-bold text-foreground mb-1">Founder & CEO</h3>
@@ -29,7 +29,7 @@ const Ownership = () => (
                 <a href="mailto:ghagro2080@gmail.com" className="flex items-center gap-3 bg-accent text-accent-foreground font-body text-sm font-semibold px-5 py-3 rounded-lg hover:opacity-90 transition-opacity">
                   <Mail size={18} /> Mail Us
                 </a>
-                <a href="https://wa.me/9779852049458" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 bg-[hsl(142_70%_45%)] text-primary-foreground font-body text-sm font-semibold px-5 py-3 rounded-lg hover:opacity-90 transition-opacity">
+                <a href="https://wa.me/9779852049458" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 bg-primary/80 text-primary-foreground font-body text-sm font-semibold px-5 py-3 rounded-lg hover:bg-primary transition-colors">
                   <MessageCircle size={18} /> Chat on WhatsApp
                 </a>
               </div>

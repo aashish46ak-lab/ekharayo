@@ -19,17 +19,17 @@ const About = () => (
 
         {/* Company intro */}
         <div className="max-w-3xl mx-auto text-center space-y-4">
-          <p className="font-body text-base text-foreground leading-relaxed">
+          <p className="font-body text-base text-foreground/80 leading-relaxed">
             <strong className="text-primary">Great Himalayan Agro PVT. LTD. (Kharayo)</strong> is a registered agro-based company dedicated to producing and delivering fresh, organic farm products across Nepal. From dairy and poultry to crops and livestock — we bring the best of Nepali agriculture directly to your home.
           </p>
-          <p className="font-body text-base text-foreground leading-relaxed">
-            We operate our own <strong>farms and mills</strong>, ensuring complete control over quality from production to delivery. Our integrated facilities include cattle farms, poultry sheds, crop fields, and modern processing mills — all managed with sustainable farming practices.
+          <p className="font-body text-base text-foreground/80 leading-relaxed">
+            We operate our own <strong className="text-foreground">farms and mills</strong>, ensuring complete control over quality from production to delivery. Our integrated facilities include cattle farms, poultry sheds, crop fields, and modern processing mills — all managed with sustainable farming practices.
           </p>
         </div>
 
         {/* Location */}
-        <div className="max-w-xl mx-auto bg-card rounded-2xl border border-border shadow-md p-8 text-center">
-          <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="max-w-xl mx-auto bg-card rounded-2xl border border-border shadow-lg shadow-primary/5 p-8 text-center">
+          <div className="w-14 h-14 bg-primary/15 rounded-full flex items-center justify-center mx-auto mb-4">
             <MapPin className="text-primary" size={28} />
           </div>
           <h3 className="font-display text-xl font-bold text-foreground mb-2">Our Location</h3>
@@ -40,12 +40,12 @@ const About = () => (
 
         {/* Facilities */}
         <div className="grid sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
-          <div className="bg-card rounded-xl border border-border p-6 text-center shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div className="bg-card rounded-xl border border-border p-6 text-center shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300">
             <Tractor className="text-primary mx-auto mb-3" size={32} />
             <h4 className="font-display text-lg font-bold text-foreground mb-1">Our Farms</h4>
             <p className="font-body text-sm text-muted-foreground">Cattle, poultry, and crop farms managed with sustainable practices.</p>
           </div>
-          <div className="bg-card rounded-xl border border-border p-6 text-center shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div className="bg-card rounded-xl border border-border p-6 text-center shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300">
             <Factory className="text-primary mx-auto mb-3" size={32} />
             <h4 className="font-display text-lg font-bold text-foreground mb-1">Our Mills</h4>
             <p className="font-body text-sm text-muted-foreground">Modern processing mills for rice, wheat, and other grains.</p>
@@ -57,8 +57,8 @@ const About = () => (
           <h3 className="font-display text-2xl font-bold text-foreground text-center mb-8">What We Stand For</h3>
           <div className="grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {values.map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="bg-card rounded-xl border border-border p-8 text-center shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-5">
+              <div key={title} className="bg-card rounded-xl border border-border p-8 text-center shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300">
+                <div className="w-14 h-14 bg-primary/15 rounded-full flex items-center justify-center mx-auto mb-5">
                   <Icon className="text-primary" size={28} />
                 </div>
                 <h3 className="font-display text-xl font-bold text-foreground mb-3">{title}</h3>
@@ -72,7 +72,7 @@ const About = () => (
         <div className="text-center">
           <Link
             to="/ownership"
-            className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body font-semibold px-8 py-4 rounded-lg hover:bg-green-glow transition-colors text-base"
+            className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body font-semibold px-8 py-4 rounded-lg hover:bg-green-glow transition-colors text-base hover:-translate-y-0.5 transition-transform"
           >
             <UserCircle size={20} /> View Ownership
           </Link>
