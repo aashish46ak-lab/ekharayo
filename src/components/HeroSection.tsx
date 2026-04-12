@@ -34,7 +34,7 @@ const HeroSection = () => {
         style={{ transform: `scale(1.05) translateY(${scrollY * 0.08}px)`, filter: "blur(1.5px)" }}
       >
         <source
-          src="https://videos.pexels.com/video-files/4919639/4919639-uhd_2560_1440_25fps.mp4"
+          src="https://videos.pexels.com/video-files/857251/857251-hd_1920_1080_25fps.mp4"
           type="video/mp4"
         />
       </video>
