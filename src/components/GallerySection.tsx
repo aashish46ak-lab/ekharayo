@@ -5,6 +5,10 @@ import gallery2 from "@/assets/gallery2.jpg";
 import gallery3 from "@/assets/gallery3.jpg";
 import gallery4 from "@/assets/gallery4.jpg";
 import gallery5 from "@/assets/gallery5.jpg";
+import gallery6 from "@/assets/gallery6.jpg";
+import gallery7 from "@/assets/gallery7.jpg";
+import gallery8 from "@/assets/gallery8.jpg";
+import gallery9 from "@/assets/gallery9.jpg";
 
 const images = [
   { src: gallery1, alt: "Cows feeding in the shed" },
@@ -12,6 +16,10 @@ const images = [
   { src: gallery3, alt: "Healthy cows at the farm" },
   { src: gallery4, alt: "Farm infrastructure and fencing" },
   { src: gallery5, alt: "Cattle grazing in the field" },
+  { src: gallery6, alt: "Kids at the poultry farm" },
+  { src: gallery7, alt: "Farm tractor and equipment" },
+  { src: gallery8, alt: "Inside the processing facility" },
+  { src: gallery9, alt: "Farm operations and setup" },
 ];
 
 const GallerySection = () => {
@@ -37,7 +45,6 @@ const GallerySection = () => {
         </div>
       </div>
 
-      {/* Full gallery modal */}
       {showAll && (
         <div className="fixed inset-0 z-[100] bg-foreground/90 overflow-y-auto p-4" onClick={() => setShowAll(false)}>
           <button
@@ -65,7 +72,6 @@ const GallerySection = () => {
         </div>
       )}
 
-      {/* Lightbox */}
       {selected !== null && (
         <div
           className="fixed inset-0 z-[110] bg-foreground/90 flex items-center justify-center p-4"
