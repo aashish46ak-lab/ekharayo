@@ -23,7 +23,7 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
-      {/* Blurry video background */}
+      {/* Cow grazing video background */}
       <video
         autoPlay
         muted
@@ -34,13 +34,13 @@ const HeroSection = () => {
         style={{ transform: `scale(1.1) translateY(${scrollY * 0.08}px)` }}
       >
         <source
-          src="https://videos.pexels.com/video-files/857251/857251-hd_1920_1080_25fps.mp4"
+          src="https://videos.pexels.com/video-files/4919639/4919639-uhd_2560_1440_25fps.mp4"
           type="video/mp4"
         />
       </video>
 
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/70" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/80" />
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 pt-24 pb-16">

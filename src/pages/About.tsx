@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import PageShell from "@/components/PageShell";
 import ScrollToTop from "@/components/ScrollToTop";
+import SiteFooter from "@/components/SiteFooter";
 import { Link } from "react-router-dom";
 import { Sprout, Heart, Truck, Users, MapPin, Factory, Tractor, UserCircle } from "lucide-react";
 
@@ -80,6 +81,7 @@ const About = () => (
 
       </div>
     </PageShell>
+    <SiteFooter />
     <ScrollToTop />
   </div>
 );

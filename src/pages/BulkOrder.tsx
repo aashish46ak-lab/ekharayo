@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import PageShell from "@/components/PageShell";
 import ScrollToTop from "@/components/ScrollToTop";
+import SiteFooter from "@/components/SiteFooter";
 import { useState } from "react";
 import { Send } from "lucide-react";
 
@@ -41,6 +42,7 @@ const BulkOrder = () => {
           </form>
         </div>
       </PageShell>
+      <SiteFooter />
       <ScrollToTop />
     </div>
   );

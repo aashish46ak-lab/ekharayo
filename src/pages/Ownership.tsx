@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import PageShell from "@/components/PageShell";
 import ScrollToTop from "@/components/ScrollToTop";
+import SiteFooter from "@/components/SiteFooter";
 import founderImg from "@/assets/founder.jpg";
 import { Phone, Mail, MessageCircle } from "lucide-react";
 
@@ -18,7 +19,6 @@ const Ownership = () => (
               <h3 className="font-display text-2xl font-bold text-foreground mb-1">Founder & CEO</h3>
               <p className="font-body text-primary font-semibold text-lg mb-1">Great Himalayan Agro PVT. LTD.</p>
               <p className="font-body text-muted-foreground mb-6">Bringing Nepal's freshest farm products to your home with trust and quality.</p>
-
               <div className="space-y-3">
                 <a href="tel:9852049458" className="flex items-center gap-3 bg-primary text-primary-foreground font-body text-sm font-semibold px-5 py-3 rounded-lg hover:bg-green-glow transition-colors">
                   <Phone size={18} /> Call: 9852049458
@@ -38,6 +38,7 @@ const Ownership = () => (
         </div>
       </div>
     </PageShell>
+    <SiteFooter />
     <ScrollToTop />
   </div>
 );
