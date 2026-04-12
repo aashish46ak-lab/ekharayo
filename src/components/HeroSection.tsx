@@ -30,8 +30,8 @@ const HeroSection = () => {
         loop
         playsInline
         onCanPlay={() => setVideoLoaded(true)}
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 blur-sm scale-110 ${videoLoaded ? "opacity-100" : "opacity-0"}`}
-        style={{ transform: `scale(1.1) translateY(${scrollY * 0.08}px)` }}
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 scale-105 ${videoLoaded ? "opacity-100" : "opacity-0"}`}
+        style={{ transform: `scale(1.05) translateY(${scrollY * 0.08}px)`, filter: "blur(1.5px)" }}
       >
         <source
           src="https://videos.pexels.com/video-files/4919639/4919639-uhd_2560_1440_25fps.mp4"
@@ -40,7 +40,7 @@ const HeroSection = () => {
       </video>
 
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/80" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/25 to-black/50" />
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 pt-24 pb-16">
