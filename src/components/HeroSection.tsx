@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
 import { ChevronDown, ShoppingBasket, Info, Image, UserCircle, PackageCheck, Phone } from "lucide-react";
 import SmartSearchBar from "./SmartSearchBar";
 import heroVideo from "@/assets/hero-cows.mp4.asset.json";
@@ -14,43 +13,25 @@ const menuItems = [
 ];
 
 const HeroSection = () => {
-  const [scrollY, setScrollY] = useState(0);
-  const [videoLoaded, setVideoLoaded] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
-      {/* Cow grazing video background */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        onCanPlay={() => setVideoLoaded(true)}
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? "opacity-100" : "opacity-0"}`}
-        style={{ transform: `scale(1.08) translateY(${scrollY * 0.06}px)`, filter: "blur(1.5px)" }}
-        poster="https://images.pexels.com/videos/857251/free-video-857251.jpg?auto=compress&cs=tinysrgb&w=1280"
-      >
-        <source
-          src="https://videos.pexels.com/video-files/857251/857251-sd_640_360_25fps.mp4"
-          type="video/mp4"
+      <div className="absolute inset-0 bg-background">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          className="absolute inset-0 h-full w-full object-cover opacity-100"
+          style={{ transform: "scale(1.08)", filter: "blur(1.5px)" }}
+          src={heroVideo.url}
         />
-      </video>
+      </div>
 
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/30 to-black/55" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/25 to-black/55" />
 
-      {/* Content */}
       <div className="relative z-10 container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-3xl mx-auto text-center">
-
-          {/* Search bar - at top */}
           <div
             className="mb-8 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0s" }}
@@ -58,7 +39,6 @@ const HeroSection = () => {
             <SmartSearchBar variant="hero" />
           </div>
 
-          {/* Badge */}
           <div
             className="inline-flex items-center gap-2 rounded-full px-5 py-2 mb-8 opacity-0 animate-fade-in-up border border-primary/30"
             style={{
@@ -73,7 +53,6 @@ const HeroSection = () => {
             </span>
           </div>
 
-          {/* Headline */}
           <h1
             className="font-display text-5xl md:text-7xl lg:text-8xl font-extrabold text-white leading-[1.05] mb-6 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.2s" }}
@@ -87,7 +66,6 @@ const HeroSection = () => {
             </span>
           </h1>
 
-          {/* Subtext */}
           <p
             className="font-body text-white/60 text-base md:text-lg max-w-xl mx-auto mb-12 leading-relaxed tracking-wide opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.35s" }}
@@ -96,7 +74,6 @@ const HeroSection = () => {
             dairy, meat & crop products across Nepal.
           </p>
 
-          {/* Menu boxes grid */}
           <div
             className="grid grid-cols-3 sm:grid-cols-6 gap-3 max-w-2xl mx-auto opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.5s" }}
@@ -121,7 +98,6 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce">
         <ChevronDown className="text-white/30" size={28} />
       </div>
