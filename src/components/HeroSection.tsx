@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ChevronDown, ShoppingBasket, Info, Image, UserCircle, PackageCheck, Phone } from "lucide-react";
 import SmartSearchBar from "./SmartSearchBar";
+import heroVideo from "@/assets/hero-cows.mp4.asset.json";
 
 const menuItems = [
   { label: "Products", href: "/products", icon: ShoppingBasket },
