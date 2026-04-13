@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ChevronDown, ShoppingBasket, Info, Image, UserCircle, PackageCheck, Phone } from "lucide-react";
+import SmartSearchBar from "./SmartSearchBar";
 
 const menuItems = [
   { label: "Products", href: "/products", icon: ShoppingBasket },
