@@ -105,6 +105,14 @@ const HeroSection = () => {
               </Link>
             ))}
           </div>
+
+          {/* Search bar */}
+          <div
+            className="mt-10 opacity-0 animate-fade-in-up"
+            style={{ animationDelay: "0.6s" }}
+          >
+            <SmartSearchBar variant="hero" />
+          </div>
         </div>
       </div>
 
