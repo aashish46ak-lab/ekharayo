@@ -30,28 +30,40 @@ const HeroSection = () => {
         muted
         loop
         playsInline
+        preload="auto"
         onCanPlay={() => setVideoLoaded(true)}
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 scale-105 ${videoLoaded ? "opacity-100" : "opacity-0"}`}
-        style={{ transform: `scale(1.05) translateY(${scrollY * 0.08}px)`, filter: "blur(1.5px)" }}
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? "opacity-100" : "opacity-0"}`}
+        style={{ transform: `scale(1.08) translateY(${scrollY * 0.06}px)`, filter: "blur(1.5px)" }}
+        poster="https://images.pexels.com/videos/857251/free-video-857251.jpg?auto=compress&cs=tinysrgb&w=1280"
       >
         <source
-          src="https://videos.pexels.com/video-files/857251/857251-hd_1920_1080_25fps.mp4"
+          src="https://videos.pexels.com/video-files/857251/857251-sd_640_360_25fps.mp4"
           type="video/mp4"
         />
       </video>
 
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/25 to-black/50" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/30 to-black/55" />
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-3xl mx-auto text-center">
+
+          {/* Search bar - at top */}
+          <div
+            className="mb-8 opacity-0 animate-fade-in-up"
+            style={{ animationDelay: "0s" }}
+          >
+            <SmartSearchBar variant="hero" />
+          </div>
+
           {/* Badge */}
           <div
             className="inline-flex items-center gap-2 rounded-full px-5 py-2 mb-8 opacity-0 animate-fade-in-up border border-primary/30"
             style={{
               background: "hsla(142, 50%, 38%, 0.12)",
               backdropFilter: "blur(12px)",
+              animationDelay: "0.1s",
             }}
           >
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_hsl(142,50%,38%)]" />
@@ -63,7 +75,7 @@ const HeroSection = () => {
           {/* Headline */}
           <h1
             className="font-display text-5xl md:text-7xl lg:text-8xl font-extrabold text-white leading-[1.05] mb-6 opacity-0 animate-fade-in-up"
-            style={{ animationDelay: "0.15s" }}
+            style={{ animationDelay: "0.2s" }}
           >
             Fresh from the
             <span
@@ -77,7 +89,7 @@ const HeroSection = () => {
           {/* Subtext */}
           <p
             className="font-body text-white/60 text-base md:text-lg max-w-xl mx-auto mb-12 leading-relaxed tracking-wide opacity-0 animate-fade-in-up"
-            style={{ animationDelay: "0.3s" }}
+            style={{ animationDelay: "0.35s" }}
           >
             Great Himalayan Agro PVT. LTD. (Kharayo) — delivering the freshest
             dairy, meat & crop products across Nepal.
@@ -86,7 +98,7 @@ const HeroSection = () => {
           {/* Menu boxes grid */}
           <div
             className="grid grid-cols-3 sm:grid-cols-6 gap-3 max-w-2xl mx-auto opacity-0 animate-fade-in-up"
-            style={{ animationDelay: "0.45s" }}
+            style={{ animationDelay: "0.5s" }}
           >
             {menuItems.map(({ label, href, icon: Icon }) => (
               <Link
@@ -104,14 +116,6 @@ const HeroSection = () => {
                 </span>
               </Link>
             ))}
-          </div>
-
-          {/* Search bar */}
-          <div
-            className="mt-10 opacity-0 animate-fade-in-up"
-            style={{ animationDelay: "0.6s" }}
-          >
-            <SmartSearchBar variant="hero" />
           </div>
         </div>
       </div>
