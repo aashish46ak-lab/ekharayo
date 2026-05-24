@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { ChevronDown, ShoppingBasket, Info, Image, UserCircle, PackageCheck, Phone } from "lucide-react";
 import SmartSearchBar from "./SmartSearchBar";
-import heroVideo from "@/assets/hero-cows.mp4.asset.json";
 
 const menuItems = [
   { label: "Products", href: "/products", icon: ShoppingBasket },
@@ -15,29 +14,17 @@ const menuItems = [
 const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
-      <div className="absolute inset-0 bg-background">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          className="absolute inset-0 h-full w-full object-cover opacity-100"
-          style={{ transform: "scale(1.08)", filter: "blur(1.5px)" }}
-          src={heroVideo.url}
-        />
-      </div>
 
-      <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/25 to-black/55" />
 
       <div className="relative z-10 container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-3xl mx-auto text-center">
           <div
-            className="mb-8 opacity-0 animate-fade-in-up"
+            className="relative z-30 mb-8 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0s" }}
           >
             <SmartSearchBar variant="hero" />
           </div>
+
 
           <div
             className="inline-flex items-center gap-2 rounded-full px-5 py-2 mb-8 opacity-0 animate-fade-in-up border border-primary/30"
