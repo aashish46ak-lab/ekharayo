@@ -19,11 +19,12 @@ const HeroSection = () => {
       <div className="relative z-10 container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-3xl mx-auto text-center">
           <div
-            className="mb-8 opacity-0 animate-fade-in-up"
+            className="relative z-30 mb-8 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0s" }}
           >
             <SmartSearchBar variant="hero" />
           </div>
+
 
           <div
             className="inline-flex items-center gap-2 rounded-full px-5 py-2 mb-8 opacity-0 animate-fade-in-up border border-primary/30"
