@@ -22,7 +22,7 @@ const InstallPrompt = () => {
   return (
     <div className="fixed bottom-4 left-4 z-[60] flex items-center gap-3 rounded-xl border border-border bg-card/95 px-4 py-3 shadow-lg backdrop-blur-md">
       <div className="text-sm">
-        <p className="font-semibold text-foreground">Install Kharayo</p>
+        <p className="font-semibold text-foreground">Install eKharayo</p>
         <p className="text-xs text-muted-foreground">Add the app to your home screen</p>
       </div>
       <button

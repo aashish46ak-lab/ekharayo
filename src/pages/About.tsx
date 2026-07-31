@@ -21,7 +21,7 @@ const About = () => (
         {/* Company intro */}
         <div className="max-w-3xl mx-auto text-center space-y-4">
           <p className="font-body text-base text-foreground/80 leading-relaxed">
-            <strong className="text-primary">Great Himalayan Agro PVT. LTD. (Kharayo)</strong> is a registered agro-based company dedicated to producing and delivering fresh, organic farm products across Nepal. From dairy and poultry to crops and livestock — we bring the best of Nepali agriculture directly to your home.
+            <strong className="text-primary">Great Himalayan Agro PVT. LTD. (eKharayo)</strong> is a registered agro-based company dedicated to producing and delivering fresh, organic farm products across Nepal. From dairy and poultry to crops and livestock — we bring the best of Nepali agriculture directly to your home.
           </p>
           <p className="font-body text-base text-foreground/80 leading-relaxed">
             We operate our own <strong className="text-foreground">farms and mills</strong>, ensuring complete control over quality from production to delivery. Our integrated facilities include cattle farms, poultry sheds, crop fields, and modern processing mills — all managed with sustainable farming practices.
