@@ -11,6 +11,8 @@ import Ownership from "./pages/Ownership.tsx";
 import BulkOrder from "./pages/BulkOrder.tsx";
 import Contact from "./pages/Contact.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import InstallPrompt from "./components/InstallPrompt.tsx";
+
 
 const queryClient = new QueryClient();
 
@@ -31,6 +33,8 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      <InstallPrompt />
+
     </TooltipProvider>
   </QueryClientProvider>
 );
