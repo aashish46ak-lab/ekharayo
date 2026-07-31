@@ -37,9 +37,9 @@ const Navbar = () => {
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBg}`}>
         <div className="container mx-auto flex items-center justify-between py-2.5 px-4">
           <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Kharayo" className="h-8 w-auto" />
+            <img src={logo} alt="eKharayo" className="h-8 w-auto" />
             <span className={`font-display text-lg font-bold leading-tight ${scrolled ? "text-primary" : "text-white"}`}>
-              Kharayo
+              eKharayo
               <span className={`font-body text-[10px] font-medium block leading-tight tracking-wide ${scrolled ? "text-muted-foreground" : "text-white/60"}`}>
                 (Great Himalayan Agro PVT. LTD.)
               </span>

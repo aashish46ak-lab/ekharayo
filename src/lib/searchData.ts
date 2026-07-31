@@ -27,7 +27,7 @@ export const searchItems: SearchItem[] = [
   // Pages
   { title: "Home", description: "Back to homepage", category: "page", href: "/", keywords: ["home", "ghar", "घर", "main"] },
   { title: "All Products", description: "Browse all our products", category: "page", href: "/products", keywords: ["products", "shop", "buy", "order", "kinnu", "किन्नु"] },
-  { title: "About Us", description: "Learn about Kharayo", category: "page", href: "/about", keywords: ["about", "baare", "बारेमा", "company", "who"] },
+  { title: "About Us", description: "Learn about eKharayo", category: "page", href: "/about", keywords: ["about", "baare", "बारेमा", "company", "who"] },
   { title: "Gallery", description: "Photo gallery of our farm", category: "page", href: "/gallery", keywords: ["gallery", "photos", "images", "tasbir", "तस्बिर"] },
   { title: "Ownership", description: "Company ownership details", category: "page", href: "/ownership", keywords: ["ownership", "owner", "malik", "मालिक"] },
   { title: "Bulk Order", description: "Place bulk orders", category: "page", href: "/bulk-order", keywords: ["bulk", "wholesale", "thok", "थोक", "order"] },

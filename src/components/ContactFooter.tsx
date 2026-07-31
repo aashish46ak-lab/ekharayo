@@ -34,7 +34,7 @@ const ContactFooter = () => {
         </div>
 
         <div className="border-t border-border pt-6 text-center">
-          <p className="font-body text-sm text-muted-foreground">© 2024 Great Himalayan Agro PVT. LTD. (Kharayo). All rights reserved.</p>
+          <p className="font-body text-sm text-muted-foreground">© 2024 Great Himalayan Agro PVT. LTD. (eKharayo). All rights reserved.</p>
         </div>
       </div>
     </div>
