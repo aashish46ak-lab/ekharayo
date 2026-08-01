@@ -8,16 +8,16 @@ import { Phone, Mail, MessageCircle } from "lucide-react";
 const Ownership = () => (
   <div className="min-h-screen pt-14">
     <Navbar />
-    <PageShell title="Meet the Founder" subtitle="The vision behind Great Sagarmatha Agro PVT. LTD.">
+    <PageShell title="Meet the Founder" subtitle="The vision behind Great Sagarmatha Agro Pvt. Ltd.">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-3xl mx-auto bg-card rounded-2xl border border-border shadow-xl shadow-primary/5 overflow-hidden">
           <div className="md:flex">
             <div className="md:w-2/5 flex items-center justify-center p-8 bg-gradient-to-br from-primary/10 to-secondary">
-              <img src={founderImg} alt="Founder of Great Sagarmatha Agro PVT. LTD." loading="lazy" className="w-60 h-68 md:w-64 md:h-76 rounded-2xl object-cover border-4 border-primary/30 shadow-lg" />
+              <img src={founderImg} alt="Founder of Great Sagarmatha Agro Pvt. Ltd." loading="lazy" className="w-60 h-68 md:w-64 md:h-76 rounded-2xl object-cover border-4 border-primary/30 shadow-lg" />
             </div>
             <div className="p-8 md:w-3/5 flex flex-col justify-center">
               <h3 className="font-display text-2xl font-bold text-foreground mb-1">Founder & CEO</h3>
-              <p className="font-body text-primary font-semibold text-lg mb-1">Great Sagarmatha Agro PVT. LTD.</p>
+              <p className="font-body text-primary font-semibold text-lg mb-1">Great Sagarmatha Agro Pvt. Ltd.</p>
               <p className="font-body text-muted-foreground mb-6">Bringing Nepal's freshest farm products to your home with trust and quality.</p>
               <div className="space-y-3">
                 <a href="tel:9852049458" className="flex items-center gap-3 bg-primary text-primary-foreground font-body text-sm font-semibold px-5 py-3 rounded-lg hover:bg-green-glow transition-colors">
