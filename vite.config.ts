@@ -24,9 +24,11 @@ export default defineConfig(({ mode }) => ({
       manifest: false,
       devOptions: { enabled: false },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,webmanifest,woff2}"],
+        // Never precache HTML: a precached index.html would be served from the
+        // precache NavigationRoute and keep installed apps on the old build.
+        globPatterns: ["**/*.{js,css,ico,png,svg,webmanifest,woff2}"],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
-        navigateFallback: "/index.html",
+        navigateFallback: null,
         navigateFallbackDenylist: [/^\/~oauth/],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
@@ -35,7 +37,12 @@ export default defineConfig(({ mode }) => ({
           {
             urlPattern: ({ request, sameOrigin }) => sameOrigin && request.mode === "navigate",
             handler: "NetworkFirst",
-            options: { cacheName: "html-navigations", networkTimeoutSeconds: 5 },
+            options: {
+              cacheName: "html-navigations",
+              networkTimeoutSeconds: 5,
+              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
           },
           {
             urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.startsWith("/assets/"),
