@@ -36,7 +36,7 @@ const HeroSection = () => {
           >
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_hsl(142,50%,38%)]" />
             <span className="font-body text-primary text-xs uppercase tracking-[0.3em] font-semibold">
-              Farm Fresh • Home Delivered
+              Nepal's Agricultural Marketplace
             </span>
           </div>
 
@@ -44,12 +44,12 @@ const HeroSection = () => {
             className="font-display text-5xl md:text-7xl lg:text-8xl font-extrabold text-white leading-[1.05] mb-6 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.2s" }}
           >
-            Fresh from the
+            Quality Agriculture,
             <span
               className="block text-primary"
               style={{ filter: "drop-shadow(0 0 30px hsla(142,50%,38%,0.4))" }}
             >
-              Sagarmatha Farm
+              One Trusted Platform
             </span>
           </h1>
 
@@ -57,9 +57,10 @@ const HeroSection = () => {
             className="font-body text-white/60 text-base md:text-lg max-w-xl mx-auto mb-12 leading-relaxed tracking-wide opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.35s" }}
           >
-            Great Sagarmatha Agro PVT. LTD. (eKharayo) — delivering the freshest
-            dairy, meat & crop products across Nepal.
+            eKharayo is the official digital marketplace of Great Sagarmatha Agro Pvt. Ltd. — our own farm products
+            plus carefully selected goods from trusted Nepali and international suppliers.
           </p>
+
 
           <div
             className="grid grid-cols-3 sm:grid-cols-6 gap-3 max-w-2xl mx-auto opacity-0 animate-fade-in-up"
