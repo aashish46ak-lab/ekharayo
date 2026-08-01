@@ -13,11 +13,11 @@ const OwnershipSection = () => {
         <div className="max-w-3xl mx-auto bg-card rounded-2xl border border-border shadow-lg overflow-hidden">
           <div className="md:flex">
             <div className="md:w-2/5 flex items-center justify-center p-6 bg-secondary">
-              <img src={founderImg} alt="Founder of Great Himalayan Agro PVT. LTD." loading="lazy" width={512} height={512} className="w-56 h-64 md:w-64 md:h-72 rounded-2xl object-cover border-4 border-primary shadow-lg" />
+              <img src={founderImg} alt="Founder of Great Sagarmatha Agro Pvt. Ltd." loading="lazy" width={512} height={512} className="w-56 h-64 md:w-64 md:h-72 rounded-2xl object-cover border-4 border-primary shadow-lg" />
             </div>
             <div className="p-8 md:w-3/5 flex flex-col justify-center">
               <h3 className="font-display text-2xl font-bold text-foreground mb-1">Founder & CEO</h3>
-              <p className="font-body text-primary font-semibold text-lg mb-1">Great Himalayan Agro PVT. LTD.</p>
+              <p className="font-body text-primary font-semibold text-lg mb-1">Great Sagarmatha Agro Pvt. Ltd.</p>
               <p className="font-body text-muted-foreground mb-6">Bringing Nepal's freshest farm products to your home with trust and quality.</p>
 
               <div className="space-y-3">
