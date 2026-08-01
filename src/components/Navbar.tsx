@@ -36,15 +36,16 @@ const Navbar = () => {
     <>
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBg}`}>
         <div className="container mx-auto flex items-center justify-between py-2.5 px-4">
-          <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="eKharayo" className="h-8 w-auto" />
+          <Link to="/" className="flex items-center gap-2.5">
+            <img src={logo} alt="eKharayo — Great Sagarmatha Agro Pvt. Ltd." className="h-9 md:h-10 w-auto shrink-0" />
             <span className={`font-display text-lg font-bold leading-tight ${scrolled ? "text-primary" : "text-white"}`}>
               eKharayo
               <span className={`font-body text-[10px] font-medium block leading-tight tracking-wide ${scrolled ? "text-muted-foreground" : "text-white/60"}`}>
-                (Great Sagarmatha Agro PVT. LTD.)
+                (Great Sagarmatha Agro Pvt. Ltd.)
               </span>
             </span>
           </Link>
+
 
           {/* Desktop */}
           <ul className="hidden md:flex items-center gap-1">
