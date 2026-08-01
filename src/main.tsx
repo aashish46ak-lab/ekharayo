@@ -1,16 +1,8 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { registerSW } from "virtual:pwa-register";
-
-registerSW({
-  immediate: true,
-  onNeedRefresh() {
-    window.location.reload();
-  },
-  onOfflineReady() {
-    console.log("App ready for offline use");
-  },
-});
+import { registerPWA } from "./pwa";
 
 createRoot(document.getElementById("root")!).render(<App />);
+
+registerPWA();
