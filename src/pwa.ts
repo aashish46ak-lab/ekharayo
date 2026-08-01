@@ -44,20 +44,38 @@ export function registerPWA() {
     window.location.reload();
   });
 
-  window.addEventListener("load", () => {
-    void navigator.serviceWorker.register(SW_URL, { scope: "/" }).then((registration) => {
-      if (!registration) return;
+  const start = () => {
+    void navigator.serviceWorker
+      .register(SW_URL, { scope: "/", updateViaCache: "none" })
+      .then((registration) => {
+        if (!registration) return;
 
-      const checkForUpdate = () => {
-        if (document.visibilityState !== "visible") return;
-        void registration.update().catch(() => {});
-      };
+        // If a new worker is already waiting (skipWaiting normally handles this,
+        // but be defensive), push it through immediately.
+        const activateWaiting = () => registration.waiting?.postMessage({ type: "SKIP_WAITING" });
+        activateWaiting();
+        registration.addEventListener("updatefound", () => {
+          const installing = registration.installing;
+          if (!installing) return;
+          installing.addEventListener("statechange", () => {
+            if (installing.state === "installed" && navigator.serviceWorker.controller) activateWaiting();
+          });
+        });
 
-      // Poll for new deployments and re-check whenever the app regains focus.
-      window.setInterval(checkForUpdate, UPDATE_INTERVAL_MS);
-      document.addEventListener("visibilitychange", checkForUpdate);
-      window.addEventListener("focus", checkForUpdate);
-      checkForUpdate();
-    });
-  });
+        const checkForUpdate = () => {
+          if (document.visibilityState !== "visible") return;
+          void registration.update().catch(() => {});
+        };
+
+        // Poll for new deployments and re-check whenever the app regains focus.
+        window.setInterval(checkForUpdate, UPDATE_INTERVAL_MS);
+        document.addEventListener("visibilitychange", checkForUpdate);
+        window.addEventListener("focus", checkForUpdate);
+        window.addEventListener("online", checkForUpdate);
+        checkForUpdate();
+      });
+  };
+
+  if (document.readyState === "complete") start();
+  else window.addEventListener("load", start);
 }
