@@ -41,7 +41,7 @@ const Navbar = () => {
             <span className={`font-display text-lg font-bold leading-tight ${scrolled ? "text-primary" : "text-white"}`}>
               eKharayo
               <span className={`font-body text-[10px] font-medium block leading-tight tracking-wide ${scrolled ? "text-muted-foreground" : "text-white/60"}`}>
-                (Great Himalayan Agro PVT. LTD.)
+                (Great Sagarmatha Agro PVT. LTD.)
               </span>
             </span>
           </Link>

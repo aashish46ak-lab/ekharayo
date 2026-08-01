@@ -49,7 +49,7 @@ const HeroSection = () => {
               className="block text-primary"
               style={{ filter: "drop-shadow(0 0 30px hsla(142,50%,38%,0.4))" }}
             >
-              Himalayan Farm
+              Sagarmatha Farm
             </span>
           </h1>
 
@@ -57,7 +57,7 @@ const HeroSection = () => {
             className="font-body text-white/60 text-base md:text-lg max-w-xl mx-auto mb-12 leading-relaxed tracking-wide opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.35s" }}
           >
-            Great Himalayan Agro PVT. LTD. (eKharayo) — delivering the freshest
+            Great Sagarmatha Agro PVT. LTD. (eKharayo) — delivering the freshest
             dairy, meat & crop products across Nepal.
           </p>
 

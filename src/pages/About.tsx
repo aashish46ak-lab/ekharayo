@@ -15,13 +15,13 @@ const values = [
 const About = () => (
   <div className="min-h-screen pt-14">
     <Navbar />
-    <PageShell title="About Us" subtitle="Learn why Great Himalayan Agro PVT. LTD. is Nepal's trusted farm brand">
+    <PageShell title="About Us" subtitle="Learn why Great Sagarmatha Agro PVT. LTD. is Nepal's trusted farm brand">
       <div className="container mx-auto px-4 py-16 space-y-16">
 
         {/* Company intro */}
         <div className="max-w-3xl mx-auto text-center space-y-4">
           <p className="font-body text-base text-foreground/80 leading-relaxed">
-            <strong className="text-primary">Great Himalayan Agro PVT. LTD. (eKharayo)</strong> is a registered agro-based company dedicated to producing and delivering fresh, organic farm products across Nepal. From dairy and poultry to crops and livestock — we bring the best of Nepali agriculture directly to your home.
+            <strong className="text-primary">Great Sagarmatha Agro PVT. LTD. (eKharayo)</strong> is a registered agro-based company dedicated to producing and delivering fresh, organic farm products across Nepal. From dairy and poultry to crops and livestock — we bring the best of Nepali agriculture directly to your home.
           </p>
           <p className="font-body text-base text-foreground/80 leading-relaxed">
             We operate our own <strong className="text-foreground">farms and mills</strong>, ensuring complete control over quality from production to delivery. Our integrated facilities include cattle farms, poultry sheds, crop fields, and modern processing mills — all managed with sustainable farming practices.
