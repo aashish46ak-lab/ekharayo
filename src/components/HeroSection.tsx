@@ -57,7 +57,7 @@ const HeroSection = () => {
             className="font-body text-white/60 text-base md:text-lg max-w-xl mx-auto mb-12 leading-relaxed tracking-wide opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.35s" }}
           >
-            eKharayo is the official digital marketplace of Great Sagarmatha Agro Pvt. Ltd. — our own farm products
+            eKharayo is the official digital marketplace of Great Sagarmatha Traders — our own farm products
             plus carefully selected goods from trusted Nepali and international suppliers.
           </p>
 
