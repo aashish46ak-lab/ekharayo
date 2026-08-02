@@ -16,6 +16,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
+    iconVersion(),
     mode === "development" && componentTagger(),
     VitePWA({
       strategies: "generateSW",
@@ -27,9 +28,13 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         // Never precache HTML: a precached index.html would be served from the
         // precache NavigationRoute and keep installed apps on the old build.
-        globPatterns: ["**/*.{js,css,ico,png,svg,webmanifest,woff2}"],
+        // Icons + manifest are intentionally excluded so a new logo is always
+        // fetched from the network instead of served from a stale precache.
+        globPatterns: ["**/*.{js,css,woff2}"],
+        globIgnores: ["**/icon-*.png", "**/favicon.png", "**/manifest.webmanifest"],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         navigateFallback: null,
+
         navigateFallbackDenylist: [/^\/~oauth/],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
