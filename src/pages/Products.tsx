@@ -1,65 +1,100 @@
+import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import PageShell from "@/components/PageShell";
 import ScrollToTop from "@/components/ScrollToTop";
 import SiteFooter from "@/components/SiteFooter";
-import dairyImg from "@/assets/dairy.jpg";
-import goatImg from "@/assets/goat.jpg";
-import chickenImg from "@/assets/chicken.jpg";
-import cropsImg from "@/assets/crops.jpg";
+import { supabase } from "@/integrations/supabase/client";
+import { useCart } from "@/hooks/useCart";
+import { rs } from "@/lib/media";
+import { ShoppingCart, Loader2, PackageX } from "lucide-react";
+import { toast } from "sonner";
 
-interface Product { name: string; description: string; }
-interface Category { title: string; image: string; products: Product[]; }
-
-const categories: Category[] = [
-  { title: "🥛 Dairy Products", image: dairyImg, products: [
-    { name: "Fresh Cow Milk", description: "Pure farm-fresh cow milk, delivered daily." },
-    { name: "Homemade Curd (Dahi)", description: "Thick, creamy curd made the traditional way." },
-    { name: "Pure Ghee", description: "Organic clarified butter for rich flavor." },
-  ]},
-  { title: "🐐 Goat Products", image: goatImg, products: [
-    { name: "Fresh Goat Meat (Khasi ko Masu)", description: "Tender, farm-raised goat meat." },
-  ]},
-  { title: "🍗 Chicken Products", image: chickenImg, products: [
-    { name: "Farm Chicken (Kukhura)", description: "Free-range, antibiotic-free chicken." },
-    { name: "Farm Eggs (Anda)", description: "Fresh organic eggs from happy hens." },
-  ]},
-  { title: "🌾 Crop Products", image: cropsImg, products: [
-    { name: "Organic Rice (Chamal)", description: "Premium local rice varieties." },
-    { name: "Wheat (Gahu)", description: "Freshly harvested whole wheat." },
-    { name: "Seasonal Vegetables", description: "Daily-picked fresh vegetables." },
-  ]},
-];
+interface Category { id: string; name: string; slug: string; image_url: string | null; sort_order: number }
+interface Product {
+  id: string; name: string; description: string | null; price: number; sale_price: number | null;
+  stock: number; unit: string | null; images: string[]; featured: boolean; category_id: string | null;
+}
 
 const Products = () => {
-  const orderUrl = (name: string) =>
-    `https://wa.me/9779852049458?text=${encodeURIComponent(`Hi! I'd like to order: ${name}`)}`;
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { add } = useCart();
+
+  useEffect(() => {
+    (async () => {
+      const [c, p] = await Promise.all([
+        supabase.from("categories").select("*").order("sort_order"),
+        supabase.from("products").select("*").eq("is_active", true).order("created_at"),
+      ]);
+      setCategories((c.data as Category[]) ?? []);
+      setProducts((p.data as unknown as Product[]) ?? []);
+      setLoading(false);
+    })();
+  }, []);
+
+  const addToCart = (p: Product) => {
+    if (p.stock <= 0) return toast.error("This product is out of stock");
+    add({ id: p.id, name: p.name, price: Number(p.sale_price ?? p.price), image: p.images?.[0] ?? null, unit: p.unit ?? undefined });
+    toast.success(`${p.name} added to cart`);
+  };
+
+  const uncategorised = products.filter((p) => !p.category_id);
 
   return (
     <div className="min-h-screen pt-14">
       <Navbar />
       <PageShell title="Our Products" subtitle="Farm-fresh dairy, meat, and crops delivered to your doorstep">
         <div className="container mx-auto px-4 py-16">
-          <div className="space-y-16">
-            {categories.map((cat) => (
-              <div key={cat.title}>
-                <div className="flex items-center gap-4 mb-8">
-                  <img src={cat.image} alt={cat.title} loading="lazy" className="w-16 h-16 rounded-xl object-cover shadow-md ring-2 ring-primary/30" />
-                  <h3 className="font-display text-2xl font-bold text-foreground">{cat.title}</h3>
-                </div>
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {cat.products.map((p) => (
-                    <div key={p.name} className="bg-card rounded-xl border border-border p-6 shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300 group">
-                      <h4 className="font-display text-lg font-bold text-foreground mb-1">{p.name}</h4>
-                      <p className="font-body text-sm text-muted-foreground mb-4">{p.description}</p>
-                      <a href={orderUrl(p.name)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 bg-primary text-primary-foreground font-body text-sm font-semibold px-5 py-2 rounded-md hover:bg-green-glow transition-colors">
-                        Order Now
-                      </a>
+          {loading ? (
+            <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary" size={28} /></div>
+          ) : (
+            <div className="space-y-16">
+              {[...categories.map((c) => ({ cat: c, list: products.filter((p) => p.category_id === c.id) })),
+                ...(uncategorised.length ? [{ cat: null as Category | null, list: uncategorised }] : [])]
+                .filter((g) => g.list.length > 0)
+                .map((g) => (
+                  <div key={g.cat?.id ?? "other"}>
+                    <div className="flex items-center gap-4 mb-8">
+                      {g.cat?.image_url && (
+                        <img src={g.cat.image_url} alt={g.cat.name} loading="lazy" className="w-16 h-16 rounded-xl object-cover shadow-md ring-2 ring-primary/30" />
+                      )}
+                      <h2 className="font-display text-2xl font-bold text-foreground">{g.cat?.name ?? "More Products"}</h2>
                     </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                      {g.list.map((p) => (
+                        <div key={p.id} className="bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300">
+                          {p.images?.[0] ? (
+                            <img src={p.images[0]} alt={p.name} loading="lazy" className="w-full h-44 object-cover" />
+                          ) : (
+                            <div className="w-full h-44 bg-muted flex items-center justify-center"><PackageX className="text-muted-foreground" size={28} /></div>
+                          )}
+                          <div className="p-6">
+                            <div className="flex items-start justify-between gap-2 mb-1">
+                              <h3 className="font-display text-lg font-bold text-foreground">{p.name}</h3>
+                              {p.featured && <span className="font-body text-[10px] uppercase tracking-wide bg-accent/15 text-accent px-2 py-1 rounded-full">Featured</span>}
+                            </div>
+                            <p className="font-body text-sm text-muted-foreground mb-3">{p.description}</p>
+                            <div className="flex items-baseline gap-2 mb-4">
+                              <span className="font-body text-lg font-bold text-primary">{rs(Number(p.sale_price ?? p.price))}</span>
+                              {p.sale_price != null && <span className="font-body text-sm text-muted-foreground line-through">{rs(Number(p.price))}</span>}
+                              {p.unit && <span className="font-body text-xs text-muted-foreground">/ {p.unit}</span>}
+                            </div>
+                            <button
+                              onClick={() => addToCart(p)}
+                              disabled={p.stock <= 0}
+                              className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-green-glow transition-colors disabled:opacity-50"
+                            >
+                              <ShoppingCart size={16} /> {p.stock > 0 ? "Add to Cart" : "Out of stock"}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          )}
         </div>
       </PageShell>
       <SiteFooter />

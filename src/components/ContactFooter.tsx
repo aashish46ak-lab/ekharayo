@@ -1,4 +1,6 @@
-import { Phone, Mail, MessageCircle, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Phone, Mail, ShoppingBasket, MapPin } from "lucide-react";
+
 
 const ContactFooter = () => {
   return (
@@ -22,10 +24,11 @@ const ContactFooter = () => {
             <Mail className="text-primary" size={24} />
             <span className="font-body text-sm font-medium text-foreground">Mail Us</span>
           </a>
-          <a href="https://wa.me/9779852049458" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 bg-card rounded-xl border border-border p-6 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
-            <MessageCircle className="text-primary" size={24} />
-            <span className="font-body text-sm font-medium text-foreground">WhatsApp</span>
-          </a>
+          <Link to="/products" className="flex flex-col items-center gap-2 bg-card rounded-xl border border-border p-6 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
+            <ShoppingBasket className="text-primary" size={24} />
+            <span className="font-body text-sm font-medium text-foreground">Order Online</span>
+          </Link>
+
         </div>
 
         <div className="flex items-center justify-center gap-2 text-muted-foreground mb-8">

@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "@/assets/logo.png";
-import { Menu, X, Home, ShoppingBasket, Info, Image, UserCircle, PackageCheck, Phone } from "lucide-react";
+import { Menu, X, Home, ShoppingBasket, Info, Image, UserCircle, PackageCheck, Phone, ShoppingCart, LayoutDashboard, LogIn, LogOut, ReceiptText } from "lucide-react";
+import { useCart } from "@/hooks/useCart";
+import { useAuth } from "@/hooks/useAuth";
 
 const navLinks = [
   { label: "Home", href: "/", icon: Home },
@@ -17,6 +19,8 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { count } = useCart();
+  const { user, isAdmin, signOut } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -32,6 +36,11 @@ const Navbar = () => {
   const activeColor = scrolled ? "text-primary bg-primary/15" : "text-primary bg-white/10";
   const hoverColor = scrolled ? "hover:text-primary hover:bg-primary/10" : "hover:text-primary hover:bg-white/10";
 
+  const accountLinks = [
+    ...(user ? [{ label: "My Orders", href: "/my-orders", icon: ReceiptText }] : []),
+    ...(isAdmin ? [{ label: "Admin", href: "/admin", icon: LayoutDashboard }] : []),
+  ];
+
   return (
     <>
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBg}`}>
@@ -46,17 +55,14 @@ const Navbar = () => {
             </span>
           </Link>
 
-
           {/* Desktop */}
           <ul className="hidden md:flex items-center gap-1">
-            {navLinks.map((l) => (
+            {[...navLinks, ...accountLinks].map((l) => (
               <li key={l.href}>
                 <Link
                   to={l.href}
                   className={`flex items-center gap-1.5 font-body text-xs font-medium px-2.5 py-1.5 rounded-md transition-all duration-200 ${
-                    location.pathname === l.href
-                      ? activeColor
-                      : `${textColor}/70 ${hoverColor}`
+                    location.pathname === l.href ? activeColor : `${textColor}/70 ${hoverColor}`
                   }`}
                 >
                   <l.icon size={14} />
@@ -64,11 +70,32 @@ const Navbar = () => {
                 </Link>
               </li>
             ))}
+            <li>
+              {user ? (
+                <button onClick={() => signOut()} className={`flex items-center gap-1.5 font-body text-xs font-medium px-2.5 py-1.5 rounded-md ${textColor}/70 ${hoverColor}`}>
+                  <LogOut size={14} /> Sign out
+                </button>
+              ) : (
+                <Link to="/auth" className={`flex items-center gap-1.5 font-body text-xs font-medium px-2.5 py-1.5 rounded-md ${textColor}/70 ${hoverColor}`}>
+                  <LogIn size={14} /> Sign in
+                </Link>
+              )}
+            </li>
           </ul>
 
-          <button onClick={() => setOpen(!open)} className={`md:hidden ${textColor}`} aria-label="Toggle menu">
-            {open ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          <div className="flex items-center gap-2">
+            <Link to="/cart" aria-label="Cart" className={`relative p-2 rounded-md ${textColor} ${hoverColor}`}>
+              <ShoppingCart size={18} />
+              {count > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground font-body text-[10px] font-bold rounded-full h-4 min-w-4 px-1 flex items-center justify-center">
+                  {count}
+                </span>
+              )}
+            </Link>
+            <button onClick={() => setOpen(!open)} className={`md:hidden ${textColor}`} aria-label="Toggle menu">
+              {open ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -78,7 +105,7 @@ const Navbar = () => {
           <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden" onClick={() => setOpen(false)} />
           <div className="fixed top-[53px] right-0 z-50 w-52 bg-card/95 backdrop-blur-xl border-l border-b border-border shadow-2xl rounded-bl-2xl md:hidden">
             <ul className="flex flex-col gap-1 p-3">
-              {navLinks.map((l) => (
+              {[...navLinks, ...accountLinks].map((l) => (
                 <li key={l.href}>
                   <Link
                     to={l.href}
@@ -94,6 +121,24 @@ const Navbar = () => {
                   </Link>
                 </li>
               ))}
+              <li>
+                {user ? (
+                  <button
+                    onClick={() => { setOpen(false); signOut(); }}
+                    className="w-full flex items-center gap-2.5 font-body text-[12px] font-medium rounded-lg px-3 py-2.5 text-foreground/70 hover:text-primary hover:bg-primary/10"
+                  >
+                    <LogOut size={15} className="text-primary shrink-0" /> Sign out
+                  </button>
+                ) : (
+                  <Link
+                    to="/auth"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-2.5 font-body text-[12px] font-medium rounded-lg px-3 py-2.5 text-foreground/70 hover:text-primary hover:bg-primary/10"
+                  >
+                    <LogIn size={15} className="text-primary shrink-0" /> Sign in
+                  </Link>
+                )}
+              </li>
             </ul>
           </div>
         </>

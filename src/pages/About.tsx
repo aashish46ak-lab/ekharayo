@@ -36,7 +36,7 @@ const whyUs = [
   { icon: ShieldCheck, title: "Quality Assurance", desc: "Products are inspected and specified before they reach our catalogue." },
   { icon: PackageSearch, title: "Carefully Selected Suppliers", desc: "We onboard partners only after verifying capability and consistency." },
   { icon: Tag, title: "Competitive Pricing", desc: "Direct sourcing and scale keep prices fair for households and businesses." },
-  { icon: Headset, title: "Reliable Customer Support", desc: "Real people on phone, email and WhatsApp — before and after purchase." },
+  { icon: Headset, title: "Reliable Customer Support", desc: "Real people on phone and email — before and after purchase." },
   { icon: Lock, title: "Secure Shopping Experience", desc: "Straightforward ordering with safeguarded customer information." },
   { icon: Globe2, title: "Local & Global Range", desc: "One platform for Nepali produce and selected international products." },
   { icon: Sparkles, title: "Continuous Innovation", desc: "The platform keeps improving — new categories, partners and features." },
