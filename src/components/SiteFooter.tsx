@@ -5,14 +5,14 @@ const SiteFooter = () => (
   <footer className="border-t border-border bg-card/50 py-8">
     <div className="container mx-auto px-4 flex flex-col items-center gap-3 text-center">
       <Link to="/" className="inline-flex items-center">
-        <img src={logo} alt="eKharayo — Great Sagarmatha Traders PVT LTD" className="h-10 w-auto" loading="lazy" />
+        <img src={logo} alt="eKharayo — Great Sagarmatha Trade Pvt. Ltd." className="h-10 w-auto" loading="lazy" />
       </Link>
       <p className="font-body text-xs text-muted-foreground max-w-md">
-        The official digital marketplace of Great Sagarmatha Traders PVT LTD — quality agricultural products from Nepal
+        The official digital marketplace of Great Sagarmatha Trade Pvt. Ltd. — quality agricultural products from Nepal
         and trusted international suppliers.
       </p>
       <p className="font-body text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Great Sagarmatha Traders PVT LTD (eKharayo). All Rights Reserved.
+        © {new Date().getFullYear()} Great Sagarmatha Trade Pvt. Ltd. (eKharayo). All Rights Reserved.
       </p>
       <span className="group inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/5 px-4 py-1.5 shadow-[0_0_18px_-6px_hsl(var(--primary))] transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_26px_-4px_hsl(var(--primary))]">
         <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />

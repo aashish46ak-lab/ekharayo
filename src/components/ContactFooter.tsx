@@ -37,7 +37,7 @@ const ContactFooter = () => {
         </div>
 
         <div className="border-t border-border pt-6 text-center">
-          <p className="font-body text-sm text-muted-foreground">© 2026 Great Sagarmatha Traders PVT LTD (eKharayo). All rights reserved.</p>
+          <p className="font-body text-sm text-muted-foreground">© 2026 Great Sagarmatha Trade Pvt. Ltd. (eKharayo). All rights reserved.</p>
         </div>
       </div>
     </div>

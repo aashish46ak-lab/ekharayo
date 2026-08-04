@@ -48,7 +48,7 @@ const About = () => (
     <Navbar />
     <PageShell
       title="About eKharayo"
-      subtitle="The official digital marketplace of Great Sagarmatha Traders PVT LTD"
+      subtitle="The official digital marketplace of Great Sagarmatha Trade Pvt. Ltd."
     >
       <div className="container mx-auto px-4 py-16 space-y-20">
 
@@ -57,11 +57,11 @@ const About = () => (
           <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground">Company Overview</h2>
           <p className="font-body text-base text-foreground/80 leading-relaxed">
             <strong className="text-primary">eKharayo</strong> is the official digital marketplace of{" "}
-            <strong className="text-foreground">Great Sagarmatha Traders PVT LTD</strong>, built to connect customers
+            <strong className="text-foreground">Great Sagarmatha Trade Pvt. Ltd.</strong>, built to connect customers
             with dependable agricultural products from Nepal and around the world through one modern platform.
           </p>
           <p className="font-body text-base text-foreground/80 leading-relaxed">
-            Customers can buy products offered directly by Great Sagarmatha Traders PVT LTD — grown, raised and
+            Customers can buy products offered directly by Great Sagarmatha Trade Pvt. Ltd. — grown, raised and
             processed at our own farms and mills — and also access a carefully curated selection sourced from trusted
             suppliers, manufacturers, wholesalers, importers and distributors in Nepali and international markets.
           </p>
@@ -77,7 +77,7 @@ const About = () => (
           <div className="text-center mb-8">
             <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground">About Us</h2>
             <p className="font-body text-muted-foreground mt-2 max-w-2xl mx-auto">
-              Great Sagarmatha Traders PVT LTD believes agriculture and modern technology belong together — that is how
+              Great Sagarmatha Trade Pvt. Ltd. believes agriculture and modern technology belong together — that is how
               quality products become genuinely accessible.
             </p>
           </div>
