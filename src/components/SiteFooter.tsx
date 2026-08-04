@@ -14,13 +14,6 @@ const SiteFooter = () => (
       <p className="font-body text-xs text-muted-foreground">
         © {new Date().getFullYear()} Great Sagarmatha Trade Pvt. Ltd. (eKharayo). All Rights Reserved.
       </p>
-      <span className="group inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/5 px-4 py-1.5 shadow-[0_0_18px_-6px_hsl(var(--primary))] transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_26px_-4px_hsl(var(--primary))]">
-        <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-        <span className="font-body text-[11px] font-medium tracking-wide text-muted-foreground">
-          Developed by{" "}
-          <span className="font-semibold text-primary drop-shadow-[0_0_6px_hsl(var(--primary)/0.6)]">Ashish</span>
-        </span>
-      </span>
     </div>
   </footer>
 );
