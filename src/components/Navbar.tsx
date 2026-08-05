@@ -20,7 +20,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const { count } = useCart();
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, isAdmin, signOut, openAuthModal } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -37,7 +37,7 @@ const Navbar = () => {
   const hoverColor = scrolled ? "hover:text-primary hover:bg-primary/10" : "hover:text-primary hover:bg-white/10";
 
   const accountLinks = [
-    ...(user ? [{ label: "My Orders", href: "/my-orders", icon: ReceiptText }] : []),
+    { label: "My Orders", href: "/my-orders", icon: ReceiptText },
     ...(isAdmin ? [{ label: "Admin", href: "/admin", icon: LayoutDashboard }] : []),
   ];
 
@@ -76,9 +76,9 @@ const Navbar = () => {
                   <LogOut size={14} /> Sign out
                 </button>
               ) : (
-                <Link to="/auth" className={`flex items-center gap-1.5 font-body text-xs font-medium px-2.5 py-1.5 rounded-md ${textColor}/70 ${hoverColor}`}>
+                <button onClick={openAuthModal} className={`flex items-center gap-1.5 font-body text-xs font-medium px-2.5 py-1.5 rounded-md ${textColor}/70 ${hoverColor}`}>
                   <LogIn size={14} /> Sign in
-                </Link>
+                </button>
               )}
             </li>
           </ul>
@@ -130,13 +130,12 @@ const Navbar = () => {
                     <LogOut size={15} className="text-primary shrink-0" /> Sign out
                   </button>
                 ) : (
-                  <Link
-                    to="/auth"
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-2.5 font-body text-[12px] font-medium rounded-lg px-3 py-2.5 text-foreground/70 hover:text-primary hover:bg-primary/10"
+                  <button
+                    onClick={() => { setOpen(false); openAuthModal(); }}
+                    className="w-full flex items-center gap-2.5 font-body text-[12px] font-medium rounded-lg px-3 py-2.5 text-foreground/70 hover:text-primary hover:bg-primary/10"
                   >
                     <LogIn size={15} className="text-primary shrink-0" /> Sign in
-                  </Link>
+                  </button>
                 )}
               </li>
             </ul>

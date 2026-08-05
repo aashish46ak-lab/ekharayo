@@ -42,12 +42,13 @@ const AdminOrders = () => {
     if (error) return toast.error(error.message);
     toast.success("Order updated");
     load();
+  };
+
   const updatePayment = async (id: string, status: string) => {
     const { error } = await supabase.from("orders").update({ payment_status: status }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Payment status updated");
     load();
-  };
   };
 
   const visible = orders.filter(
@@ -101,7 +102,15 @@ const AdminOrders = () => {
                     <p className="text-muted-foreground">{o.customer_phone}</p>
                     <p className="text-muted-foreground mt-2">{o.address_line}, {o.city} {o.district}</p>
                     {o.notes && <p className="text-muted-foreground mt-2 whitespace-pre-line">{o.notes}</p>}
-                    <div className="flex items-center gap-2 mt-2 text-muted-foreground">Payment: {o.payment_method} · <select value={o.payment_status} onChange={(e) => updatePayment(o.id, e.target.value)} className="bg-transparent border-none p-0 text-foreground font-semibold focus:ring-0 cursor-pointer"><option value="pending">pending</option><option value="paid">paid</option><option value="failed">failed</option><option value="refunded">refunded</option></select></div>
+                    <div className="flex items-center gap-2 mt-2 text-muted-foreground">
+                      Payment: {o.payment_method} · 
+                      <select value={o.payment_status} onChange={(e) => updatePayment(o.id, e.target.value)} className="bg-transparent border-none p-0 text-foreground font-semibold focus:ring-0 cursor-pointer">
+                        <option value="pending">pending</option>
+                        <option value="paid">paid</option>
+                        <option value="failed">failed</option>
+                        <option value="refunded">refunded</option>
+                      </select>
+                    </div>
                   </div>
                   <div>
                     <p className="font-semibold text-foreground mb-1">Items</p>

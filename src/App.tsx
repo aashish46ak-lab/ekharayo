@@ -20,6 +20,8 @@ import OrderConfirmation from "./pages/OrderConfirmation.tsx";
 import MyOrders from "./pages/MyOrders.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import InstallPrompt from "./components/InstallPrompt.tsx";
+import AuthModal from "./components/AuthModal";
+import WelcomeManager from "./components/WelcomeManager";
 import AdminLayout from "./components/admin/AdminLayout.tsx";
 import Dashboard from "./pages/admin/Dashboard.tsx";
 import AdminProducts from "./pages/admin/AdminProducts.tsx";
@@ -41,6 +43,8 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <CartProvider>
+            <WelcomeManager />
+            <AuthModal />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/products" element={<Products />} />
