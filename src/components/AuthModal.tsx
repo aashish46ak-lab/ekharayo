@@ -14,7 +14,7 @@ const OTP_TTL = 600;
 type Mode = "login" | "signup" | "forgot" | "otp" | "reset";
 
 const AuthModal = () => {
-  const { isAuthModalOpen, closeAuthModal, user } = useAuth();
+  const { isAuthModalOpen, closeAuthModal, user, setGuest } = useAuth();
   const [mode, setMode] = useState<Mode>("login");
   const [otpType, setOtpType] = useState<"signup" | "recovery">("signup");
   const [name, setName] = useState("");
@@ -152,7 +152,7 @@ const AuthModal = () => {
   const [title, subtitle] = titles[mode];
 
   const handleGuest = () => {
-    localStorage.setItem("ekharayo_guest_mode", "true");
+    setGuest(true);
     closeAuthModal();
   };
 

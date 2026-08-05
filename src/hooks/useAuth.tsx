@@ -17,6 +17,8 @@ interface AuthState {
   isAuthModalOpen: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
+  isGuest: boolean;
+  setGuest: (val: boolean) => void;
 }
 
 const AuthContext = createContext<AuthState>({
@@ -31,6 +33,8 @@ const AuthContext = createContext<AuthState>({
   isAuthModalOpen: false,
   openAuthModal: () => {},
   closeAuthModal: () => {},
+  isGuest: false,
+  setGuest: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -39,6 +43,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [banned, setBanned] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isGuest, setIsGuest] = useState(() => localStorage.getItem("ekharayo_guest_mode") === "true");
+
+  const setGuest = (val: boolean) => {
+    setIsGuest(val);
+    if (val) localStorage.setItem("ekharayo_guest_mode", "true");
+    else localStorage.removeItem("ekharayo_guest_mode");
+  };
 
   const loadRole = (userId: string) => {
     // deferred to avoid deadlocks inside the auth callback
@@ -59,6 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (s?.user) {
         loadRole(s.user.id);
         setIsAuthModalOpen(false);
+        setGuest(false);
       } else {
         setRoles([]);
         setBanned(false);
@@ -80,6 +92,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setSession(null);
     setRoles([]);
     setBanned(false);
+    setGuest(false);
   };
 
   const openAuthModal = () => setIsAuthModalOpen(true);
@@ -102,6 +115,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isAuthModalOpen,
         openAuthModal,
         closeAuthModal,
+        isGuest,
+        setGuest,
       }}
     >
       {children}
