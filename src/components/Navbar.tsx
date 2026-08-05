@@ -76,7 +76,7 @@ const Navbar = () => {
                   <LogOut size={14} /> Sign out
                 </button>
               ) : (
-                <button onClick={openAuthModal} className={`flex items-center gap-1.5 font-body text-xs font-medium px-2.5 py-1.5 rounded-md ${textColor}/70 ${hoverColor}`}>
+                <button onClick={() => openAuthModal()} className={`flex items-center gap-1.5 font-body text-xs font-medium px-2.5 py-1.5 rounded-md ${textColor}/70 ${hoverColor}`}>
                   <LogIn size={14} /> Sign in
                 </button>
               )}
