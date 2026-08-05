@@ -14,6 +14,9 @@ interface AuthState {
   banned: boolean;
   loading: boolean;
   signOut: () => Promise<void>;
+  isAuthModalOpen: boolean;
+  openAuthModal: () => void;
+  closeAuthModal: () => void;
 }
 
 const AuthContext = createContext<AuthState>({
@@ -25,6 +28,9 @@ const AuthContext = createContext<AuthState>({
   banned: false,
   loading: true,
   signOut: async () => {},
+  isAuthModalOpen: false,
+  openAuthModal: () => {},
+  closeAuthModal: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -32,6 +38,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [banned, setBanned] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const loadRole = (userId: string) => {
     // deferred to avoid deadlocks inside the auth callback
@@ -51,6 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(s);
       if (s?.user) {
         loadRole(s.user.id);
+        setIsAuthModalOpen(false);
       } else {
         setRoles([]);
         setBanned(false);
@@ -74,11 +82,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setBanned(false);
   };
 
+  const openAuthModal = () => setIsAuthModalOpen(true);
+  const closeAuthModal = () => setIsAuthModalOpen(false);
+
   const isAdmin = roles.some((r) => STAFF_ROLES.includes(r));
   const isSuperAdmin = roles.includes("super_admin");
 
   return (
-    <AuthContext.Provider value={{ user: session?.user ?? null, session, roles, isAdmin, isSuperAdmin, banned, loading, signOut }}>
+    <AuthContext.Provider
+      value={{
+        user: session?.user ?? null,
+        session,
+        roles,
+        isAdmin,
+        isSuperAdmin,
+        banned,
+        loading,
+        signOut,
+        isAuthModalOpen,
+        openAuthModal,
+        closeAuthModal,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
