@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { rs } from "@/lib/media";
-import { Search } from "lucide-react";
+import { Search, Ban, UserCheck } from "lucide-react";
+import { toast } from "sonner";
 
-interface Profile { id: string; email: string | null; full_name: string | null; phone: string | null; created_at: string }
+interface Profile { id: string; email: string | null; full_name: string | null; phone: string | null; created_at: string; banned: boolean }
 interface Order { id: string; user_id: string | null; order_number: string; total: number; status: string; created_at: string }
 
 const AdminCustomers = () => {
@@ -12,16 +13,25 @@ const AdminCustomers = () => {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState<string | null>(null);
 
+  const load = async () => {
+    const [p, o] = await Promise.all([
+      supabase.from("profiles").select("*").order("created_at", { ascending: false }),
+      supabase.from("orders").select("id,user_id,order_number,total,status,created_at"),
+    ]);
+    setProfiles((p.data as unknown as Profile[]) ?? []);
+    setOrders((o.data as unknown as Order[]) ?? []);
+  };
+
   useEffect(() => {
-    (async () => {
-      const [p, o] = await Promise.all([
-        supabase.from("profiles").select("*").order("created_at", { ascending: false }),
-        supabase.from("orders").select("id,user_id,order_number,total,status,created_at"),
-      ]);
-      setProfiles((p.data as unknown as Profile[]) ?? []);
-      setOrders((o.data as unknown as Order[]) ?? []);
-    })();
+    load();
   }, []);
+
+  const toggleBan = async (id: string, current: boolean) => {
+    const { error } = await supabase.from("profiles").update({ banned: !current }).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success(!current ? "User banned" : "User unbanned");
+    load();
+  };
 
   const visible = profiles.filter((p) => `${p.email} ${p.full_name}`.toLowerCase().includes(q.toLowerCase()));
 
@@ -41,13 +51,21 @@ const AdminCustomers = () => {
           const spent = mine.filter((o) => o.status !== "cancelled").reduce((s, o) => s + Number(o.total), 0);
           return (
             <div key={p.id} className="bg-card border border-border rounded-xl">
-              <button onClick={() => setOpen(open === p.id ? null : p.id)} className="w-full flex flex-wrap items-center justify-between gap-3 p-5 text-left">
-                <div>
-                  <p className="font-display font-bold text-foreground">{p.full_name || p.email}</p>
+              <div className="w-full flex flex-wrap items-center justify-between gap-3 p-5 text-left">
+                <button onClick={() => setOpen(open === p.id ? null : p.id)} className="flex-1 text-left">
+                  <div className="flex items-center gap-2">
+                    <p className="font-display font-bold text-foreground">{p.full_name || p.email}</p>
+                    {p.banned && <span className="bg-destructive/10 text-destructive text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">Banned</span>}
+                  </div>
                   <p className="font-body text-xs text-muted-foreground">{p.email} · joined {new Date(p.created_at).toLocaleDateString()}</p>
+                </button>
+                <div className="flex items-center gap-4">
+                  <p className="font-body text-sm text-muted-foreground">{mine.length} orders · <span className="text-primary font-semibold">{rs(spent)}</span></p>
+                  <button onClick={() => toggleBan(p.id, p.banned)} title={p.banned ? "Unban user" : "Ban user"} className={`p-2 rounded-lg ${p.banned ? "bg-primary text-primary-foreground" : "bg-destructive/10 text-destructive hover:bg-destructive/20"}`}>
+                    {p.banned ? <UserCheck size={16} /> : <Ban size={16} />}
+                  </button>
                 </div>
-                <p className="font-body text-sm text-muted-foreground">{mine.length} orders · <span className="text-primary font-semibold">{rs(spent)}</span></p>
-              </button>
+              </div>
               {open === p.id && (
                 <div className="border-t border-border p-5 space-y-2 font-body text-sm">
                   {mine.length === 0 && <p className="text-muted-foreground">No orders yet.</p>}

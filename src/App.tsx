@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CartProvider } from "@/hooks/useCart";
-import { RequireAdmin, RequireAuth } from "@/components/RouteGuards";
+import { RequireAdmin, RequireAuth, RequireSuperAdmin } from "@/components/RouteGuards";
 import Index from "./pages/Index.tsx";
 import Products from "./pages/Products.tsx";
 import About from "./pages/About.tsx";
@@ -20,6 +20,8 @@ import OrderConfirmation from "./pages/OrderConfirmation.tsx";
 import MyOrders from "./pages/MyOrders.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import InstallPrompt from "./components/InstallPrompt.tsx";
+import AuthModal from "./components/AuthModal";
+import WelcomeManager from "./components/WelcomeManager";
 import AdminLayout from "./components/admin/AdminLayout.tsx";
 import Dashboard from "./pages/admin/Dashboard.tsx";
 import AdminProducts from "./pages/admin/AdminProducts.tsx";
@@ -28,6 +30,7 @@ import AdminOrders from "./pages/admin/AdminOrders.tsx";
 import AdminCustomers from "./pages/admin/AdminCustomers.tsx";
 import AdminAnalytics from "./pages/admin/AdminAnalytics.tsx";
 import AdminWebsite from "./pages/admin/AdminWebsite.tsx";
+import AdminStaff from "./pages/admin/AdminStaff.tsx";
 import AdminNotifications from "./pages/admin/AdminNotifications.tsx";
 
 const queryClient = new QueryClient();
@@ -40,6 +43,8 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <CartProvider>
+            <WelcomeManager />
+            <AuthModal />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/products" element={<Products />} />
@@ -61,6 +66,7 @@ const App = () => (
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="customers" element={<AdminCustomers />} />
                 <Route path="analytics" element={<AdminAnalytics />} />
+                <Route path="staff" element={<RequireSuperAdmin><AdminStaff /></RequireSuperAdmin>} />
                 <Route path="website" element={<AdminWebsite />} />
                 <Route path="notifications" element={<AdminNotifications />} />
               </Route>

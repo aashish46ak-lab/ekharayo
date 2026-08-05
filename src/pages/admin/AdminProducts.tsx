@@ -8,12 +8,14 @@ interface Category { id: string; name: string }
 interface Product {
   id: string; name: string; slug: string; description: string; category_id: string | null;
   price: number; sale_price: number | null; stock: number; unit: string | null;
+  sku: string | null; barcode: string | null; weight: string | null; low_stock_threshold: number;
   images: string[]; featured: boolean; is_active: boolean;
 }
 
 const empty = {
   name: "", slug: "", description: "", category_id: "", price: 0, sale_price: "" as number | "",
   stock: 0, unit: "unit", images: [] as string[], featured: false, is_active: true,
+  sku: "", barcode: "", weight: "", low_stock_threshold: 5,
 };
 
 const AdminProducts = () => {
@@ -49,6 +51,10 @@ const AdminProducts = () => {
       images: editing.images,
       featured: editing.featured,
       is_active: editing.is_active,
+      sku: editing.sku || null,
+      barcode: editing.barcode || null,
+      weight: editing.weight || null,
+      low_stock_threshold: Number(editing.low_stock_threshold),
     };
     const { error } = editing.id
       ? await supabase.from("products").update(payload).eq("id", editing.id)
@@ -107,10 +113,10 @@ const AdminProducts = () => {
                 </td>
                 <td className="p-4 text-muted-foreground">{categories.find((c) => c.id === p.category_id)?.name ?? "—"}</td>
                 <td className="p-4 text-foreground">{rs(Number(p.sale_price ?? p.price))}</td>
-                <td className={`p-4 ${p.stock <= 5 ? "text-accent" : "text-muted-foreground"}`}>{p.stock}</td>
+                <td className={`p-4 ${p.stock <= (p.low_stock_threshold || 5) ? "text-accent font-bold" : "text-muted-foreground"}`}>{p.stock}</td>
                 <td className="p-4">{p.is_active ? <Eye size={16} className="text-primary" /> : <EyeOff size={16} className="text-muted-foreground" />}</td>
                 <td className="p-4 text-right whitespace-nowrap">
-                  <button onClick={() => setEditing({ ...p, category_id: p.category_id ?? "", sale_price: p.sale_price ?? "", unit: p.unit ?? "unit", images: p.images ?? [], description: p.description ?? "" })} className="p-2 text-muted-foreground hover:text-primary"><Pencil size={15} /></button>
+                  <button onClick={() => setEditing({ ...p, category_id: p.category_id ?? "", sale_price: p.sale_price ?? "", unit: p.unit ?? "unit", images: p.images ?? [], description: p.description ?? "", sku: p.sku ?? "", barcode: p.barcode ?? "", weight: p.weight ?? "", low_stock_threshold: p.low_stock_threshold ?? 5 })} className="p-2 text-muted-foreground hover:text-primary"><Pencil size={15} /></button>
                   <button onClick={() => del(p.id)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 size={15} /></button>
                 </td>
               </tr>
@@ -128,15 +134,49 @@ const AdminProducts = () => {
               <button type="button" onClick={() => setEditing(null)} className="text-muted-foreground hover:text-foreground"><X size={18} /></button>
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
-              <input required placeholder="Name" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} className={field} />
-              <select value={editing.category_id} onChange={(e) => setEditing({ ...editing, category_id: e.target.value })} className={field}>
-                <option value="">No category</option>
-                {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
-              <input type="number" step="0.01" placeholder="Price" value={editing.price} onChange={(e) => setEditing({ ...editing, price: Number(e.target.value) })} className={field} />
-              <input type="number" step="0.01" placeholder="Sale price (optional)" value={editing.sale_price} onChange={(e) => setEditing({ ...editing, sale_price: e.target.value === "" ? "" : Number(e.target.value) })} className={field} />
-              <input type="number" placeholder="Stock" value={editing.stock} onChange={(e) => setEditing({ ...editing, stock: Number(e.target.value) })} className={field} />
-              <input placeholder="Unit (kg, litre...)" value={editing.unit} onChange={(e) => setEditing({ ...editing, unit: e.target.value })} className={field} />
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground ml-1">Product name</label>
+                <input required placeholder="Name" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} className={field} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground ml-1">Category</label>
+                <select value={editing.category_id} onChange={(e) => setEditing({ ...editing, category_id: e.target.value })} className={field}>
+                  <option value="">No category</option>
+                  {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground ml-1">Base Price</label>
+                <input type="number" step="0.01" placeholder="Price" value={editing.price} onChange={(e) => setEditing({ ...editing, price: Number(e.target.value) })} className={field} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground ml-1">Sale Price (Optional)</label>
+                <input type="number" step="0.01" placeholder="Sale price" value={editing.sale_price} onChange={(e) => setEditing({ ...editing, sale_price: e.target.value === "" ? "" : Number(e.target.value) })} className={field} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground ml-1">Current Stock</label>
+                <input type="number" placeholder="Stock" value={editing.stock} onChange={(e) => setEditing({ ...editing, stock: Number(e.target.value) })} className={field} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground ml-1">Stock Alert Threshold</label>
+                <input type="number" placeholder="Low stock threshold" value={editing.low_stock_threshold} onChange={(e) => setEditing({ ...editing, low_stock_threshold: Number(e.target.value) })} className={field} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground ml-1">Unit</label>
+                <input placeholder="Unit (kg, pcs...)" value={editing.unit || ""} onChange={(e) => setEditing({ ...editing, unit: e.target.value })} className={field} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground ml-1">SKU</label>
+                <input placeholder="SKU" value={editing.sku || ""} onChange={(e) => setEditing({ ...editing, sku: e.target.value })} className={field} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground ml-1">Barcode</label>
+                <input placeholder="Barcode" value={editing.barcode || ""} onChange={(e) => setEditing({ ...editing, barcode: e.target.value })} className={field} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground ml-1">Weight</label>
+                <input placeholder="Weight" value={editing.weight || ""} onChange={(e) => setEditing({ ...editing, weight: e.target.value })} className={field} />
+              </div>
             </div>
             <textarea rows={3} placeholder="Description" value={editing.description} onChange={(e) => setEditing({ ...editing, description: e.target.value })} className={`${field} resize-none`} />
             <div>

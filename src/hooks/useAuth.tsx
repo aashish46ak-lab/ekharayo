@@ -14,6 +14,12 @@ interface AuthState {
   banned: boolean;
   loading: boolean;
   signOut: () => Promise<void>;
+  isAuthModalOpen: boolean;
+  authNext: string | null;
+  openAuthModal: (next?: string) => void;
+  closeAuthModal: () => void;
+  isGuest: boolean;
+  setGuest: (val: boolean) => void;
 }
 
 const AuthContext = createContext<AuthState>({
@@ -25,6 +31,12 @@ const AuthContext = createContext<AuthState>({
   banned: false,
   loading: true,
   signOut: async () => {},
+  isAuthModalOpen: false,
+  authNext: null,
+  openAuthModal: () => {},
+  closeAuthModal: () => {},
+  isGuest: false,
+  setGuest: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -32,6 +44,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [banned, setBanned] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authNext, setAuthNext] = useState<string | null>(null);
+  const [isGuest, setIsGuest] = useState(() => localStorage.getItem("ekharayo_guest_mode") === "true");
+
+  const setGuest = (val: boolean) => {
+    setIsGuest(val);
+    if (val) localStorage.setItem("ekharayo_guest_mode", "true");
+    else localStorage.removeItem("ekharayo_guest_mode");
+  };
 
   const loadRole = (userId: string) => {
     // deferred to avoid deadlocks inside the auth callback
@@ -51,6 +72,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(s);
       if (s?.user) {
         loadRole(s.user.id);
+        setIsAuthModalOpen(false);
+        setGuest(false);
       } else {
         setRoles([]);
         setBanned(false);
@@ -72,13 +95,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setSession(null);
     setRoles([]);
     setBanned(false);
+    setGuest(false);
+  };
+
+  const openAuthModal = (next?: string) => {
+    setAuthNext(next ?? null);
+    setIsAuthModalOpen(true);
+  };
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+    setAuthNext(null);
   };
 
   const isAdmin = roles.some((r) => STAFF_ROLES.includes(r));
   const isSuperAdmin = roles.includes("super_admin");
 
   return (
-    <AuthContext.Provider value={{ user: session?.user ?? null, session, roles, isAdmin, isSuperAdmin, banned, loading, signOut }}>
+    <AuthContext.Provider
+      value={{
+        user: session?.user ?? null,
+        session,
+        roles,
+        isAdmin,
+        isSuperAdmin,
+        banned,
+        loading,
+        signOut,
+        isAuthModalOpen,
+        authNext,
+        openAuthModal,
+        closeAuthModal,
+        isGuest,
+        setGuest,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

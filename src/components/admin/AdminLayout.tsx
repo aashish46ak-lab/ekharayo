@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Package, Tags, ShoppingBag, Users, Globe, BarChart3, Bell, LogOut, Menu, X, Home } from "lucide-react";
+import { LayoutDashboard, Package, Tags, ShoppingBag, Users, Globe, BarChart3, Bell, LogOut, Menu, X, Home, ShieldCheck } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,7 +16,7 @@ const links = [
 ];
 
 const AdminLayout = () => {
-  const { signOut } = useAuth();
+  const { signOut, isSuperAdmin } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [unread, setUnread] = useState(0);
@@ -58,6 +58,11 @@ const AdminLayout = () => {
           ))}
           <NavLink to="/admin/notifications" onClick={() => setOpen(false)} className={({ isActive }) => item(isActive)}>
             <Bell size={17} /> Notifications
+          {isSuperAdmin && (
+            <NavLink to="/admin/staff" onClick={() => setOpen(false)} className={({ isActive }) => item(isActive)}>
+              <ShieldCheck size={17} /> Staff Management
+            </NavLink>
+          )}
             {unread > 0 && <span className="ml-auto bg-primary text-primary-foreground text-[10px] font-bold rounded-full px-1.5 py-0.5">{unread}</span>}
           </NavLink>
         </nav>
