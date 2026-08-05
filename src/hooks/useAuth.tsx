@@ -15,7 +15,8 @@ interface AuthState {
   loading: boolean;
   signOut: () => Promise<void>;
   isAuthModalOpen: boolean;
-  openAuthModal: () => void;
+  authNext: string | null;
+  openAuthModal: (next?: string) => void;
   closeAuthModal: () => void;
   isGuest: boolean;
   setGuest: (val: boolean) => void;
@@ -31,6 +32,7 @@ const AuthContext = createContext<AuthState>({
   loading: true,
   signOut: async () => {},
   isAuthModalOpen: false,
+  authNext: null,
   openAuthModal: () => {},
   closeAuthModal: () => {},
   isGuest: false,
@@ -43,6 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [banned, setBanned] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authNext, setAuthNext] = useState<string | null>(null);
   const [isGuest, setIsGuest] = useState(() => localStorage.getItem("ekharayo_guest_mode") === "true");
 
   const setGuest = (val: boolean) => {
@@ -95,8 +98,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setGuest(false);
   };
 
-  const openAuthModal = () => setIsAuthModalOpen(true);
-  const closeAuthModal = () => setIsAuthModalOpen(false);
+  const openAuthModal = (next?: string) => {
+    setAuthNext(next ?? null);
+    setIsAuthModalOpen(true);
+  };
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+    setAuthNext(null);
+  };
 
   const isAdmin = roles.some((r) => STAFF_ROLES.includes(r));
   const isSuperAdmin = roles.includes("super_admin");
@@ -113,6 +122,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         loading,
         signOut,
         isAuthModalOpen,
+        authNext,
         openAuthModal,
         closeAuthModal,
         isGuest,

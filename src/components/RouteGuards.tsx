@@ -1,5 +1,5 @@
 import { ReactNode, useEffect } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, Link } from "react-router-dom";
 import { Loader2, ShieldAlert, Lock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -35,7 +35,7 @@ const AuthRequiredScreen = () => {
   const location = useLocation();
 
   useEffect(() => {
-    openAuthModal();
+    openAuthModal(location.pathname);
   }, [openAuthModal]);
 
   return (
@@ -50,14 +50,13 @@ const AuthRequiredScreen = () => {
         </p>
         <div className="space-y-3">
           <button
-            onClick={() => openAuthModal()}
+            onClick={() => openAuthModal(location.pathname)}
             className="w-full bg-primary text-primary-foreground font-body font-semibold py-3 rounded-lg hover:bg-green-glow transition-colors"
           >
             Sign in / Sign up
           </button>
-          <Navigate to={`/auth?next=${encodeURIComponent(location.pathname)}`} className="hidden" />
           <p className="text-xs text-muted-foreground">
-            Or <a href="/" className="text-primary hover:underline">return home</a>
+            Or <Link to="/" className="text-primary hover:underline">return home</Link>
           </p>
         </div>
       </div>
@@ -66,19 +65,12 @@ const AuthRequiredScreen = () => {
 };
 
 export const RequireAuth = ({ children }: { children: ReactNode }) => {
-  const { user, banned, loading, isGuest } = useAuth();
+  const { user, banned, loading } = useAuth();
   
   if (loading) return <Spinner />;
   if (banned) return <BannedScreen />;
   
-  // Special case: if it's a checkout page, we might allow guests
-  const location = useLocation();
-  const isCheckout = location.pathname.startsWith("/checkout");
-  
   if (!user) {
-    if (isCheckout && isGuest) {
-      return <>{children}</>;
-    }
     return <AuthRequiredScreen />;
   }
   

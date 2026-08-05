@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Package, Tags, ShoppingBag, Users, Globe, BarChart3, Bell, LogOut, Menu, X, Home, ShieldCheck } from "lucide-react";
-import { LayoutDashboard, Package, Tags, ShoppingBag, Users, Globe, BarChart3, Bell, LogOut, Menu, X, Home } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,9 +15,8 @@ const links = [
   { to: "/admin/website", label: "Website", icon: Globe },
 ];
 
-  const { signOut, isSuperAdmin } = useAuth();
 const AdminLayout = () => {
-  // removed redundant line
+  const { signOut, isSuperAdmin } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [unread, setUnread] = useState(0);

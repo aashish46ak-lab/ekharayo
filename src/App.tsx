@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CartProvider } from "@/hooks/useCart";
-import { RequireAdmin, RequireAuth } from "@/components/RouteGuards";
+import { RequireAdmin, RequireAuth, RequireSuperAdmin } from "@/components/RouteGuards";
 import Index from "./pages/Index.tsx";
 import Products from "./pages/Products.tsx";
 import About from "./pages/About.tsx";

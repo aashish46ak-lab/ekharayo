@@ -10,7 +10,7 @@ import logo from "@/assets/logo.png";
 type Mode = "login" | "signup" | "verify";
 
 const AuthModal = () => {
-  const { user, authOpen, closeAuth, authNext } = useAuth();
+  const { user, isAuthModalOpen, closeAuthModal, authNext, setGuest } = useAuth();
   const [mode, setMode] = useState<Mode>("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -22,11 +22,11 @@ const AuthModal = () => {
   const cleanEmail = email.trim().toLowerCase();
 
   useEffect(() => {
-    if (user && authOpen) closeAuth();
-  }, [user, authOpen, closeAuth]);
+    if (user && isAuthModalOpen) closeAuthModal();
+  }, [user, isAuthModalOpen, closeAuthModal]);
 
   const finish = () => {
-    closeAuth();
+    closeAuthModal();
     if (authNext) window.location.assign(authNext);
   };
 
@@ -78,7 +78,7 @@ const AuthModal = () => {
   const field = "w-full h-11 rounded-md border border-border bg-muted pl-10 pr-10 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring";
 
   return (
-    <Dialog open={authOpen} onOpenChange={(open) => !open && closeAuth()}>
+    <Dialog open={isAuthModalOpen} onOpenChange={(open) => !open && closeAuthModal()}>
       <DialogContent className="max-w-none h-[100dvh] w-screen rounded-none border-0 p-0 overflow-y-auto bg-background sm:rounded-none">
         <div className="min-h-full grid lg:grid-cols-2">
           <div className="hidden lg:flex bg-secondary p-12 items-center justify-center border-r border-border">
@@ -121,7 +121,7 @@ const AuthModal = () => {
               </form>}
 
               <div className="flex items-center gap-3 my-6"><span className="h-px flex-1 bg-border" /><span className="text-xs text-muted-foreground">OR</span><span className="h-px flex-1 bg-border" /></div>
-              <Button type="button" variant="outline" className="w-full h-11" onClick={closeAuth}>Continue as Guest</Button>
+              <Button type="button" variant="outline" className="w-full h-11" onClick={() => { setGuest(true); closeAuthModal(); }}>Continue as Guest</Button>
               <p className="text-xs text-muted-foreground text-center mt-3">Guest browsing is available. Sign in is required for checkout and account features.</p>
             </div>
           </div>
