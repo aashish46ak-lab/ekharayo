@@ -92,11 +92,13 @@ const Auth = () => {
     setBusy(false);
     if (!error) return toast.success("Welcome back");
     if (error.message.toLowerCase().includes("email not confirmed")) {
-      const { error: rErr } = await supabase.auth.resend({ type: "signup", email: cleanEmail });
-      if (rErr) return toast.error(rErr.message);
+      // Always take the user to the OTP screen — they already hold a valid code.
+      // Resend is best-effort (it can be rate-limited right after signup).
       setOtpType("signup");
       setMode("otp");
       setSecondsLeft(OTP_TTL);
+      const { error: rErr } = await supabase.auth.resend({ type: "signup", email: cleanEmail });
+      if (rErr) return toast.success("Please verify your email — use the code we already sent you");
       return toast.success("Please verify your email — we sent you a new code");
     }
     toast.error(error.message === "Invalid login credentials" ? "Incorrect email or password" : error.message);

@@ -39,14 +39,15 @@ const AuthModal = () => {
     setBusy(false);
     if (error) {
       if (error.message.toLowerCase().includes("email not confirmed")) {
+        // Always go to the OTP screen — the user already holds a valid code.
+        setOtpType("signup");
+        setMode("verify");
         const { error: rErr } = await supabase.auth.resend({
           type: "signup",
           email: cleanEmail,
           options: { emailRedirectTo: `${window.location.origin}/auth` },
         });
-        if (rErr) return toast.error(rErr.message);
-        setOtpType("signup");
-        setMode("verify");
+        if (rErr) return toast.success("Please verify your email — use the code we already sent you");
         return toast.success("Please verify your email — we sent you a new code");
       }
       return toast.error(error.message === "Invalid login credentials" ? "Incorrect email or password" : error.message);
