@@ -28,11 +28,29 @@ const Auth = () => {
 
   const next = params.get("next");
 
+  // Handle email links: password-recovery links land here and Supabase fires PASSWORD_RECOVERY
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setOtpType("recovery");
+        setMode("reset");
+      }
+    });
+    // Fallback in case the hash is still visible on mount
+    if (window.location.hash.includes("type=recovery")) {
+      setOtpType("recovery");
+      setMode("reset");
+    }
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
   useEffect(() => {
     if (!loading && user) {
+      // A verified recovery session must set a new password first
+      if (mode === "reset") return;
       navigate(isAdmin ? "/admin" : next || "/", { replace: true });
     }
-  }, [user, isAdmin, loading, navigate, next]);
+  }, [user, isAdmin, loading, navigate, next, mode]);
 
   useEffect(() => {
     if (secondsLeft <= 0) return;
@@ -50,7 +68,7 @@ const Auth = () => {
     const { error } = await supabase.auth.signUp({
       email: cleanEmail,
       password,
-      options: { data: { full_name: name.trim() } },
+      options: { data: { full_name: name.trim() }, emailRedirectTo: `${window.location.origin}/auth` },
     });
     setBusy(false);
     if (error) {
@@ -87,7 +105,9 @@ const Auth = () => {
   const forgot = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail);
+    const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+      redirectTo: `${window.location.origin}/auth`,
+    });
     setBusy(false);
     if (error) return toast.error(error.message);
     setOtpType("recovery");
@@ -117,15 +137,16 @@ const Auth = () => {
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     setBusy(false);
     if (error) return toast.error(error.message);
-    toast.success("Password updated");
+    toast.success("Password updated — you're signed in");
+    setMode("login"); // triggers the signed-in redirect above
   };
 
   const resend = async () => {
     setBusy(true);
     const { error } =
       otpType === "signup"
-        ? await supabase.auth.resend({ type: "signup", email: cleanEmail })
-        : await supabase.auth.resetPasswordForEmail(cleanEmail);
+        ? await supabase.auth.resend({ type: "signup", email: cleanEmail, options: { emailRedirectTo: `${window.location.origin}/auth` } })
+        : await supabase.auth.resetPasswordForEmail(cleanEmail, { redirectTo: `${window.location.origin}/auth` });
     setBusy(false);
     if (error) return toast.error(error.message);
     setSecondsLeft(OTP_TTL);

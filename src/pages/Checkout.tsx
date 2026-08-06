@@ -10,16 +10,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { couponSavings } from "@/lib/commerce";
 import { rs } from "@/lib/media";
 import { toast } from "sonner";
-import { Banknote, Check, CreditCard, Loader2, ShieldCheck } from "lucide-react";
+import { Banknote, Check, Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const paymentMethods = [
-  { id: "cod", name: "Cash on Delivery", label: "COD", available: true },
-  { id: "esewa", name: "eSewa", label: "eSewa", available: false },
-  { id: "khalti", name: "Khalti", label: "Khalti", available: false },
-  { id: "fonepay", name: "Fonepay", label: "Fonepay", available: false },
-  { id: "imepay", name: "IME Pay", label: "IME Pay", available: false },
-] as const;
+type PaymentId = "cod" | "esewa" | "khalti" | "fonepay" | "imepay";
+
+const paymentMethods: { id: PaymentId; name: string; color: string }[] = [
+  { id: "cod", name: "Cash on Delivery", color: "" },
+  { id: "esewa", name: "eSewa", color: "#60BB46" },
+  { id: "khalti", name: "Khalti", color: "#5C2D91" },
+  { id: "fonepay", name: "Fonepay", color: "#E4002B" },
+  { id: "imepay", name: "IME Pay", color: "#004A99" },
+];
+
+const defaultPayments: Record<PaymentId, boolean> = { cod: true, esewa: false, khalti: false, fonepay: false, imepay: false };
 
 const Checkout = () => {
   const { items, subtotal, coupon, clear } = useCart();
@@ -28,6 +32,7 @@ const Checkout = () => {
   const [busy, setBusy] = useState(false);
   const [deliveryFee, setDeliveryFee] = useState(0);
   const [tax, setTax] = useState(0);
+  const [payments, setPayments] = useState<Record<PaymentId, boolean>>(defaultPayments);
   const [form, setForm] = useState({
     customer_name: "",
     customer_email: user?.email ?? "",
@@ -58,6 +63,13 @@ const Checkout = () => {
       setTax(Number.isFinite(taxRate) ? Math.max((subtotal * taxRate) / 100, 0) : 0);
     });
   }, [subtotal]);
+
+  useEffect(() => {
+    supabase.from("site_settings").select("value").eq("key", "payments").maybeSingle().then(({ data }) => {
+      const v = data?.value as Partial<Record<PaymentId, boolean>> | undefined;
+      setPayments({ ...defaultPayments, ...(v ?? {}) });
+    });
+  }, []);
 
   useEffect(() => {
     if (items.length === 0 && !busy) navigate("/cart", { replace: true });
@@ -141,15 +153,45 @@ const Checkout = () => {
 
               <h2 className="font-display text-xl font-bold text-foreground pt-2">Payment method</h2>
               <div className="grid sm:grid-cols-2 gap-3">
-                {paymentMethods.map((method) => (
-                  <button key={method.id} type="button" disabled={!method.available} onClick={() => setForm({ ...form, payment_method: method.id })} className={`min-h-24 text-left border rounded-lg p-4 transition-colors ${method.available ? "border-primary bg-primary/10" : "border-border bg-muted/40 opacity-65 cursor-not-allowed"}`}>
-                    <div className="flex items-start justify-between gap-2">
-                      <span className="inline-flex h-8 px-2 items-center rounded-md bg-background border border-border font-bold text-sm">{method.label}</span>
-                      {method.available ? <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold text-primary"><Check size={13} /> Available</span> : <span className="rounded-full bg-accent/15 text-accent px-2 py-1 text-[10px] uppercase font-bold">Coming Soon</span>}
-                    </div>
-                    <span className="flex items-center gap-2 mt-3 font-semibold">{method.id === "cod" ? <Banknote size={16} /> : <CreditCard size={16} />}{method.name}</span>
-                  </button>
-                ))}
+                {paymentMethods.map((method) => {
+                  const available = payments[method.id];
+                  return (
+                    <button
+                      key={method.id}
+                      type="button"
+                      disabled={!available}
+                      onClick={() => setForm({ ...form, payment_method: method.id })}
+                      className={`min-h-24 text-left border rounded-lg p-4 transition-colors ${
+                        available && form.payment_method === method.id
+                          ? "border-primary bg-primary/10"
+                          : available
+                          ? "border-border bg-card hover:border-primary/40"
+                          : "border-border bg-muted/40 opacity-65 cursor-not-allowed"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        {method.id === "cod" ? (
+                          <span className="inline-flex items-center gap-1.5 h-8 px-2 rounded-md bg-primary/10 text-primary font-bold text-sm">
+                            <Banknote size={15} /> COD
+                          </span>
+                        ) : (
+                          <span
+                            className="inline-flex h-8 px-2.5 items-center rounded-md font-bold text-xs text-white"
+                            style={{ backgroundColor: method.color }}
+                          >
+                            {method.name}
+                          </span>
+                        )}
+                        {available ? (
+                          <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold text-primary"><Check size={13} /> Available</span>
+                        ) : (
+                          <span className="rounded-full bg-accent/15 text-accent px-2 py-1 text-[10px] uppercase font-bold">Coming Soon</span>
+                        )}
+                      </div>
+                      <span className="flex items-center gap-2 mt-3 font-semibold text-sm">{method.name}</span>
+                    </button>
+                  );
+                })}
               </div>
 
               <Button disabled={busy} className="w-full h-14 font-semibold">
