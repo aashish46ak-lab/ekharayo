@@ -47,7 +47,7 @@ CREATE POLICY "notif own read" ON public.order_notifications FOR SELECT TO authe
 DROP POLICY IF EXISTS "notif insert auth" ON public.order_notifications;
 CREATE POLICY "notif insert auth" ON public.order_notifications FOR INSERT TO authenticated WITH CHECK (true);
 
--- Delivery settings defaults (Morang HQ)
+-- Delivery settings defaults (Morang HQ) — max delivery Rs. 350
 INSERT INTO public.site_settings (key, value) VALUES
 (
   'delivery_zones',
@@ -55,14 +55,33 @@ INSERT INTO public.site_settings (key, value) VALUES
     "hq": {"name": "Patharishanishchare-5, Morang", "lat": 26.6525, "lng": 87.5389},
     "base_fee": 50,
     "free_above": 3000,
+    "max_fee": 350,
     "tiers": [
       {"max_km": 10, "fee": 50},
       {"max_km": 25, "fee": 100},
       {"max_km": 50, "fee": 150},
       {"max_km": 100, "fee": 250},
-      {"max_km": 200, "fee": 400},
-      {"max_km": 9999, "fee": 600}
+      {"max_km": 150, "fee": 300},
+      {"max_km": 9999, "fee": 350}
     ]
   }'::jsonb
 )
 ON CONFLICT (key) DO NOTHING;
+
+-- If delivery_zones already exists, force max_fee 350 and capped tiers
+UPDATE public.site_settings
+SET value = '{
+  "hq": {"name": "Patharishanishchare-5, Morang", "lat": 26.6525, "lng": 87.5389},
+  "base_fee": 50,
+  "free_above": 3000,
+  "max_fee": 350,
+  "tiers": [
+    {"max_km": 10, "fee": 50},
+    {"max_km": 25, "fee": 100},
+    {"max_km": 50, "fee": 150},
+    {"max_km": 100, "fee": 250},
+    {"max_km": 150, "fee": 300},
+    {"max_km": 9999, "fee": 350}
+  ]
+}'::jsonb
+WHERE key = 'delivery_zones';
