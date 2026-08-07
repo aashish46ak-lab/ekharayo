@@ -28,22 +28,6 @@ const Auth = () => {
 
   const next = params.get("next");
 
-  // Handle email links: password-recovery links land here and Supabase fires PASSWORD_RECOVERY
-  useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
-        setOtpType("recovery");
-        setMode("reset");
-      }
-    });
-    // Fallback in case the hash is still visible on mount
-    if (window.location.hash.includes("type=recovery")) {
-      setOtpType("recovery");
-      setMode("reset");
-    }
-    return () => sub.subscription.unsubscribe();
-  }, []);
-
   useEffect(() => {
     if (!loading && user) {
       // A verified recovery session must set a new password first
@@ -68,7 +52,7 @@ const Auth = () => {
     const { error } = await supabase.auth.signUp({
       email: cleanEmail,
       password,
-      options: { data: { full_name: name.trim() }, emailRedirectTo: `${window.location.origin}/auth` },
+      options: { data: { full_name: name.trim() } },
     });
     setBusy(false);
     if (error) {
@@ -98,7 +82,7 @@ const Auth = () => {
       setMode("otp");
       setSecondsLeft(OTP_TTL);
       const { error: rErr } = await supabase.auth.resend({ type: "signup", email: cleanEmail });
-      if (rErr) return toast.success("Please verify your email — use the code we already sent you");
+      if (rErr) return toast.error(`Email delivery failed: ${rErr.message}`);
       return toast.success("Please verify your email — we sent you a new code");
     }
     toast.error(error.message === "Invalid login credentials" ? "Incorrect email or password" : error.message);
@@ -147,7 +131,7 @@ const Auth = () => {
     setBusy(true);
     const { error } =
       otpType === "signup"
-        ? await supabase.auth.resend({ type: "signup", email: cleanEmail, options: { emailRedirectTo: `${window.location.origin}/auth` } })
+        ? await supabase.auth.resend({ type: "signup", email: cleanEmail })
         : await supabase.auth.resetPasswordForEmail(cleanEmail, { redirectTo: `${window.location.origin}/auth` });
     setBusy(false);
     if (error) return toast.error(error.message);
