@@ -1,11 +1,17 @@
+import { useLocation } from "react-router-dom";
 import { useLang } from "@/i18n/LanguageContext";
+import { useAuth } from "@/hooks/useAuth";
 
 /**
- * Fixed top-left "dynamic island" language pill — stays put while scrolling.
- * Sits just under the navbar.
+ * Fixed top-left language pill — customers only.
+ * Hidden for admin/staff and on /admin routes.
  */
 const FloatingLangSwitch = () => {
   const { lang, setLang } = useLang();
+  const { isAdmin } = useAuth();
+  const { pathname } = useLocation();
+
+  if (isAdmin || pathname.startsWith("/admin")) return null;
 
   return (
     <div
