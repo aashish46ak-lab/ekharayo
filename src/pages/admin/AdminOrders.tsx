@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { rs } from "@/lib/media";
 import { toast } from "sonner";
+import { queueOrderNotification, type OrderEvent } from "@/lib/notifications";
 import { Search, Loader2 } from "lucide-react";
 
 interface Order {
@@ -39,9 +40,29 @@ const AdminOrders = () => {
 
   const update = async (id: string, status: string) => {
     const nextStatus = status as (typeof statuses)[number];
+    const order = orders.find((o) => o.id === id);
     const { error } = await supabase.from("orders").update({ status: nextStatus }).eq("id", id);
     if (error) return toast.error(error.message);
-    toast.success("Order updated");
+    const eventMap: Record<string, OrderEvent> = {
+      confirmed: "order_confirmed",
+      processing: "order_processing",
+      packed: "order_packed",
+      shipped: "order_shipped",
+      out_for_delivery: "out_for_delivery",
+      delivered: "order_delivered",
+      cancelled: "order_cancelled",
+    };
+    const ev = eventMap[nextStatus];
+    if (ev && order) {
+      await queueOrderNotification({
+        orderId: id,
+        email: order.customer_email,
+        orderNumber: order.order_number,
+        event: ev,
+        total: Number(order.total),
+      });
+    }
+    toast.success(ev ? "Order updated · customer notified" : "Order updated");
     load();
   };
 
@@ -104,7 +125,7 @@ const AdminOrders = () => {
                     <p className="text-muted-foreground mt-2">{o.address_line}, {o.city} {o.district}</p>
                     {o.notes && <p className="text-muted-foreground mt-2 whitespace-pre-line">{o.notes}</p>}
                     <div className="flex items-center gap-2 mt-2 text-muted-foreground">
-                      Payment: {o.payment_method} · 
+                      Payment: {o.payment_method} ·{" "}
                       <select value={o.payment_status} onChange={(e) => updatePayment(o.id, e.target.value)} className="bg-transparent border-none p-0 text-foreground font-semibold focus:ring-0 cursor-pointer">
                         <option value="pending">pending</option>
                         <option value="paid">paid</option>

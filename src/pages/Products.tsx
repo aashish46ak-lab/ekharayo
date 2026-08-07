@@ -26,6 +26,7 @@ const Products = () => {
   const [activeCat, setActiveCat] = useState<string | "all">("all");
   const [q, setQ] = useState("");
   const [inStockOnly, setInStockOnly] = useState(false);
+  const [sortBy, setSortBy] = useState<"newest" | "price_asc" | "price_desc" | "name">("newest");
   const { add } = useCart();
   const { user, openAuthModal } = useAuth();
   const { has, toggle } = useWishlist();
@@ -34,7 +35,7 @@ const Products = () => {
     (async () => {
       const [c, p] = await Promise.all([
         supabase.from("categories").select("*").order("sort_order"),
-        supabase.from("products").select("*").eq("is_active", true).order("created_at"),
+        supabase.from("products").select("*").eq("is_active", true).order("created_at", { ascending: false }),
       ]);
       setCategories((c.data as Category[]) ?? []);
       setProducts((p.data as unknown as Product[]) ?? []);
@@ -44,16 +45,22 @@ const Products = () => {
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
-    return products.filter((p) => {
+    let list = products.filter((p) => {
       if (activeCat !== "all" && p.category_id !== activeCat) return false;
       if (inStockOnly && p.stock <= 0) return false;
       if (!term) return true;
-      return (
-        p.name.toLowerCase().includes(term) ||
-        (p.description ?? "").toLowerCase().includes(term)
-      );
+      return p.name.toLowerCase().includes(term) || (p.description ?? "").toLowerCase().includes(term);
     });
-  }, [products, activeCat, q, inStockOnly]);
+    list = [...list].sort((a, b) => {
+      const pa = Number(a.sale_price ?? a.price);
+      const pb = Number(b.sale_price ?? b.price);
+      if (sortBy === "price_asc") return pa - pb;
+      if (sortBy === "price_desc") return pb - pa;
+      if (sortBy === "name") return a.name.localeCompare(b.name);
+      return 0;
+    });
+    return list;
+  }, [products, activeCat, q, inStockOnly, sortBy]);
 
   const addToCart = (p: Product) => {
     if (p.stock <= 0) return toast.error("This product is out of stock");
@@ -63,7 +70,10 @@ const Products = () => {
   const buyNow = (p: Product) => {
     if (p.stock <= 0) return toast.error("This product is out of stock");
     if (!user) return openAuthModal("/products");
-    localStorage.setItem("ekharayo-cart", JSON.stringify([{ id: p.id, name: p.name, price: Number(p.sale_price ?? p.price), image: p.images?.[0] ?? null, unit: p.unit, quantity: 1 }]));
+    localStorage.setItem(
+      "ekharayo-cart",
+      JSON.stringify([{ id: p.id, name: p.name, price: Number(p.sale_price ?? p.price), image: p.images?.[0] ?? null, unit: p.unit, quantity: 1 }]),
+    );
     window.location.assign("/checkout");
   };
 
@@ -72,7 +82,6 @@ const Products = () => {
       <Navbar />
       <PageShell title="Our Products" subtitle="Farm-fresh dairy, meat, and crops delivered to your doorstep">
         <div className="container mx-auto px-4 py-12">
-          {/* Filters */}
           <div className="flex flex-col md:flex-row gap-3 mb-8">
             <input
               value={q}
@@ -84,28 +93,22 @@ const Products = () => {
               <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} className="rounded border-border" />
               In stock only
             </label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              className="border border-border rounded-lg px-3 py-2.5 font-body text-sm bg-muted text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              aria-label="Sort products"
+            >
+              <option value="newest">Newest</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="name">Name A–Z</option>
+            </select>
           </div>
           <div className="flex flex-wrap gap-2 mb-10">
-            <button
-              type="button"
-              onClick={() => setActiveCat("all")}
-              className={`px-3 py-1.5 rounded-full font-body text-xs font-medium border transition-colors ${
-                activeCat === "all" ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/40"
-              }`}
-            >
-              All
-            </button>
+            <button type="button" onClick={() => setActiveCat("all")} className={`px-3 py-1.5 rounded-full font-body text-xs font-medium border transition-colors ${activeCat === "all" ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/40"}`}>All</button>
             {categories.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => setActiveCat(c.id)}
-                className={`px-3 py-1.5 rounded-full font-body text-xs font-medium border transition-colors ${
-                  activeCat === c.id ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/40"
-                }`}
-              >
-                {c.name}
-              </button>
+              <button key={c.id} type="button" onClick={() => setActiveCat(c.id)} className={`px-3 py-1.5 rounded-full font-body text-xs font-medium border transition-colors ${activeCat === c.id ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/40"}`}>{c.name}</button>
             ))}
           </div>
 
@@ -120,14 +123,7 @@ const Products = () => {
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {filtered.map((p) => (
                 <div key={p.id} className="bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300 relative">
-                  <button
-                    type="button"
-                    onClick={() => toggle(p.id)}
-                    className={`absolute top-3 right-3 z-10 p-2 rounded-full bg-card/90 border border-border ${
-                      has(p.id) ? "text-primary" : "text-muted-foreground hover:text-primary"
-                    }`}
-                    aria-label="Wishlist"
-                  >
+                  <button type="button" onClick={() => toggle(p.id)} className={`absolute top-3 right-3 z-10 p-2 rounded-full bg-card/90 border border-border ${has(p.id) ? "text-primary" : "text-muted-foreground hover:text-primary"}`} aria-label="Wishlist">
                     <Heart size={16} className={has(p.id) ? "fill-current" : ""} />
                   </button>
                   <Link to={`/products/${p.id}`}>
@@ -139,18 +135,12 @@ const Products = () => {
                   </Link>
                   <div className="p-6">
                     <div className="flex items-start justify-between gap-2 mb-1">
-                      <Link to={`/products/${p.id}`} className="font-display text-lg font-bold text-foreground hover:text-primary">
-                        {p.name}
-                      </Link>
+                      <Link to={`/products/${p.id}`} className="font-display text-lg font-bold text-foreground hover:text-primary">{p.name}</Link>
                       {p.featured && <span className="font-body text-[10px] uppercase tracking-wide bg-accent/15 text-accent px-2 py-1 rounded-full shrink-0">Featured</span>}
                     </div>
                     <p className="font-body text-sm text-muted-foreground mb-2 line-clamp-2">{p.description}</p>
                     <p className="font-body text-xs mb-3">
-                      {p.stock > 0 ? (
-                        p.stock <= 5 ? <span className="text-accent">Only {p.stock} left</span> : <span className="text-primary">In stock</span>
-                      ) : (
-                        <span className="text-destructive">Out of stock</span>
-                      )}
+                      {p.stock > 0 ? (p.stock <= 5 ? <span className="text-accent">Only {p.stock} left</span> : <span className="text-primary">In stock</span>) : <span className="text-destructive">Out of stock</span>}
                     </p>
                     <div className="flex items-baseline gap-2 mb-4">
                       <span className="font-body text-lg font-bold text-primary">{rs(Number(p.sale_price ?? p.price))}</span>
