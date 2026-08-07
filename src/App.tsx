@@ -8,6 +8,7 @@ import { CartProvider } from "@/hooks/useCart";
 import { RequireAdmin, RequireAuth, RequireSuperAdmin } from "@/components/RouteGuards";
 import Index from "./pages/Index.tsx";
 import Products from "./pages/Products.tsx";
+import ProductDetail from "./pages/ProductDetail.tsx";
 import About from "./pages/About.tsx";
 import Gallery from "./pages/Gallery.tsx";
 import Ownership from "./pages/Ownership.tsx";
@@ -18,6 +19,8 @@ import Cart from "./pages/Cart.tsx";
 import Checkout from "./pages/Checkout.tsx";
 import OrderConfirmation from "./pages/OrderConfirmation.tsx";
 import MyOrders from "./pages/MyOrders.tsx";
+import Wishlist from "./pages/Wishlist.tsx";
+import Policy from "./pages/Policy.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import InstallPrompt from "./components/InstallPrompt.tsx";
 import AuthModal from "./components/AuthModal";
@@ -48,6 +51,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/products/:id" element={<ProductDetail />} />
               <Route path="/about" element={<About />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/ownership" element={<Ownership />} />
@@ -55,6 +59,8 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/cart" element={<Cart />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/policy/:slug" element={<Policy />} />
               <Route path="/checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
               <Route path="/order-confirmation/:id" element={<RequireAuth><OrderConfirmation /></RequireAuth>} />
               <Route path="/my-orders" element={<RequireAuth><MyOrders /></RequireAuth>} />
