@@ -12,19 +12,23 @@ import { rs } from "@/lib/media";
 import { toast } from "sonner";
 import { Banknote, Check, Loader2, ShieldCheck, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import esewaLogo from "@/assets/payment-esewa.png.asset.json";
-import khaltiLogo from "@/assets/payment-khalti.png.asset.json";
-import fonepayLogo from "@/assets/payment-fonepay.png.asset.json";
-import imepayLogo from "@/assets/payment-imepay.jpeg.asset.json";
 
 type PaymentId = "cod" | "esewa" | "khalti" | "fonepay" | "imepay";
 
+/** Clean square brand icons (exact logos — no broken Lovable asset paths). */
+const PAYMENT_LOGOS: Record<Exclude<PaymentId, "cod">, string> = {
+  esewa: "https://www.google.com/s2/favicons?domain=esewa.com.np&sz=128",
+  khalti: "https://www.google.com/s2/favicons?domain=khalti.com&sz=128",
+  fonepay: "https://www.google.com/s2/favicons?domain=fonepay.com&sz=128",
+  imepay: "https://www.google.com/s2/favicons?domain=imepay.com.np&sz=128",
+};
+
 const paymentMethods: { id: PaymentId; name: string; logo?: string }[] = [
   { id: "cod", name: "Cash on Delivery" },
-  { id: "esewa", name: "eSewa", logo: esewaLogo.url },
-  { id: "khalti", name: "Khalti", logo: khaltiLogo.url },
-  { id: "fonepay", name: "Fonepay", logo: fonepayLogo.url },
-  { id: "imepay", name: "IME Pay", logo: imepayLogo.url },
+  { id: "esewa", name: "eSewa", logo: PAYMENT_LOGOS.esewa },
+  { id: "khalti", name: "Khalti", logo: PAYMENT_LOGOS.khalti },
+  { id: "fonepay", name: "Fonepay", logo: PAYMENT_LOGOS.fonepay },
+  { id: "imepay", name: "IME Pay", logo: PAYMENT_LOGOS.imepay },
 ];
 
 const defaultPayments: Record<PaymentId, boolean> = { cod: true, esewa: false, khalti: false, fonepay: false, imepay: false };
@@ -178,15 +182,23 @@ const Checkout = () => {
                     >
                       <div className="flex items-start justify-between gap-2">
                         {method.id === "cod" ? (
-                          <span className="inline-flex items-center gap-1.5 h-8 px-2 rounded-md bg-primary/10 text-primary font-bold text-sm">
-                            <Banknote size={15} /> COD
+                          <span className="inline-flex items-center gap-1.5 h-10 px-2.5 rounded-lg bg-primary/10 text-primary font-bold text-sm">
+                            <Banknote size={18} /> COD
                           </span>
                         ) : (
-                          <img src={method.logo} alt={`${method.name} logo`} className="h-9 w-24 rounded-md bg-background object-contain p-1" />
+                          <span className="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-white border border-border/60 shadow-sm overflow-hidden shrink-0">
+                            <img
+                              src={method.logo}
+                              alt={`${method.name} logo`}
+                              className="h-7 w-7 object-contain"
+                              loading="lazy"
+                              referrerPolicy="no-referrer"
+                            />
+                          </span>
                         )}
                         {available ? (
                           <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold text-primary"><Check size={13} /> Available</span>
-                        ) : (
+                          ) : (
                           <span className="rounded-full bg-accent/15 text-accent px-2 py-1 text-[10px] uppercase font-bold">Coming Soon</span>
                         )}
                       </div>
