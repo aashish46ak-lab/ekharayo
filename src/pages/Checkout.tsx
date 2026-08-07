@@ -73,7 +73,7 @@ const Checkout = () => {
       const pay = map.payments as Partial<Record<PaymentId, boolean>> | undefined;
       setPayments({ ...defaultPayments, ...(pay ?? {}) });
       const zones = map.delivery_zones as DeliveryTierConfig | undefined;
-      if (zones?.hq?.lat && zones.tiers?.length) setDeliveryCfg({ ...DEFAULT_DELIVERY, ...zones });
+      if (zones?.hq?.lat && zones.tiers?.length) setDeliveryCfg({ ...DEFAULT_DELIVERY, ...zones, max_fee: 350 });
     });
   }, [subtotal]);
 
@@ -194,7 +194,7 @@ const Checkout = () => {
                   <p className="font-body text-xs text-muted-foreground mt-1">{deliveryInfo.label}</p>
                   {deliveryInfo.km != null && <p className="font-body text-xs text-primary mt-1">Distance: {deliveryInfo.km} km</p>}
                   <p className="font-body text-[11px] text-muted-foreground mt-2">
-                    Tiers: 0–10km Rs.50 · 10–25km Rs.100 · 25–50km Rs.150 · 50–100km Rs.250 · farther higher. Free above Rs. {deliveryCfg.free_above}.
+                    Tiers: 0–10km Rs.50 · 10–25km Rs.100 · 25–50km Rs.150 · 50–100km Rs.250 · 100–150km Rs.300 · beyond max Rs.350. Free above Rs. {deliveryCfg.free_above}.
                   </p>
                 </div>
               </div>
