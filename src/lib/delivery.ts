@@ -13,6 +13,8 @@ export interface DeliveryTierConfig {
   hq: { name: string; lat: number; lng: number };
   base_fee: number;
   free_above: number;
+  /** Absolute maximum delivery charge (never exceed this). */
+  max_fee: number;
   tiers: { max_km: number; fee: number }[];
 }
 
@@ -20,22 +22,28 @@ export const DEFAULT_DELIVERY: DeliveryTierConfig = {
   hq: { name: "Patharishanishchare-5, Morang", lat: 26.6525, lng: 87.5389 },
   base_fee: 50,
   free_above: 3000,
+  max_fee: 350,
   tiers: [
     { max_km: 10, fee: 50 },
     { max_km: 25, fee: 100 },
     { max_km: 50, fee: 150 },
     { max_km: 100, fee: 250 },
-    { max_km: 200, fee: 400 },
-    { max_km: 9999, fee: 600 },
+    { max_km: 150, fee: 300 },
+    { max_km: 9999, fee: 350 },
   ],
 };
 
 export function feeForDistance(km: number, cfg: DeliveryTierConfig = DEFAULT_DELIVERY): number {
   const sorted = [...cfg.tiers].sort((a, b) => a.max_km - b.max_km);
+  let fee = sorted[sorted.length - 1]?.fee ?? cfg.base_fee;
   for (const t of sorted) {
-    if (km <= t.max_km) return t.fee;
+    if (km <= t.max_km) {
+      fee = t.fee;
+      break;
+    }
   }
-  return sorted[sorted.length - 1]?.fee ?? cfg.base_fee;
+  const cap = Number(cfg.max_fee ?? 350);
+  return Math.min(fee, cap);
 }
 
 export function computeDeliveryFee(
