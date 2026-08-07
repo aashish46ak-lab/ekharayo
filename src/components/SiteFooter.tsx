@@ -3,6 +3,7 @@ import logo from "@/assets/logo.png";
 import { Facebook, Instagram, Youtube, MessageCircle } from "lucide-react";
 import { useSiteSettings, getBranding, getCompany, getSocial } from "@/hooks/useSiteSettings";
 
+/** Footer without Products/About/Contact menu strip — branding + social only */
 const SiteFooter = () => {
   const { settings } = useSiteSettings();
   const branding = getBranding(settings);
@@ -23,35 +24,25 @@ const SiteFooter = () => {
             "The official digital marketplace of Great Sagarmatha Trade Pvt. Ltd. — quality agricultural products from Nepal and trusted international suppliers."}
         </p>
 
-        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-body text-xs text-muted-foreground">
-          <Link to="/products" className="hover:text-primary">Products</Link>
-          <Link to="/about" className="hover:text-primary">About</Link>
-          <Link to="/contact" className="hover:text-primary">Contact</Link>
-          <Link to="/policy/privacy" className="hover:text-primary">Privacy</Link>
-          <Link to="/policy/terms" className="hover:text-primary">Terms</Link>
-          <Link to="/policy/shipping" className="hover:text-primary">Shipping</Link>
-          <Link to="/policy/returns" className="hover:text-primary">Returns</Link>
-        </div>
-
         {hasSocial ? (
           <div className="flex items-center gap-3">
             {social.facebook ? (
-              <a href={social.facebook} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+              <a href={social.facebook} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Facebook">
                 <Facebook size={16} />
               </a>
             ) : null}
             {social.instagram ? (
-              <a href={social.instagram} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+              <a href={social.instagram} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Instagram">
                 <Instagram size={16} />
               </a>
             ) : null}
             {social.tiktok ? (
-              <a href={social.tiktok} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+              <a href={social.tiktok} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="TikTok">
                 <MessageCircle size={16} />
               </a>
             ) : null}
             {social.youtube ? (
-              <a href={social.youtube} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+              <a href={social.youtube} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="YouTube">
                 <Youtube size={16} />
               </a>
             ) : null}
