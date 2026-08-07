@@ -1,18 +1,25 @@
 import { Link } from "react-router-dom";
-import { ChevronDown, ShoppingBasket, Phone } from "lucide-react";
+import { ChevronDown, ShoppingBasket, ArrowRight } from "lucide-react";
 import SmartSearchBar from "./SmartSearchBar";
 
-/** Dark gradient hero — no cow/farm photo or video background */
+/**
+ * Dark hero — primary action is View Products → separate /products page
+ * (not inline product list on home)
+ */
 const HeroSection = () => {
   return (
     <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden bg-background">
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-secondary to-background" />
-      <div className="absolute inset-0 opacity-[0.07]" style={{
-        backgroundImage: `linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)`,
-        backgroundSize: "48px 48px",
-      }} />
-      <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary/15 rounded-full blur-[100px]" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-[120px]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#070b12] via-[#0a0f18] to-background" />
+      <div
+        className="absolute inset-0 opacity-[0.05]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+        }}
+      />
+      <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary/10 rounded-full blur-[110px]" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px]" />
 
       <div className="relative z-10 container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-3xl mx-auto text-center">
@@ -22,7 +29,7 @@ const HeroSection = () => {
 
           <div
             className="inline-flex items-center gap-2 rounded-full px-5 py-2 mb-8 opacity-0 animate-fade-in-up border border-primary/30"
-            style={{ background: "hsla(142, 50%, 38%, 0.12)", backdropFilter: "blur(12px)", animationDelay: "0.1s" }}
+            style={{ background: "hsla(142, 50%, 38%, 0.12)", animationDelay: "0.1s" }}
           >
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             <span className="font-body text-primary text-xs uppercase tracking-[0.3em] font-semibold">
@@ -45,19 +52,29 @@ const HeroSection = () => {
             Official marketplace of Great Sagarmatha Trade Pvt. Ltd. — quality farm products delivered across Nepal.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 opacity-0 animate-fade-in-up" style={{ animationDelay: "0.5s" }}>
-            <Link to="/products" className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body font-semibold px-8 py-3.5 rounded-lg hover:bg-green-glow transition-colors">
-              <ShoppingBasket size={18} /> Shop products
-            </Link>
-            <Link to="/contact" className="inline-flex items-center gap-2 border border-border text-foreground font-body font-semibold px-8 py-3.5 rounded-lg hover:border-primary/40 transition-colors">
-              <Phone size={18} /> Contact us
+          {/* View Products box → opens separate /products page */}
+          <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: "0.5s" }}>
+            <Link
+              to="/products"
+              className="group mx-auto max-w-md flex flex-col items-center gap-3 rounded-2xl border border-primary/40 bg-card/80 px-8 py-7 shadow-lg shadow-primary/10 hover:border-primary hover:bg-primary/10 transition-all duration-300"
+            >
+              <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/20 text-primary group-hover:scale-110 transition-transform">
+                <ShoppingBasket size={28} />
+              </span>
+              <span className="font-display text-xl font-bold text-foreground">View Products</span>
+              <span className="font-body text-sm text-muted-foreground">
+                Open full catalogue on a separate page
+              </span>
+              <span className="inline-flex items-center gap-1.5 font-body text-sm font-semibold text-primary">
+                Go to products <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              </span>
             </Link>
           </div>
         </div>
       </div>
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce pointer-events-none">
-        <ChevronDown className="text-muted-foreground/40" size={28} />
+        <ChevronDown className="text-muted-foreground/30" size={28} />
       </div>
     </section>
   );
