@@ -23,6 +23,16 @@ const SiteFooter = () => {
             "The official digital marketplace of Great Sagarmatha Trade Pvt. Ltd. — quality agricultural products from Nepal and trusted international suppliers."}
         </p>
 
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-body text-xs text-muted-foreground">
+          <Link to="/products" className="hover:text-primary">Products</Link>
+          <Link to="/about" className="hover:text-primary">About</Link>
+          <Link to="/contact" className="hover:text-primary">Contact</Link>
+          <Link to="/policy/privacy" className="hover:text-primary">Privacy</Link>
+          <Link to="/policy/terms" className="hover:text-primary">Terms</Link>
+          <Link to="/policy/shipping" className="hover:text-primary">Shipping</Link>
+          <Link to="/policy/returns" className="hover:text-primary">Returns</Link>
+        </div>
+
         {hasSocial ? (
           <div className="flex items-center gap-3">
             {social.facebook ? (

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ChevronDown, ShoppingBasket, Info, Image, UserCircle, PackageCheck, Phone } from "lucide-react";
 import SmartSearchBar from "./SmartSearchBar";
+import heroBg from "@/assets/hero-bg.jpg";
 
 const menuItems = [
   { label: "Products", href: "/products", icon: ShoppingBasket },
@@ -14,17 +15,19 @@ const menuItems = [
 const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
-
+      <img
+        src={heroBg}
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover"
+        loading="eager"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/55 to-background" />
 
       <div className="relative z-10 container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-3xl mx-auto text-center">
-          <div
-            className="relative z-30 mb-8 opacity-0 animate-fade-in-up"
-            style={{ animationDelay: "0s" }}
-          >
+          <div className="relative z-30 mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: "0s" }}>
             <SmartSearchBar variant="hero" />
           </div>
-
 
           <div
             className="inline-flex items-center gap-2 rounded-full px-5 py-2 mb-8 opacity-0 animate-fade-in-up border border-primary/30"
@@ -45,10 +48,7 @@ const HeroSection = () => {
             style={{ animationDelay: "0.2s" }}
           >
             Quality Agriculture,
-            <span
-              className="block text-primary"
-              style={{ filter: "drop-shadow(0 0 30px hsla(142,50%,38%,0.4))" }}
-            >
+            <span className="block text-primary" style={{ filter: "drop-shadow(0 0 30px hsla(142,50%,38%,0.4))" }}>
               One Trusted Platform
             </span>
           </h1>
@@ -60,7 +60,6 @@ const HeroSection = () => {
             eKharayo is the official digital marketplace of Great Sagarmatha Trade Pvt. Ltd. — our own farm products
             plus carefully selected goods from trusted Nepali and international suppliers.
           </p>
-
 
           <div
             className="grid grid-cols-3 sm:grid-cols-6 gap-3 max-w-2xl mx-auto opacity-0 animate-fade-in-up"

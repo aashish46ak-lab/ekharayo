@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "@/assets/logo.png";
-import { Menu, X, Home, ShoppingBasket, Info, Image, UserCircle, PackageCheck, Phone, ShoppingCart, LayoutDashboard, LogIn, LogOut, ReceiptText } from "lucide-react";
+import { Menu, X, Home, ShoppingBasket, Info, Image, UserCircle, PackageCheck, Phone, ShoppingCart, LayoutDashboard, LogIn, LogOut, ReceiptText, Heart } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
+import SmartSearchBar from "./SmartSearchBar";
 
 const navLinks = [
   { label: "Home", href: "/", icon: Home },
@@ -38,16 +39,17 @@ const Navbar = () => {
 
   const accountLinks = [
     { label: "My Orders", href: "/my-orders", icon: ReceiptText },
+    { label: "Wishlist", href: "/wishlist", icon: Heart },
     ...(isAdmin ? [{ label: "Admin", href: "/admin", icon: LayoutDashboard }] : []),
   ];
 
   return (
     <>
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBg}`}>
-        <div className="container mx-auto flex items-center justify-between py-2.5 px-4">
-          <Link to="/" className="flex items-center gap-2.5">
+        <div className="container mx-auto flex items-center justify-between gap-3 py-2.5 px-4">
+          <Link to="/" className="flex items-center gap-2.5 shrink-0">
             <img src={logo} alt="eKharayo — Great Sagarmatha Trade Pvt. Ltd." className="h-9 md:h-10 w-auto shrink-0" />
-            <span className={`font-display text-lg font-bold leading-tight ${scrolled ? "text-primary" : "text-white"}`}>
+            <span className={`font-display text-lg font-bold leading-tight hidden sm:block ${scrolled ? "text-primary" : "text-white"}`}>
               eKharayo
               <span className={`font-body text-[10px] font-medium block leading-tight tracking-wide ${scrolled ? "text-muted-foreground" : "text-white/60"}`}>
                 (Great Sagarmatha Trade Pvt. Ltd.)
@@ -55,13 +57,16 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* Desktop */}
-          <ul className="hidden md:flex items-center gap-1">
-            {[...navLinks, ...accountLinks].map((l) => (
+          <div className="hidden md:block flex-1 max-w-xs mx-2">
+            <SmartSearchBar variant="navbar" />
+          </div>
+
+          <ul className="hidden lg:flex items-center gap-0.5">
+            {[...navLinks.slice(0, 4), ...accountLinks].map((l) => (
               <li key={l.href}>
                 <Link
                   to={l.href}
-                  className={`flex items-center gap-1.5 font-body text-xs font-medium px-2.5 py-1.5 rounded-md transition-all duration-200 ${
+                  className={`flex items-center gap-1.5 font-body text-xs font-medium px-2 py-1.5 rounded-md transition-all duration-200 ${
                     location.pathname === l.href ? activeColor : `${textColor}/70 ${hoverColor}`
                   }`}
                 >
@@ -72,18 +77,21 @@ const Navbar = () => {
             ))}
             <li>
               {user ? (
-                <button onClick={() => signOut()} className={`flex items-center gap-1.5 font-body text-xs font-medium px-2.5 py-1.5 rounded-md ${textColor}/70 ${hoverColor}`}>
+                <button onClick={() => signOut()} className={`flex items-center gap-1.5 font-body text-xs font-medium px-2 py-1.5 rounded-md ${textColor}/70 ${hoverColor}`}>
                   <LogOut size={14} /> Sign out
                 </button>
               ) : (
-                <button onClick={() => openAuthModal()} className={`flex items-center gap-1.5 font-body text-xs font-medium px-2.5 py-1.5 rounded-md ${textColor}/70 ${hoverColor}`}>
+                <button onClick={() => openAuthModal()} className={`flex items-center gap-1.5 font-body text-xs font-medium px-2 py-1.5 rounded-md ${textColor}/70 ${hoverColor}`}>
                   <LogIn size={14} /> Sign in
                 </button>
               )}
             </li>
           </ul>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            <Link to="/wishlist" aria-label="Wishlist" className={`p-2 rounded-md ${textColor} ${hoverColor}`}>
+              <Heart size={18} />
+            </Link>
             <Link to="/cart" aria-label="Cart" className={`relative p-2 rounded-md ${textColor} ${hoverColor}`}>
               <ShoppingCart size={18} />
               {count > 0 && (
@@ -92,18 +100,20 @@ const Navbar = () => {
                 </span>
               )}
             </Link>
-            <button onClick={() => setOpen(!open)} className={`md:hidden ${textColor}`} aria-label="Toggle menu">
+            <button onClick={() => setOpen(!open)} className={`lg:hidden ${textColor}`} aria-label="Toggle menu">
               {open ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
       </nav>
 
-      {/* Mobile menu */}
       {open && (
         <>
-          <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden" onClick={() => setOpen(false)} />
-          <div className="fixed top-[53px] right-0 z-50 w-52 bg-card/95 backdrop-blur-xl border-l border-b border-border shadow-2xl rounded-bl-2xl md:hidden">
+          <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden" onClick={() => setOpen(false)} />
+          <div className="fixed top-[53px] right-0 z-50 w-64 bg-card/95 backdrop-blur-xl border-l border-b border-border shadow-2xl rounded-bl-2xl lg:hidden">
+            <div className="p-3 border-b border-border md:hidden">
+              <SmartSearchBar variant="navbar" />
+            </div>
             <ul className="flex flex-col gap-1 p-3">
               {[...navLinks, ...accountLinks].map((l) => (
                 <li key={l.href}>
