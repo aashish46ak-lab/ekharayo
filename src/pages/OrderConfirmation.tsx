@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import PageShell from "@/components/PageShell";
 import SiteFooter from "@/components/SiteFooter";
+import OrderTimeline from "@/components/OrderTimeline";
 import { supabase } from "@/integrations/supabase/client";
 import { rs } from "@/lib/media";
 import { generateInvoiceImage, type InvoiceCompany, type InvoiceOrder, type InvoiceItem } from "@/lib/invoice";
@@ -12,6 +13,7 @@ import { CheckCircle2, Download, Loader2, Package } from "lucide-react";
 interface OrderRow extends InvoiceOrder {
   notes?: string | null;
   coupon_code?: string | null;
+  status: string;
 }
 interface ItemRow extends InvoiceItem {
   id: string;
@@ -93,24 +95,28 @@ const OrderConfirmation = () => {
             <p className="font-body text-center text-muted-foreground">Order not found.</p>
           ) : (
             <div className="space-y-6">
-              {/* Hero */}
               <div className="bg-card border border-border rounded-2xl p-8 sm:p-10 text-center">
-                <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 animate-fade-in-up">
+                <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
                   <CheckCircle2 className="text-primary" size={48} />
                 </div>
                 <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">Order confirmed</h2>
                 <p className="font-display text-lg font-semibold text-primary mb-2">#{order.order_number}</p>
                 <p className="font-body text-sm text-muted-foreground">
-                  We'll contact you at <span className="text-foreground font-medium">{order.customer_phone}</span> to confirm delivery.
+                  We will email status updates (shipped, out for delivery, delivered) to{" "}
+                  <span className="text-foreground font-medium">{order.customer_email || "your account email"}</span>.
                 </p>
               </div>
 
-              {/* Order details */}
+              <div className="bg-card border border-border rounded-2xl p-6 sm:p-8">
+                <h3 className="font-display text-lg font-bold text-foreground mb-4">Order tracking</h3>
+                <OrderTimeline status={order.status || "pending"} />
+              </div>
+
               <div className="bg-card border border-border rounded-2xl p-6 sm:p-8">
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
                   <h3 className="font-display text-lg font-bold text-foreground">Order details</h3>
                   <span className="inline-flex items-center rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-bold uppercase">
-                     {order.status.replace(/_/g, " ")}
+                    {(order.status || "pending").replace(/_/g, " ")}
                   </span>
                 </div>
 
@@ -120,9 +126,8 @@ const OrderConfirmation = () => {
                     <p className="text-foreground">{addressParts.join(", ") || "—"}</p>
                   </div>
                   <div className="space-y-1">
-                    <p><span className="text-muted-foreground">Payment method: </span><span className="text-foreground font-medium">{paymentLabel(order.payment_method)}</span></p>
-                    <p><span className="text-muted-foreground">Delivery method: </span><span className="text-foreground font-medium">{order.delivery_method ?? "standard"}</span></p>
-                    <p><span className="text-muted-foreground">Order date: </span><span className="text-foreground font-medium">{new Date(order.created_at).toLocaleString()}</span></p>
+                    <p><span className="text-muted-foreground">Payment: </span><span className="text-foreground font-medium">{paymentLabel(order.payment_method)}</span></p>
+                    <p><span className="text-muted-foreground">Date: </span><span className="text-foreground font-medium">{new Date(order.created_at).toLocaleString()}</span></p>
                   </div>
                 </div>
 
@@ -141,9 +146,6 @@ const OrderConfirmation = () => {
                 <div className="border-t border-border mt-5 pt-4 space-y-2 font-body text-sm">
                   <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span className="text-foreground">{rs(Number(order.subtotal))}</span></div>
                   <div className="flex justify-between"><span className="text-muted-foreground">Delivery fee</span><span className="text-foreground">{rs(Number(order.delivery_fee || 0))}</span></div>
-                  {Number(order.shipping_charge || 0) > 0 && (
-                    <div className="flex justify-between"><span className="text-muted-foreground">Shipping</span><span className="text-foreground">{rs(Number(order.shipping_charge || 0))}</span></div>
-                  )}
                   <div className="flex justify-between"><span className="text-muted-foreground">Tax</span><span className="text-foreground">{rs(Number(order.tax || 0))}</span></div>
                   <div className="flex justify-between"><span className="text-muted-foreground">Discount</span><span className="text-foreground">− {rs(Number(order.discount || 0))}</span></div>
                   <div className="flex justify-between pt-3 border-t border-border">
@@ -154,12 +156,8 @@ const OrderConfirmation = () => {
               </div>
 
               <div className="flex flex-wrap gap-3 justify-center">
-                <button
-                  onClick={handleDownload}
-                  disabled={downloading}
-                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body font-semibold px-5 py-3 rounded-lg hover:bg-green-glow transition-colors disabled:opacity-60"
-                >
-                   {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />} Download Bill (PNG)
+                <button onClick={handleDownload} disabled={downloading} className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body font-semibold px-5 py-3 rounded-lg hover:bg-green-glow transition-colors disabled:opacity-60">
+                  {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />} Download Bill (PNG)
                 </button>
                 <Link to="/my-orders" className="border border-border text-foreground font-body font-semibold px-5 py-3 rounded-lg hover:border-primary/40 transition-colors">My orders</Link>
                 <Link to="/products" className="border border-border text-foreground font-body font-semibold px-5 py-3 rounded-lg hover:border-primary/40 transition-colors">Continue shopping</Link>
