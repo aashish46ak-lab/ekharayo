@@ -37,8 +37,11 @@ const Products = () => {
         supabase.from("categories").select("*").order("sort_order"),
         supabase.from("products").select("*").eq("is_active", true).order("created_at", { ascending: false }),
       ]);
-      setCategories((c.data as Category[]) ?? []);
-      setProducts((p.data as unknown as Product[]) ?? []);
+      const prods = (p.data as unknown as Product[]) ?? [];
+      const cats = (c.data as Category[]) ?? [];
+      const nonEmpty = cats.filter((cat) => prods.some((pr) => pr.category_id === cat.id));
+      setCategories(nonEmpty);
+      setProducts(prods);
       setLoading(false);
     })();
   }, []);
@@ -83,22 +86,12 @@ const Products = () => {
       <PageShell title="Our Products" subtitle="Farm-fresh dairy, meat, and crops delivered to your doorstep">
         <div className="container mx-auto px-4 py-12">
           <div className="flex flex-col md:flex-row gap-3 mb-8">
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Filter products…"
-              className="flex-1 border border-border rounded-lg px-4 py-2.5 font-body text-sm bg-muted text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter products…" className="flex-1 border border-border rounded-lg px-4 py-2.5 font-body text-sm bg-muted text-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
             <label className="inline-flex items-center gap-2 font-body text-sm text-muted-foreground px-2">
               <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} className="rounded border-border" />
               In stock only
             </label>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-              className="border border-border rounded-lg px-3 py-2.5 font-body text-sm bg-muted text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              aria-label="Sort products"
-            >
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value as typeof sortBy)} className="border border-border rounded-lg px-3 py-2.5 font-body text-sm bg-muted text-foreground focus:outline-none focus:ring-2 focus:ring-ring" aria-label="Sort products">
               <option value="newest">Newest</option>
               <option value="price_asc">Price: Low to High</option>
               <option value="price_desc">Price: High to Low</option>
