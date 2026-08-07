@@ -51,7 +51,7 @@ const Dashboard = () => {
   const stats = [
     { label: "Total Orders", value: orders.length, icon: ShoppingBag },
     { label: "Pending", value: byStatus("pending"), icon: Clock },
-    { label: "Completed", value: byStatus("completed"), icon: CheckCircle2 },
+    { label: "Delivered", value: byStatus("delivered"), icon: CheckCircle2 },
     { label: "Cancelled", value: byStatus("cancelled"), icon: XCircle },
     { label: "Total Revenue", value: rs(revenue), icon: DollarSign },
     { label: "Products", value: products.length, icon: Package },

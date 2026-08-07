@@ -5,7 +5,7 @@ import PageShell from "@/components/PageShell";
 import SiteFooter from "@/components/SiteFooter";
 import { supabase } from "@/integrations/supabase/client";
 import { rs } from "@/lib/media";
-import { generateInvoicePdf, type InvoiceCompany, type InvoiceOrder, type InvoiceItem } from "@/lib/invoice";
+import { generateInvoiceImage, type InvoiceCompany, type InvoiceOrder, type InvoiceItem } from "@/lib/invoice";
 import { toast } from "sonner";
 import { CheckCircle2, Download, Loader2, Package } from "lucide-react";
 
@@ -30,10 +30,14 @@ const OrderConfirmation = () => {
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
     (async () => {
       const [o, it, settings] = await Promise.all([
-        supabase.from("orders").select("*").eq("id", id!).maybeSingle(),
-        supabase.from("order_items").select("*").eq("order_id", id!),
+        supabase.from("orders").select("*").eq("id", id).maybeSingle(),
+        supabase.from("order_items").select("*").eq("order_id", id),
         supabase.from("site_settings").select("key,value").in("key", ["branding", "contact", "company"]),
       ]);
       setOrder((o.data as unknown as OrderRow) ?? null);
@@ -58,7 +62,7 @@ const OrderConfirmation = () => {
     if (!order) return;
     setDownloading(true);
     try {
-      await generateInvoicePdf(order, items, company);
+      await generateInvoiceImage(order, items, company);
     } catch {
       toast.error("Could not generate invoice");
     } finally {
@@ -106,7 +110,7 @@ const OrderConfirmation = () => {
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
                   <h3 className="font-display text-lg font-bold text-foreground">Order details</h3>
                   <span className="inline-flex items-center rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-bold uppercase">
-                    {order.status}
+                     {order.status.replace(/_/g, " ")}
                   </span>
                 </div>
 
@@ -155,7 +159,7 @@ const OrderConfirmation = () => {
                   disabled={downloading}
                   className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body font-semibold px-5 py-3 rounded-lg hover:bg-green-glow transition-colors disabled:opacity-60"
                 >
-                  {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />} Download Invoice (PDF)
+                   {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />} Download Bill (PNG)
                 </button>
                 <Link to="/my-orders" className="border border-border text-foreground font-body font-semibold px-5 py-3 rounded-lg hover:border-primary/40 transition-colors">My orders</Link>
                 <Link to="/products" className="border border-border text-foreground font-body font-semibold px-5 py-3 rounded-lg hover:border-primary/40 transition-colors">Continue shopping</Link>

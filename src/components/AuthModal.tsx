@@ -45,9 +45,9 @@ const AuthModal = () => {
         const { error: rErr } = await supabase.auth.resend({
           type: "signup",
           email: cleanEmail,
-          options: { emailRedirectTo: `${window.location.origin}/auth` },
+          options: {},
         });
-        if (rErr) return toast.success("Please verify your email — use the code we already sent you");
+        if (rErr) return toast.error(`Email delivery failed: ${rErr.message}`);
         return toast.success("Please verify your email — we sent you a new code");
       }
       return toast.error(error.message === "Invalid login credentials" ? "Incorrect email or password" : error.message);
@@ -64,7 +64,7 @@ const AuthModal = () => {
     const { data, error } = await supabase.auth.signUp({
       email: cleanEmail,
       password,
-      options: { data: { full_name: name.trim() }, emailRedirectTo: `${window.location.origin}/auth` },
+      options: { data: { full_name: name.trim() } },
     });
     setBusy(false);
     if (error) {
@@ -123,7 +123,7 @@ const AuthModal = () => {
     setBusy(true);
     const { error } =
       otpType === "signup"
-        ? await supabase.auth.resend({ type: "signup", email: cleanEmail, options: { emailRedirectTo: `${window.location.origin}/auth` } })
+        ? await supabase.auth.resend({ type: "signup", email: cleanEmail })
         : await supabase.auth.resetPasswordForEmail(cleanEmail, { redirectTo: `${window.location.origin}/auth` });
     setBusy(false);
     if (error) return toast.error(error.message);

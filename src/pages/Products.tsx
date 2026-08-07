@@ -8,6 +8,8 @@ import { useCart } from "@/hooks/useCart";
 import { rs } from "@/lib/media";
 import { ShoppingCart, Loader2, PackageX } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Category { id: string; name: string; slug: string; image_url: string | null; sort_order: number }
 interface Product {
@@ -20,6 +22,7 @@ const Products = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const { add } = useCart();
+  const { user, openAuthModal } = useAuth();
 
   useEffect(() => {
     (async () => {
@@ -37,6 +40,13 @@ const Products = () => {
     if (p.stock <= 0) return toast.error("This product is out of stock");
     add({ id: p.id, name: p.name, price: Number(p.sale_price ?? p.price), image: p.images?.[0] ?? null, unit: p.unit ?? undefined });
     toast.success(`${p.name} added to cart`);
+  };
+
+  const buyNow = (p: Product) => {
+    if (p.stock <= 0) return toast.error("This product is out of stock");
+    if (!user) return openAuthModal("/products");
+    localStorage.setItem("ekharayo-cart", JSON.stringify([{ id: p.id, name: p.name, price: Number(p.sale_price ?? p.price), image: p.images?.[0] ?? null, unit: p.unit, quantity: 1 }]));
+    window.location.assign("/checkout");
   };
 
   const uncategorised = products.filter((p) => !p.category_id);
@@ -80,13 +90,10 @@ const Products = () => {
                               {p.sale_price != null && <span className="font-body text-sm text-muted-foreground line-through">{rs(Number(p.price))}</span>}
                               {p.unit && <span className="font-body text-xs text-muted-foreground">/ {p.unit}</span>}
                             </div>
-                            <button
-                              onClick={() => addToCart(p)}
-                              disabled={p.stock <= 0}
-                              className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body text-sm font-semibold px-5 py-2.5 rounded-md hover:bg-green-glow transition-colors disabled:opacity-50"
-                            >
-                              <ShoppingCart size={16} /> {p.stock > 0 ? "Add to Cart" : "Out of stock"}
-                            </button>
+                            <div className="grid grid-cols-2 gap-2">
+                              <Button variant="outline" onClick={() => addToCart(p)} disabled={p.stock <= 0}><ShoppingCart size={16} /> {p.stock > 0 ? "Add to Cart" : "Out of stock"}</Button>
+                              <Button onClick={() => buyNow(p)} disabled={p.stock <= 0}>Buy Now</Button>
+                            </div>
                           </div>
                         </div>
                       ))}

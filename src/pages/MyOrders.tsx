@@ -12,8 +12,12 @@ interface OrderRow { id: string; order_number: string; total: number; status: st
 
 const statusStyle: Record<string, string> = {
   pending: "bg-accent/15 text-accent",
+  confirmed: "bg-primary/15 text-primary",
   processing: "bg-primary/15 text-primary",
-  completed: "bg-primary/20 text-primary",
+  packed: "bg-primary/15 text-primary",
+  shipped: "bg-primary/20 text-primary",
+  out_for_delivery: "bg-primary/20 text-primary",
+  delivered: "bg-primary/20 text-primary",
   cancelled: "bg-destructive/15 text-destructive",
 };
 
@@ -24,10 +28,13 @@ const MyOrders = () => {
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("orders").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).then(({ data }) => {
+    const load = () => supabase.from("orders").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).then(({ data }) => {
       setOrders((data as unknown as OrderRow[]) ?? []);
       setLoading(false);
     });
+    load();
+    const channel = supabase.channel(`my-orders-${user.id}`).on("postgres_changes", { event: "UPDATE", schema: "public", table: "orders", filter: `user_id=eq.${user.id}` }, load).subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, [user]);
 
   return (
@@ -48,7 +55,7 @@ const MyOrders = () => {
                     <p className="font-body text-xs text-muted-foreground">{new Date(o.created_at).toLocaleString()}</p>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className={`font-body text-[11px] uppercase tracking-wide px-2.5 py-1 rounded-full ${statusStyle[o.status] ?? ""}`}>{o.status}</span>
+                    <span className={`font-body text-[11px] uppercase px-2.5 py-1 rounded-full ${statusStyle[o.status] ?? ""}`}>{o.status.replace(/_/g, " ")}</span>
                     <span className="font-body font-semibold text-primary">{rs(Number(o.total))}</span>
                   </div>
                 </Link>

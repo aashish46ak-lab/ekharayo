@@ -11,7 +11,7 @@ interface Order {
 }
 interface Item { id: string; order_id: string; product_name: string; quantity: number; unit_price: number; line_total: number }
 
-const statuses = ["pending", "processing", "completed", "cancelled"] as const;
+const statuses = ["pending", "confirmed", "processing", "packed", "shipped", "out_for_delivery", "delivered", "cancelled"] as const;
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -38,7 +38,8 @@ const AdminOrders = () => {
   }, []);
 
   const update = async (id: string, status: string) => {
-    const { error } = await supabase.from("orders").update({ status: status as "pending" | "processing" | "completed" | "cancelled" }).eq("id", id);
+    const nextStatus = status as (typeof statuses)[number];
+    const { error } = await supabase.from("orders").update({ status: nextStatus }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Order updated");
     load();

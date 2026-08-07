@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadMedia } from "@/lib/media";
 import { toast } from "sonner";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, Trash2 } from "lucide-react";
 
 type Settings = Record<string, Record<string, unknown>>;
 
@@ -54,6 +54,12 @@ const AdminWebsite = () => {
       await saveKey(key, next);
     } catch (e) { toast.error((e as Error).message); }
     setBusy(false);
+  };
+
+  const removeMedia = async (key: string, name: string) => {
+    const next = { ...(settings[key] ?? {}), [name]: "" };
+    setSettings((s) => ({ ...s, [key]: next }));
+    await saveKey(key, next);
   };
 
   const field = "w-full border border-border rounded-lg px-3 py-2.5 font-body text-sm bg-muted text-foreground focus:outline-none focus:ring-2 focus:ring-ring";
@@ -163,7 +169,7 @@ const AdminWebsite = () => {
           {settings.owner?.photo_url ? <img src={String(settings.owner.photo_url)} alt="Owner" className="h-20 w-20 object-cover rounded-lg" /> : null}
           <label className="font-body text-sm text-foreground block">Cover image</label>
           <input type="file" accept="image/*" className="font-body text-sm text-muted-foreground" onChange={(e) => upload("owner", "cover_url", e.target.files?.[0])} />
-          {settings.owner?.cover_url ? <img src={String(settings.owner.cover_url)} alt="Cover" className="h-20 w-full object-cover rounded-lg" /> : null}
+           {settings.owner?.cover_url ? <div className="space-y-2"><img src={String(settings.owner.cover_url)} alt="Cover" className="h-20 w-full object-cover rounded-lg" /><button onClick={() => removeMedia("owner", "cover_url")} className="inline-flex items-center gap-2 text-sm text-destructive"><Trash2 size={14} /> Remove cover image</button></div> : null}
           <button onClick={() => saveKey("owner", settings.owner ?? {})} disabled={busy} className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-green-glow transition-colors disabled:opacity-60">
             {busy ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />} Save
           </button>
