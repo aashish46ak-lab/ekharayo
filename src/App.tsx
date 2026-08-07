@@ -24,6 +24,7 @@ import Policy from "./pages/Policy.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import InstallPrompt from "./components/InstallPrompt.tsx";
 import WhatsAppFloat from "./components/WhatsAppFloat.tsx";
+import ChatWidget from "./components/ChatWidget.tsx";
 import AuthModal from "./components/AuthModal";
 import WelcomeManager from "./components/WelcomeManager";
 import AdminLayout from "./components/admin/AdminLayout.tsx";
@@ -36,6 +37,8 @@ import AdminAnalytics from "./pages/admin/AdminAnalytics.tsx";
 import AdminWebsite from "./pages/admin/AdminWebsite.tsx";
 import AdminStaff from "./pages/admin/AdminStaff.tsx";
 import AdminNotifications from "./pages/admin/AdminNotifications.tsx";
+import AdminGallery from "./pages/admin/AdminGallery.tsx";
+import AdminMessages from "./pages/admin/AdminMessages.tsx";
 
 const queryClient = new QueryClient();
 
@@ -71,6 +74,8 @@ const App = () => (
                 <Route path="products" element={<AdminProducts />} />
                 <Route path="categories" element={<AdminCategories />} />
                 <Route path="orders" element={<AdminOrders />} />
+                <Route path="messages" element={<AdminMessages />} />
+                <Route path="gallery" element={<AdminGallery />} />
                 <Route path="customers" element={<AdminCustomers />} />
                 <Route path="analytics" element={<AdminAnalytics />} />
                 <Route path="staff" element={<RequireSuperAdmin><AdminStaff /></RequireSuperAdmin>} />
@@ -82,6 +87,7 @@ const App = () => (
             </Routes>
             <InstallPrompt />
             <WhatsAppFloat />
+            <ChatWidget />
           </CartProvider>
         </AuthProvider>
       </BrowserRouter>
