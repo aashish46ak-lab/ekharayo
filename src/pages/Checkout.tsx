@@ -73,7 +73,9 @@ const Checkout = () => {
       const pay = map.payments as Partial<Record<PaymentId, boolean>> | undefined;
       setPayments({ ...defaultPayments, ...(pay ?? {}) });
       const zones = map.delivery_zones as DeliveryTierConfig | undefined;
-      if (zones?.hq?.lat && zones.tiers?.length) setDeliveryCfg({ ...DEFAULT_DELIVERY, ...zones, max_fee: 350 });
+      if (zones?.hq?.lat && zones.tiers?.length) {
+        setDeliveryCfg({ ...DEFAULT_DELIVERY, ...zones, max_fee: Number(zones.max_fee ?? 350) });
+      }
     });
   }, [subtotal]);
 
@@ -102,7 +104,7 @@ const Checkout = () => {
           ...current,
           address_line: current.address_line || `GPS: ${c.latitude.toFixed(6)}, ${c.longitude.toFixed(6)}`,
         }));
-        toast.success("Location set — delivery fee updated from Morang HQ");
+        toast.success("Location set — delivery fee updated from Itahari HQ");
       },
       (error) => toast.error(error.message || "Could not access your location"),
       { enableHighAccuracy: true, timeout: 10000 },
@@ -190,7 +192,7 @@ const Checkout = () => {
               <div className="rounded-xl border border-border bg-muted/40 p-4 flex gap-3">
                 <Truck className="text-primary shrink-0 mt-0.5" size={20} />
                 <div>
-                  <p className="font-body text-sm font-semibold text-foreground">Delivery from Morang HQ</p>
+                  <p className="font-body text-sm font-semibold text-foreground">Delivery from Itahari HQ</p>
                   <p className="font-body text-xs text-muted-foreground mt-1">{deliveryInfo.label}</p>
                   {deliveryInfo.km != null && <p className="font-body text-xs text-primary mt-1">Distance: {deliveryInfo.km} km</p>}
                   <p className="font-body text-[11px] text-muted-foreground mt-2">
