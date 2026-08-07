@@ -34,7 +34,7 @@ const dict = {
     heroTitle1: "Quality Agriculture,",
     heroTitle2: "One Trusted Platform",
     heroSub:
-      "Official marketplace of Great Sagarmatha Trade Pvt. Ltd. — quality farm products delivered across Nepal.",
+      "Official marketplace of Great Sagarmatha Trade Pvt. Ltd. — farm products and trusted suppliers, delivered across Nepal.",
     buyProductsDesc: "Browse full catalogue",
     contactDesc: "Phone, WhatsApp & email",
     ownershipDesc: "Company ownership",
@@ -56,6 +56,25 @@ const dict = {
     growing: "Growing catalogue",
     growingDesc: "New local & international products added regularly.",
     go: "Open",
+    detailTitle: "From Morang to your door",
+    detailBody:
+      "Our head office is at Patharishanishchare-5, Morang. Delivery fee is calculated by distance (max Rs. 350). Orders above Rs. 3,000 may qualify for free delivery.",
+    detailPoint1: "Distance-based delivery from Morang HQ",
+    detailPoint2: "COD available · digital wallets coming soon",
+    detailPoint3: "Live chat & WhatsApp support",
+    detailPoint4: "Admin-managed products, gallery & orders",
+    ownTitle: "Ownership",
+    ownSub: "Who owns and runs Great Sagarmatha Trade Pvt. Ltd.",
+    ownIntro:
+      "eKharayo is the official digital marketplace of Great Sagarmatha Trade Pvt. Ltd., a registered Nepali trading company focused on agricultural products.",
+    ownCompany: "Company",
+    ownCompanyBody:
+      "Great Sagarmatha Trade Pvt. Ltd. operates eKharayo to sell farm-fresh and supplier-sourced goods with clear pricing and accountable delivery.",
+    ownFounder: "Leadership",
+    ownFounderBody:
+      "The company is managed by its registered leadership team. For formal ownership and registration details, contact us or visit the Ownership page sections maintained by admin.",
+    aboutTitle: "About eKharayo",
+    aboutSub: "Official digital marketplace of Great Sagarmatha Trade Pvt. Ltd.",
   },
   ne: {
     shop: "सामान किन्नुहोस्",
@@ -88,7 +107,7 @@ const dict = {
     heroTitle1: "गुणस्तरीय कृषि,",
     heroTitle2: "एक भरपर्दो प्लेटफर्म",
     heroSub:
-      "Great Sagarmatha Trade Pvt. Ltd. को आधिकारिक डिजिटल बजार — नेपालभर डेलिभरी।",
+      "Great Sagarmatha Trade Pvt. Ltd. को आधिकारिक डिजिटल बजार — कृषि उत्पादन नेपालभर डेलिभरी।",
     buyProductsDesc: "पूरा सूची हेर्नुहोस्",
     contactDesc: "फोन, WhatsApp र इमेल",
     ownershipDesc: "कम्पनी स्वामित्व",
@@ -110,6 +129,25 @@ const dict = {
     growing: "बढ्दो सूची",
     growingDesc: "स्थानीय र अन्तर्राष्ट्रिय उत्पादन नियमित थपिन्छ।",
     go: "खोल्नुहोस्",
+    detailTitle: "मोरङबाट तपाईंको घरसम्म",
+    detailBody:
+      "हाम्रो मुख्य कार्यालय पथरीशनिश्चरे-५, मोरङमा छ। डेलिभरी शुल्क दूरी अनुसार (अधिकतम रु. ३५०)। रु. ३,००० भन्दा माथिको अर्डरमा निःशुल्क डेलिभरी हुन सक्छ।",
+    detailPoint1: "मोरङ HQ बाट दूरी अनुसार डेलिभरी",
+    detailPoint2: "COD उपलब्ध · डिजिटल वालेट चाँडै",
+    detailPoint3: "लाइभ च्याट र WhatsApp सहयोग",
+    detailPoint4: "एडमिनले उत्पादन, ग्यालरी र अर्डर व्यवस्थापन",
+    ownTitle: "स्वामित्व",
+    ownSub: "Great Sagarmatha Trade Pvt. Ltd. को स्वामित्व र सञ्चालन",
+    ownIntro:
+      "eKharayo Great Sagarmatha Trade Pvt. Ltd. को आधिकारिक डिजिटल बजार हो — कृषि उत्पादनमा केन्द्रित दर्ता भएको नेपाली व्यापार कम्पनी।",
+    ownCompany: "कम्पनी",
+    ownCompanyBody:
+      "Great Sagarmatha Trade Pvt. Ltd. ले eKharayo मार्फत फार्म-ताजा तथा आपूर्तिकर्ताबाट आएका सामान स्पष्ट मूल्य र जवाफदेही डेलिभरीसहित बेच्छ।",
+    ownFounder: "नेतृत्व",
+    ownFounderBody:
+      "कम्पनी दर्ता भएको नेतृत्व टोलीद्वारा सञ्चालित छ। औपचारिक स्वामित्व र दर्ता विवरणका लागि सम्पर्क गर्नुहोस् वा Ownership पृष्ठ हेर्नुहोस्।",
+    aboutTitle: "eKharayo बारे",
+    aboutSub: "Great Sagarmatha Trade Pvt. Ltd. को आधिकारिक डिजिटल बजार",
   },
 } as const;
 
