@@ -30,10 +30,14 @@ const OrderConfirmation = () => {
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
     (async () => {
       const [o, it, settings] = await Promise.all([
-        supabase.from("orders").select("*").eq("id", id!).maybeSingle(),
-        supabase.from("order_items").select("*").eq("order_id", id!),
+        supabase.from("orders").select("*").eq("id", id).maybeSingle(),
+        supabase.from("order_items").select("*").eq("order_id", id),
         supabase.from("site_settings").select("key,value").in("key", ["branding", "contact", "company"]),
       ]);
       setOrder((o.data as unknown as OrderRow) ?? null);

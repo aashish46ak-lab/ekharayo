@@ -55,7 +55,8 @@ const Checkout = () => {
   });
 
   useEffect(() => {
-    if (user?.email) setForm((f) => ({ ...f, customer_email: f.customer_email || user.email! }));
+    const email = user?.email;
+    if (email) setForm((f) => ({ ...f, customer_email: f.customer_email || email }));
   }, [user]);
 
   useEffect(() => {
