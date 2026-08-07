@@ -6,9 +6,10 @@ import SiteFooter from "@/components/SiteFooter";
 import OrderTimeline from "@/components/OrderTimeline";
 import { supabase } from "@/integrations/supabase/client";
 import { rs } from "@/lib/media";
+import { mapsTrackUrl, parseGpsFromText } from "@/lib/tracking";
 import { generateInvoiceImage, type InvoiceCompany, type InvoiceOrder, type InvoiceItem } from "@/lib/invoice";
 import { toast } from "sonner";
-import { CheckCircle2, Download, Loader2, Package } from "lucide-react";
+import { CheckCircle2, Download, Loader2, Package, MapPin } from "lucide-react";
 
 interface OrderRow extends InvoiceOrder {
   notes?: string | null;
@@ -102,7 +103,7 @@ const OrderConfirmation = () => {
                 <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">Order confirmed</h2>
                 <p className="font-display text-lg font-semibold text-primary mb-2">#{order.order_number}</p>
                 <p className="font-body text-sm text-muted-foreground">
-                  We will email status updates (shipped, out for delivery, delivered) to{" "}
+                  We will email status updates to{" "}
                   <span className="text-foreground font-medium">{order.customer_email || "your account email"}</span>.
                 </p>
               </div>
@@ -110,6 +111,21 @@ const OrderConfirmation = () => {
               <div className="bg-card border border-border rounded-2xl p-6 sm:p-8">
                 <h3 className="font-display text-lg font-bold text-foreground mb-4">Order tracking</h3>
                 <OrderTimeline status={order.status || "pending"} />
+                {(() => {
+                  const gps = parseGpsFromText(order.address_line);
+                  const href = mapsTrackUrl({
+                    addressLine: order.address_line,
+                    city: order.city,
+                    district: order.district,
+                    lat: gps?.lat,
+                    lng: gps?.lng,
+                  });
+                  return (
+                    <a href={href} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+                      <MapPin size={16} /> Track on map (Morang HQ → your address)
+                    </a>
+                  );
+                })()}
               </div>
 
               <div className="bg-card border border-border rounded-2xl p-6 sm:p-8">
@@ -159,6 +175,21 @@ const OrderConfirmation = () => {
                 <button onClick={handleDownload} disabled={downloading} className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body font-semibold px-5 py-3 rounded-lg hover:bg-green-glow transition-colors disabled:opacity-60">
                   {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />} Download Bill (PNG)
                 </button>
+                {(() => {
+                  const gps = parseGpsFromText(order.address_line);
+                  const href = mapsTrackUrl({
+                    addressLine: order.address_line,
+                    city: order.city,
+                    district: order.district,
+                    lat: gps?.lat,
+                    lng: gps?.lng,
+                  });
+                  return (
+                    <a href={href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 border border-primary/40 text-primary font-body font-semibold px-5 py-3 rounded-lg hover:bg-primary/10 transition-colors">
+                      <MapPin size={16} /> Track on map
+                    </a>
+                  );
+                })()}
                 <Link to="/my-orders" className="border border-border text-foreground font-body font-semibold px-5 py-3 rounded-lg hover:border-primary/40 transition-colors">My orders</Link>
                 <Link to="/products" className="border border-border text-foreground font-body font-semibold px-5 py-3 rounded-lg hover:border-primary/40 transition-colors">Continue shopping</Link>
               </div>
