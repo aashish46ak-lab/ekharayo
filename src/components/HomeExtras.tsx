@@ -22,7 +22,6 @@ const HomeExtras = () => {
 
   return (
     <div className="bg-background">
-      {/* Detail / Morang delivery */}
       <section className="container mx-auto px-4 py-14 sm:py-16">
         <div className="max-w-3xl mx-auto rounded-2xl border border-border bg-card/60 p-6 sm:p-8">
           <div className="flex items-start gap-3 mb-4">
@@ -49,8 +48,8 @@ const HomeExtras = () => {
             <Link to="/ownership" className="inline-flex items-center gap-2 border border-border text-foreground font-body text-sm font-semibold px-5 py-2.5 rounded-lg hover:border-primary/40 transition-colors">
               {t("ownership")}
             </Link>
-            <Link to="/about" className="inline-flex items-center gap-2 border border-border text-foreground font-body text-sm font-semibold px-5 py-2.5 rounded-lg hover:border-primary/40 transition-colors">
-              {t("about")}
+            <Link to="/contact" className="inline-flex items-center gap-2 border border-border text-foreground font-body text-sm font-semibold px-5 py-2.5 rounded-lg hover:border-primary/40 transition-colors">
+              {t("contact")}
             </Link>
           </div>
         </div>

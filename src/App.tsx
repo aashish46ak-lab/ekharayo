@@ -24,7 +24,6 @@ import Wishlist from "./pages/Wishlist.tsx";
 import Policy from "./pages/Policy.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import InstallPrompt from "./components/InstallPrompt.tsx";
-import WhatsAppFloat from "./components/WhatsAppFloat.tsx";
 import ChatWidget from "./components/ChatWidget.tsx";
 import FloatingLangSwitch from "./components/FloatingLangSwitch.tsx";
 import AuthModal from "./components/AuthModal";
@@ -90,7 +89,6 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <InstallPrompt />
-              <WhatsAppFloat />
               <ChatWidget />
             </CartProvider>
           </AuthProvider>
