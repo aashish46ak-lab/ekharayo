@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CartProvider } from "@/hooks/useCart";
+import { LanguageProvider } from "@/i18n/LanguageContext";
 import { RequireAdmin, RequireAuth, RequireSuperAdmin } from "@/components/RouteGuards";
 import Index from "./pages/Index.tsx";
 import Products from "./pages/Products.tsx";
@@ -48,48 +49,50 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AuthProvider>
-          <CartProvider>
-            <WelcomeManager />
-            <AuthModal />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/products/:id" element={<ProductDetail />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/gallery" element={<Gallery />} />
-              <Route path="/ownership" element={<Ownership />} />
-              <Route path="/bulk-order" element={<BulkOrder />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/wishlist" element={<Wishlist />} />
-              <Route path="/policy/:slug" element={<Policy />} />
-              <Route path="/checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
-              <Route path="/order-confirmation/:id" element={<RequireAuth><OrderConfirmation /></RequireAuth>} />
-              <Route path="/my-orders" element={<RequireAuth><MyOrders /></RequireAuth>} />
+        <LanguageProvider>
+          <AuthProvider>
+            <CartProvider>
+              <WelcomeManager />
+              <AuthModal />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/products/:id" element={<ProductDetail />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/gallery" element={<Gallery />} />
+                <Route path="/ownership" element={<Ownership />} />
+                <Route path="/bulk-order" element={<BulkOrder />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/policy/:slug" element={<Policy />} />
+                <Route path="/checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
+                <Route path="/order-confirmation/:id" element={<RequireAuth><OrderConfirmation /></RequireAuth>} />
+                <Route path="/my-orders" element={<RequireAuth><MyOrders /></RequireAuth>} />
 
-              <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
-                <Route index element={<Dashboard />} />
-                <Route path="products" element={<AdminProducts />} />
-                <Route path="categories" element={<AdminCategories />} />
-                <Route path="orders" element={<AdminOrders />} />
-                <Route path="messages" element={<AdminMessages />} />
-                <Route path="gallery" element={<AdminGallery />} />
-                <Route path="customers" element={<AdminCustomers />} />
-                <Route path="analytics" element={<AdminAnalytics />} />
-                <Route path="staff" element={<RequireSuperAdmin><AdminStaff /></RequireSuperAdmin>} />
-                <Route path="website" element={<AdminWebsite />} />
-                <Route path="notifications" element={<AdminNotifications />} />
-              </Route>
+                <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
+                  <Route index element={<Dashboard />} />
+                  <Route path="products" element={<AdminProducts />} />
+                  <Route path="categories" element={<AdminCategories />} />
+                  <Route path="orders" element={<AdminOrders />} />
+                  <Route path="messages" element={<AdminMessages />} />
+                  <Route path="gallery" element={<AdminGallery />} />
+                  <Route path="customers" element={<AdminCustomers />} />
+                  <Route path="analytics" element={<AdminAnalytics />} />
+                  <Route path="staff" element={<RequireSuperAdmin><AdminStaff /></RequireSuperAdmin>} />
+                  <Route path="website" element={<AdminWebsite />} />
+                  <Route path="notifications" element={<AdminNotifications />} />
+                </Route>
 
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <InstallPrompt />
-            <WhatsAppFloat />
-            <ChatWidget />
-          </CartProvider>
-        </AuthProvider>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              <InstallPrompt />
+              <WhatsAppFloat />
+              <ChatWidget />
+            </CartProvider>
+          </AuthProvider>
+        </LanguageProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

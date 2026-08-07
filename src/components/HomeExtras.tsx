@@ -2,11 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { rs } from "@/lib/media";
+import { useLang } from "@/i18n/LanguageContext";
 import { ArrowRight, BadgeCheck, Headset, Loader2, PackageX, ShieldCheck, Sparkles } from "lucide-react";
-import dairy from "@/assets/dairy.jpg";
-import chicken from "@/assets/chicken.jpg";
-import goat from "@/assets/goat.jpg";
-import crops from "@/assets/crops.jpg";
 
 interface Category {
   id: string;
@@ -22,23 +19,19 @@ interface Product {
   images: string[];
   unit: string | null;
   featured: boolean;
+  category_id: string | null;
+  stock: number;
 }
 
-const fallbackCats = [
-  { name: "Dairy", img: dairy, href: "/products" },
-  { name: "Chicken", img: chicken, href: "/products" },
-  { name: "Goat", img: goat, href: "/products" },
-  { name: "Crops", img: crops, href: "/products" },
-];
-
 const reasons = [
-  { icon: BadgeCheck, title: "Trusted source", desc: "Registered company with verified farm & supplier network." },
-  { icon: ShieldCheck, title: "Quality first", desc: "Clear specs and careful handling before listing." },
-  { icon: Headset, title: "Real support", desc: "Phone & WhatsApp help before and after your order." },
-  { icon: Sparkles, title: "Growing catalogue", desc: "New local & international products added regularly." },
+  { icon: BadgeCheck, titleKey: "Trusted source" as const, desc: "Registered company with verified farm & supplier network." },
+  { icon: ShieldCheck, titleKey: "Quality first" as const, desc: "Clear specs and careful handling before listing." },
+  { icon: Headset, titleKey: "Real support" as const, desc: "Phone & WhatsApp help before and after your order." },
+  { icon: Sparkles, titleKey: "Growing catalogue" as const, desc: "New local & international products added regularly." },
 ];
 
 const HomeExtras = () => {
+  const { t } = useLang();
   const [categories, setCategories] = useState<Category[]>([]);
   const [featured, setFeatured] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,70 +39,61 @@ const HomeExtras = () => {
   useEffect(() => {
     (async () => {
       const [c, p] = await Promise.all([
-        supabase.from("categories").select("id,name,slug,image_url").order("sort_order").limit(8),
-        supabase.from("products").select("id,name,price,sale_price,images,unit,featured").eq("is_active", true).order("featured", { ascending: false }).limit(8),
+        supabase.from("categories").select("id,name,slug,image_url").order("sort_order"),
+        supabase.from("products").select("id,name,price,sale_price,images,unit,featured,category_id,stock").eq("is_active", true).order("featured", { ascending: false }).limit(40),
       ]);
-      setCategories((c.data as Category[]) ?? []);
-      setFeatured((p.data as unknown as Product[]) ?? []);
+      const products = (p.data as unknown as Product[]) ?? [];
+      const cats = (c.data as Category[]) ?? [];
+      // Only show categories that have at least one active product in stock (or any stock product)
+      const withItems = cats.filter((cat) => products.some((pr) => pr.category_id === cat.id && pr.stock > 0));
+      // If all out of stock but category has products, still hide empty; show only non-empty
+      const withAny = cats.filter((cat) => products.some((pr) => pr.category_id === cat.id));
+      setCategories(withItems.length > 0 ? withItems.slice(0, 8) : withAny.slice(0, 8));
+      setFeatured(products.filter((x) => x.stock > 0).slice(0, 8));
       setLoading(false);
     })();
   }, []);
 
   return (
     <div className="bg-background">
-      {/* Categories */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="flex items-end justify-between mb-8 gap-4">
-          <div>
-            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground">Shop by category</h2>
-            <p className="font-body text-sm text-muted-foreground mt-1">Farm-fresh dairy, meat, poultry and crops</p>
+      {categories.length > 0 && (
+        <section className="container mx-auto px-4 py-16">
+          <div className="flex items-end justify-between mb-8 gap-4">
+            <div>
+              <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground">{t("shopByCategory")}</h2>
+            </div>
+            <Link to="/products" className="hidden sm:inline-flex items-center gap-1 text-primary font-body text-sm font-semibold hover:underline">
+              {t("allProducts")} <ArrowRight size={14} />
+            </Link>
           </div>
-          <Link to="/products" className="hidden sm:inline-flex items-center gap-1 text-primary font-body text-sm font-semibold hover:underline">
-            All products <ArrowRight size={14} />
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {categories.length > 0
-            ? categories.map((c) => (
-                <Link
-                  key={c.id}
-                  to="/products"
-                  className="group relative rounded-2xl overflow-hidden border border-border aspect-[4/3] hover:border-primary/40 transition-all"
-                >
-                  {c.image_url ? (
-                    <img src={c.image_url} alt={c.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  ) : (
-                    <div className="w-full h-full bg-muted" />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-4">
-                    <span className="font-display font-bold text-white text-sm md:text-base">{c.name}</span>
-                  </div>
-                </Link>
-              ))
-            : fallbackCats.map((c) => (
-                <Link
-                  key={c.name}
-                  to={c.href}
-                  className="group relative rounded-2xl overflow-hidden border border-border aspect-[4/3]"
-                >
-                  <img src={c.img} alt={c.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-4">
-                    <span className="font-display font-bold text-white">{c.name}</span>
-                  </div>
-                </Link>
-              ))}
-        </div>
-      </section>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {categories.map((c) => (
+              <Link
+                key={c.id}
+                to="/products"
+                className="group relative rounded-2xl overflow-hidden border border-border aspect-[4/3] hover:border-primary/40 transition-all"
+              >
+                {c.image_url ? (
+                  <img src={c.image_url} alt={c.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                ) : (
+                  <div className="w-full h-full bg-muted" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-4">
+                  <span className="font-display font-bold text-white text-sm md:text-base">{c.name}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
-      {/* Featured products */}
       <section className="container mx-auto px-4 pb-16">
         <div className="flex items-end justify-between mb-8 gap-4">
           <div>
-            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground">Featured products</h2>
-            <p className="font-body text-sm text-muted-foreground mt-1">Popular picks from our marketplace</p>
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground">{t("featured")}</h2>
           </div>
           <Link to="/products" className="hidden sm:inline-flex items-center gap-1 text-primary font-body text-sm font-semibold hover:underline">
-            View all <ArrowRight size={14} />
+            {t("viewAll")} <ArrowRight size={14} />
           </Link>
         </div>
         {loading ? (
@@ -149,17 +133,16 @@ const HomeExtras = () => {
         )}
       </section>
 
-      {/* Why us */}
       <section className="border-y border-border bg-card/40 py-16">
         <div className="container mx-auto px-4">
-          <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground text-center mb-10">Why eKharayo</h2>
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground text-center mb-10">{t("why")}</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-5xl mx-auto">
-            {reasons.map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="bg-card border border-border rounded-xl p-5 text-center hover:border-primary/30 transition-colors">
+            {reasons.map(({ icon: Icon, titleKey, desc }) => (
+              <div key={titleKey} className="bg-card border border-border rounded-xl p-5 text-center hover:border-primary/30 transition-colors">
                 <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center mx-auto mb-3">
                   <Icon className="text-primary" size={22} />
                 </div>
-                <h3 className="font-display font-bold text-foreground mb-1">{title}</h3>
+                <h3 className="font-display font-bold text-foreground mb-1">{titleKey}</h3>
                 <p className="font-body text-xs text-muted-foreground leading-relaxed">{desc}</p>
               </div>
             ))}
@@ -169,7 +152,7 @@ const HomeExtras = () => {
               to="/products"
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body font-semibold px-7 py-3.5 rounded-lg hover:bg-green-glow transition-colors"
             >
-              Start shopping <ArrowRight size={16} />
+              {t("shop")} <ArrowRight size={16} />
             </Link>
           </div>
         </div>
