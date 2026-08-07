@@ -12,20 +12,20 @@ import { rs } from "@/lib/media";
 import { toast } from "sonner";
 import { Banknote, Check, Loader2, ShieldCheck, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-// Lovable built-in cloud assets
-import esewaLogo from "@/assets/payment-esewa.png.asset.json";
-import khaltiLogo from "@/assets/payment-khalti.png.asset.json";
-import fonepayLogo from "@/assets/payment-fonepay.png.asset.json";
-import imepayLogo from "@/assets/payment-imepay.jpeg.asset.json";
+// Transparent official-style SVG brand marks (no white/black rect backgrounds)
+import esewaLogo from "@/assets/payment/esewa.svg";
+import khaltiLogo from "@/assets/payment/khalti.svg";
+import fonepayLogo from "@/assets/payment/fonepay.svg";
+import imepayLogo from "@/assets/payment/imepay.svg";
 
 type PaymentId = "cod" | "esewa" | "khalti" | "fonepay" | "imepay";
 
 const paymentMethods: { id: PaymentId; name: string; logo?: string }[] = [
   { id: "cod", name: "Cash on Delivery" },
-  { id: "esewa", name: "eSewa", logo: esewaLogo.url },
-  { id: "khalti", name: "Khalti", logo: khaltiLogo.url },
-  { id: "fonepay", name: "Fonepay", logo: fonepayLogo.url },
-  { id: "imepay", name: "IME Pay", logo: imepayLogo.url },
+  { id: "esewa", name: "eSewa", logo: esewaLogo },
+  { id: "khalti", name: "Khalti", logo: khaltiLogo },
+  { id: "fonepay", name: "Fonepay", logo: fonepayLogo },
+  { id: "imepay", name: "IME Pay", logo: imepayLogo },
 ];
 
 const defaultPayments: Record<PaymentId, boolean> = { cod: true, esewa: false, khalti: false, fonepay: false, imepay: false };
@@ -160,20 +160,21 @@ const Checkout = () => {
               <Button type="button" variant="outline" onClick={useCurrentLocation}><MapPin size={16} /> Use Current Location</Button>
 
               <h2 className="font-display text-xl font-bold text-foreground pt-2">Payment method</h2>
-              <div className="grid sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {paymentMethods.map((method) => {
                   const available = payments[method.id];
+                  const selected = available && form.payment_method === method.id;
                   return (
                     <button
                       key={method.id}
                       type="button"
                       disabled={!available}
                       onClick={() => setForm({ ...form, payment_method: method.id })}
-                      className={`min-h-24 text-left border rounded-lg p-4 transition-colors ${
-                        available && form.payment_method === method.id
-                          ? "border-primary bg-primary/10"
+                      className={`min-h-[5.5rem] text-left border rounded-lg p-4 transition-all duration-200 ease-out ${
+                        selected
+                          ? "border-primary bg-primary/10 scale-[1.03] shadow-md shadow-primary/10"
                           : available
-                          ? "border-border bg-card hover:border-primary/40"
+                          ? "border-border bg-card hover:border-primary/40 hover:scale-[1.03] active:scale-[1.03]"
                           : "border-border bg-muted/40 opacity-65 cursor-not-allowed"
                       }`}
                     >
@@ -183,13 +184,14 @@ const Checkout = () => {
                             <Banknote size={18} /> COD
                           </span>
                         ) : (
-                          /* Icon-style logo: white rounded box, no stretch, exact logo from Lovable cloud */
-                          <span className="inline-flex items-center justify-center h-11 w-11 rounded-xl bg-white border border-border/50 shadow-sm overflow-hidden shrink-0 p-1.5">
+                          /* Identical icon containers — transparent logos, 40px height, centered */
+                          <span className="inline-flex items-center justify-center h-12 w-[7.5rem] shrink-0 rounded-xl bg-transparent overflow-hidden">
                             <img
                               src={method.logo}
                               alt={`${method.name} logo`}
-                              className="h-full w-full object-contain"
+                              className="h-10 w-auto max-w-full object-contain object-center"
                               loading="lazy"
+                              decoding="async"
                             />
                           </span>
                         )}
@@ -203,7 +205,7 @@ const Checkout = () => {
                           </span>
                         )}
                       </div>
-                      <span className="flex items-center gap-2 mt-3 font-semibold text-sm">{method.name}</span>
+                      <span className="flex items-center gap-2 mt-3 font-semibold text-sm text-foreground">{method.name}</span>
                     </button>
                   );
                 })}
