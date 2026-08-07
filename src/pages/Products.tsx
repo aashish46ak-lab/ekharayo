@@ -9,7 +9,6 @@ import { rs } from "@/lib/media";
 import { ShoppingCart, Loader2, PackageX } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
 interface Category { id: string; name: string; slug: string; image_url: string | null; sort_order: number }
@@ -24,7 +23,6 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const { add } = useCart();
   const { user, openAuthModal } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {

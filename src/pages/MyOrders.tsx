@@ -55,7 +55,7 @@ const MyOrders = () => {
                     <p className="font-body text-xs text-muted-foreground">{new Date(o.created_at).toLocaleString()}</p>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className={`font-body text-[11px] uppercase px-2.5 py-1 rounded-full ${statusStyle[o.status] ?? ""}`}>{o.status.replaceAll("_", " ")}</span>
+                    <span className={`font-body text-[11px] uppercase px-2.5 py-1 rounded-full ${statusStyle[o.status] ?? ""}`}>{o.status.replace(/_/g, " ")}</span>
                     <span className="font-body font-semibold text-primary">{rs(Number(o.total))}</span>
                   </div>
                 </Link>

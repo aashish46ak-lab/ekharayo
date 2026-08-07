@@ -10,17 +10,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { couponSavings } from "@/lib/commerce";
 import { rs } from "@/lib/media";
 import { toast } from "sonner";
-import { Banknote, Check, Loader2, ShieldCheck } from "lucide-react";
+import { Banknote, Check, Loader2, ShieldCheck, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import esewaLogo from "@/assets/payment-esewa.png.asset.json";
+import khaltiLogo from "@/assets/payment-khalti.png.asset.json";
+import fonepayLogo from "@/assets/payment-fonepay.png.asset.json";
+import imepayLogo from "@/assets/payment-imepay.jpeg.asset.json";
 
 type PaymentId = "cod" | "esewa" | "khalti" | "fonepay" | "imepay";
 
-const paymentMethods: { id: PaymentId; name: string; color: string }[] = [
-  { id: "cod", name: "Cash on Delivery", color: "" },
-  { id: "esewa", name: "eSewa", color: "#60BB46" },
-  { id: "khalti", name: "Khalti", color: "#5C2D91" },
-  { id: "fonepay", name: "Fonepay", color: "#E4002B" },
-  { id: "imepay", name: "IME Pay", color: "#004A99" },
+const paymentMethods: { id: PaymentId; name: string; logo?: string }[] = [
+  { id: "cod", name: "Cash on Delivery" },
+  { id: "esewa", name: "eSewa", logo: esewaLogo.url },
+  { id: "khalti", name: "Khalti", logo: khaltiLogo.url },
+  { id: "fonepay", name: "Fonepay", logo: fonepayLogo.url },
+  { id: "imepay", name: "IME Pay", logo: imepayLogo.url },
 ];
 
 const defaultPayments: Record<PaymentId, boolean> = { cod: true, esewa: false, khalti: false, fonepay: false, imepay: false };
@@ -80,6 +84,15 @@ const Checkout = () => {
   const discount = Number(savings.discount || 0);
   const total = Math.max(subtotal + effectiveDelivery + tax - discount, 0);
 
+  const useCurrentLocation = () => {
+    if (!navigator.geolocation) return toast.error("Current location is not supported on this device");
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => setForm((current) => ({ ...current, address_line: `GPS: ${coords.latitude.toFixed(6)}, ${coords.longitude.toFixed(6)}` })),
+      (error) => toast.error(error.message || "Could not access your location"),
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
+  };
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || items.length === 0 || total <= 0) return toast.error("Please review your cart before placing this order");
@@ -137,19 +150,12 @@ const Checkout = () => {
               <h2 className="font-display text-xl font-bold text-foreground">Customer details</h2>
               <div className="grid sm:grid-cols-2 gap-4">
                 <input required placeholder="Full name" value={form.customer_name} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} className={field} />
-                <input required type="email" placeholder="Email" value={form.customer_email} onChange={(e) => setForm({ ...form, customer_email: e.target.value })} className={field} />
                 <input required placeholder="Phone number" value={form.customer_phone} onChange={(e) => setForm({ ...form, customer_phone: e.target.value })} className={field} />
-                <input placeholder="Alternate phone (optional)" value={form.alt_phone} onChange={(e) => setForm({ ...form, alt_phone: e.target.value })} className={field} />
-                <input required placeholder="City / Town" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className={field} />
-                <input required placeholder="Province" value={form.province} onChange={(e) => setForm({ ...form, province: e.target.value })} className={field} />
-                <input required placeholder="District" value={form.district} onChange={(e) => setForm({ ...form, district: e.target.value })} className={field} />
-                <input required placeholder="Municipality" value={form.municipality} onChange={(e) => setForm({ ...form, municipality: e.target.value })} className={field} />
-                <input required placeholder="Ward" value={form.ward} onChange={(e) => setForm({ ...form, ward: e.target.value })} className={field} />
-                <input placeholder="Postal code" value={form.postal_code} onChange={(e) => setForm({ ...form, postal_code: e.target.value })} className={field} />
               </div>
               <h2 className="font-display text-xl font-bold text-foreground pt-2">Shipping address</h2>
               <input required placeholder="Street address, tole, ward" value={form.address_line} onChange={(e) => setForm({ ...form, address_line: e.target.value })} className={field} />
-              <textarea rows={3} placeholder="Delivery notes (optional)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={`${field} resize-none`} />
+              <input placeholder="Nearby landmark (optional)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={field} />
+              <Button type="button" variant="outline" onClick={useCurrentLocation}><MapPin size={16} /> Use Current Location</Button>
 
               <h2 className="font-display text-xl font-bold text-foreground pt-2">Payment method</h2>
               <div className="grid sm:grid-cols-2 gap-3">
@@ -175,12 +181,7 @@ const Checkout = () => {
                             <Banknote size={15} /> COD
                           </span>
                         ) : (
-                          <span
-                            className="inline-flex h-8 px-2.5 items-center rounded-md font-bold text-xs text-white"
-                            style={{ backgroundColor: method.color }}
-                          >
-                            {method.name}
-                          </span>
+                          <img src={method.logo} alt={`${method.name} logo`} className="h-9 w-24 rounded-md bg-background object-contain p-1" />
                         )}
                         {available ? (
                           <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold text-primary"><Check size={13} /> Available</span>
