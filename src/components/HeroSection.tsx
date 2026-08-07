@@ -1,80 +1,90 @@
 import { Link } from "react-router-dom";
-import { ChevronDown, ShoppingBasket, ArrowRight } from "lucide-react";
+import { ChevronDown, ShoppingBasket, Phone, UserCircle, Info } from "lucide-react";
 import SmartSearchBar from "./SmartSearchBar";
+import { useLang } from "@/i18n/LanguageContext";
 
-/**
- * Dark hero — primary action is View Products → separate /products page
- * (not inline product list on home)
- */
 const HeroSection = () => {
+  const { t } = useLang();
+
+  const boxes = [
+    { to: "/products", icon: ShoppingBasket, title: t("shop"), desc: t("buyProductsDesc") },
+    { to: "/contact", icon: Phone, title: t("contact"), desc: t("contactDesc") },
+    { to: "/ownership", icon: UserCircle, title: t("ownership"), desc: t("ownershipDesc") },
+    { to: "/about", icon: Info, title: t("about"), desc: t("aboutDesc") },
+  ];
+
   return (
-    <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden bg-background">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#070b12] via-[#0a0f18] to-background" />
+    <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden bg-[#070b12]">
+      <div className="absolute inset-0 bg-gradient-to-b from-[#05080e] via-[#070b12] to-[#0a0f18]" />
       <div
-        className="absolute inset-0 opacity-[0.05]"
+        className="absolute inset-0 opacity-[0.04]"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)",
+            "linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
           backgroundSize: "48px 48px",
         }}
       />
-      <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary/10 rounded-full blur-[110px]" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px]" />
+      <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-[100px]" />
 
-      <div className="relative z-10 container mx-auto px-4 pt-24 pb-16">
+      <div className="relative z-10 container mx-auto px-4 pt-28 pb-16">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="relative z-30 mb-8 opacity-0 animate-fade-in-up">
+          <div className="relative z-30 mb-6 opacity-0 animate-fade-in-up">
             <SmartSearchBar variant="hero" />
           </div>
 
           <div
-            className="inline-flex items-center gap-2 rounded-full px-5 py-2 mb-8 opacity-0 animate-fade-in-up border border-primary/30"
-            style={{ background: "hsla(142, 50%, 38%, 0.12)", animationDelay: "0.1s" }}
+            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 opacity-0 animate-fade-in-up border border-primary/25"
+            style={{ background: "hsla(142, 50%, 38%, 0.1)", animationDelay: "0.1s" }}
           >
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="font-body text-primary text-xs uppercase tracking-[0.3em] font-semibold">
-              Nepal&apos;s Agricultural Marketplace
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            <span className="font-body text-primary text-[10px] sm:text-xs uppercase tracking-[0.25em] font-semibold">
+              {t("heroBadge")}
             </span>
           </div>
 
           <h1
-            className="font-display text-5xl md:text-7xl lg:text-8xl font-extrabold text-foreground leading-[1.05] mb-6 opacity-0 animate-fade-in-up"
+            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-foreground leading-[1.08] mb-5 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.2s" }}
           >
-            Quality Agriculture,
-            <span className="block text-primary">One Trusted Platform</span>
+            {t("heroTitle1")}
+            <span className="block text-primary">{t("heroTitle2")}</span>
           </h1>
 
           <p
-            className="font-body text-muted-foreground text-base md:text-lg max-w-xl mx-auto mb-10 leading-relaxed opacity-0 animate-fade-in-up"
+            className="font-body text-muted-foreground text-sm sm:text-base max-w-xl mx-auto mb-10 leading-relaxed opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.35s" }}
           >
-            Official marketplace of Great Sagarmatha Trade Pvt. Ltd. — quality farm products delivered across Nepal.
+            {t("heroSub")}
           </p>
 
-          {/* View Products box → opens separate /products page */}
-          <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: "0.5s" }}>
-            <Link
-              to="/products"
-              className="group mx-auto max-w-md flex flex-col items-center gap-3 rounded-2xl border border-primary/40 bg-card/80 px-8 py-7 shadow-lg shadow-primary/10 hover:border-primary hover:bg-primary/10 transition-all duration-300"
-            >
-              <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/20 text-primary group-hover:scale-110 transition-transform">
-                <ShoppingBasket size={28} />
-              </span>
-              <span className="font-display text-xl font-bold text-foreground">View Products</span>
-              <span className="font-body text-sm text-muted-foreground">
-                Open full catalogue on a separate page
-              </span>
-              <span className="inline-flex items-center gap-1.5 font-body text-sm font-semibold text-primary">
-                Go to products <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </span>
-            </Link>
+          {/* 4 square action boxes */}
+          <div
+            className="grid grid-cols-2 gap-3 sm:gap-4 max-w-lg mx-auto opacity-0 animate-fade-in-up"
+            style={{ animationDelay: "0.5s" }}
+          >
+            {boxes.map(({ to, icon: Icon, title, desc }) => (
+              <Link
+                key={to}
+                to={to}
+                className="group aspect-square flex flex-col items-center justify-center gap-2 rounded-2xl border border-border/80 bg-card/60 px-3 py-4 hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 shadow-lg shadow-black/20"
+              >
+                <span className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-primary/15 text-primary group-hover:scale-110 transition-transform">
+                  <Icon size={22} />
+                </span>
+                <span className="font-display text-sm sm:text-base font-bold text-foreground text-center leading-tight">
+                  {title}
+                </span>
+                <span className="font-body text-[10px] sm:text-xs text-muted-foreground text-center leading-snug">
+                  {desc}
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce pointer-events-none">
-        <ChevronDown className="text-muted-foreground/30" size={28} />
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 animate-bounce pointer-events-none">
+        <ChevronDown className="text-muted-foreground/25" size={26} />
       </div>
     </section>
   );

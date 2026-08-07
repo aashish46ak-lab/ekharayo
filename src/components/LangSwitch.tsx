@@ -1,20 +1,19 @@
 import { useLang } from "@/i18n/LanguageContext";
 
-const LangSwitch = ({ compact = false }: { compact?: boolean }) => {
+/** Compact EN | नेपाली toggle — designed to sit under logo */
+const LangSwitch = () => {
   const { lang, setLang } = useLang();
 
   return (
     <div
-      className={`inline-flex items-center rounded-full border border-border bg-muted/80 p-0.5 ${
-        compact ? "text-[10px]" : "text-xs"
-      }`}
+      className="inline-flex items-center rounded-md border border-border/80 bg-muted/60 p-0.5 text-[10px] leading-none"
       role="group"
       aria-label="Language"
     >
       <button
         type="button"
         onClick={() => setLang("en")}
-        className={`px-2 py-1 rounded-full font-body font-semibold transition-colors ${
+        className={`px-1.5 py-0.5 rounded font-body font-semibold transition-colors ${
           lang === "en" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
         }`}
       >
@@ -23,11 +22,11 @@ const LangSwitch = ({ compact = false }: { compact?: boolean }) => {
       <button
         type="button"
         onClick={() => setLang("ne")}
-        className={`px-2 py-1 rounded-full font-body font-semibold transition-colors ${
+        className={`px-1.5 py-0.5 rounded font-body font-semibold transition-colors ${
           lang === "ne" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
         }`}
       >
-        नेपाली
+        नेप
       </button>
     </div>
   );
