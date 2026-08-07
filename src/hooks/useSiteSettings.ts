@@ -42,15 +42,22 @@ export const useSiteSettings = () => {
   return { settings, loading };
 };
 
-const str = (v: unknown, fallback = ""): string => (v === undefined || v === null || v === "" ? fallback : String(v));
+/** Call after admin saves to force public refresh on next load */
+export const invalidateSiteSettingsCache = () => {
+  cache = null;
+  inflight = null;
+};
+
+const str = (v: unknown, fallback = ""): string =>
+  v === undefined || v === null || v === "" ? fallback : String(v);
 
 export const getContact = (settings: SiteSettings) => {
   const c = settings.contact ?? {};
   return {
-    phone1: str(c.phone1, "9852049458"),
-    phone2: str(c.phone2, "9802749458"),
-    email: str(c.email, "ghagro2080@gmail.com"),
-    address: str(c.address, "Patharishanishchare-5, Morang, Nepal"),
+    phone1: str(c.phone1, ""),
+    phone2: str(c.phone2, ""),
+    email: str(c.email, ""),
+    address: str(c.address, "Itahari-20, Sunsari, Nepal"),
   };
 };
 
@@ -58,87 +65,83 @@ export const getCompany = (settings: SiteSettings) => {
   const c = settings.company ?? {};
   return {
     company_name: str(c.company_name, "Great Sagarmatha Trade Pvt. Ltd."),
-    tagline: str(c.tagline),
-    about: str(c.about),
-    website: str(c.website),
-    whatsapp: str(c.whatsapp),
-    business_hours: str(c.business_hours),
-    email: str(c.email),
-    phone1: str(c.phone1),
-    phone2: str(c.phone2),
-  };
-};
-
-export const getOwner = (settings: SiteSettings) => {
-  const o = settings.owner ?? {};
-  return {
-    name: str(o.name, "Founder"),
-    position: str(o.position, "Founder & CEO"),
-    company: str(o.company),
-    bio: str(o.bio),
-    photo_url: str(o.photo_url),
-    cover_url: str(o.cover_url),
-    phone1: str(o.phone1),
-    phone2: str(o.phone2),
-    email: str(o.email),
-    website: str(o.website),
-    facebook: str(o.facebook),
-    instagram: str(o.instagram),
-    tiktok: str(o.tiktok),
-    map_url: str(o.map_url),
-    address: str(o.address),
-    welcome: str(o.welcome),
-  };
-};
-
-export const getSocial = (settings: SiteSettings) => {
-  const s = settings.social ?? {};
-  return {
-    facebook: str(s.facebook),
-    instagram: str(s.instagram),
-    tiktok: str(s.tiktok),
-    youtube: str(s.youtube),
-    whatsapp: str(s.whatsapp),
+    tagline: str(c.tagline, ""),
+    about: str(c.about, ""),
+    business_hours: str(c.business_hours, ""),
+    email: str(c.email, ""),
+    phone1: str(c.phone1, ""),
+    phone2: str(c.phone2, ""),
+    whatsapp: str(c.whatsapp, ""),
   };
 };
 
 export const getLocation = (settings: SiteSettings) => {
   const l = settings.location ?? {};
   return {
-    address: str(l.address),
-    province: str(l.province),
-    district: str(l.district),
-    municipality: str(l.municipality),
-    ward: str(l.ward),
-    postal_code: str(l.postal_code),
-    google_maps_url: str(l.google_maps_url),
-    google_maps_embed: str(l.google_maps_embed),
-    latitude: str(l.latitude),
-    longitude: str(l.longitude),
+    address: str(l.address, "Itahari-20, Sunsari"),
+    province: str(l.province, ""),
+    district: str(l.district, "Sunsari"),
+    municipality: str(l.municipality, "Itahari"),
+    ward: str(l.ward, "20"),
+    postal_code: str(l.postal_code, ""),
+    google_maps_url: str(l.google_maps_url, ""),
+    google_maps_embed: str(l.google_maps_embed, ""),
+    latitude: str(l.latitude, "26.755"),
+    longitude: str(l.longitude, "87.28"),
+  };
+};
+
+export const getOwner = (settings: SiteSettings) => {
+  const o = settings.owner ?? {};
+  return {
+    name: str(o.name, ""),
+    position: str(o.position, ""),
+    company: str(o.company, ""),
+    bio: str(o.bio, ""),
+    welcome: str(o.welcome, ""),
+    phone1: str(o.phone1, ""),
+    phone2: str(o.phone2, ""),
+    email: str(o.email, ""),
+    website: str(o.website, ""),
+    photo_url: str(o.photo_url, ""),
+    cover_url: str(o.cover_url, ""),
+    address: str(o.address, ""),
+    map_url: str(o.map_url, ""),
+    facebook: str(o.facebook, ""),
+    instagram: str(o.instagram, ""),
+    tiktok: str(o.tiktok, ""),
   };
 };
 
 export const getBranding = (settings: SiteSettings) => {
   const b = settings.branding ?? {};
   return {
-    logo_url: str(b.logo_url),
-    favicon_url: str(b.favicon_url),
+    logo_url: str(b.logo_url, ""),
   };
 };
 
-export const composeAddress = (location: ReturnType<typeof getLocation>, fallback: string) => {
-  const parts = [
-    location.address,
-    location.municipality && `Ward ${location.ward || ""} ${location.municipality}`.trim(),
-    location.district,
-    location.province,
-    location.postal_code,
-  ].filter(Boolean);
-  return parts.length ? parts.join(", ") : fallback;
+export const getSocial = (settings: SiteSettings) => {
+  const s = settings.social ?? {};
+  return {
+    facebook: str(s.facebook, ""),
+    instagram: str(s.instagram, ""),
+    tiktok: str(s.tiktok, ""),
+    youtube: str(s.youtube, ""),
+    whatsapp: str(s.whatsapp, ""),
+  };
 };
 
-export const waLink = (num: string) => {
-  const digits = num.replace(/\D/g, "");
-  if (!digits) return "";
-  return `https://wa.me/${digits.startsWith("977") ? digits : `977${digits.replace(/^0/, "")}`}`;
+export const composeAddress = (
+  location: ReturnType<typeof getLocation>,
+  fallback?: string,
+) =>
+  [location.address, location.ward ? `Ward ${location.ward}` : "", location.municipality, location.district, location.province]
+    .filter(Boolean)
+    .join(", ") || fallback || "";
+
+export const waLink = (phone: string, text?: string) => {
+  const n = phone.replace(/\D/g, "");
+  if (!n) return "#";
+  const full = n.startsWith("977") ? n : `977${n.replace(/^0/, "")}`;
+  return `https://wa.me/${full}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
 };
