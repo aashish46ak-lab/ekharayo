@@ -26,6 +26,7 @@ import NotFound from "./pages/NotFound.tsx";
 import InstallPrompt from "./components/InstallPrompt.tsx";
 import WhatsAppFloat from "./components/WhatsAppFloat.tsx";
 import ChatWidget from "./components/ChatWidget.tsx";
+import FloatingLangSwitch from "./components/FloatingLangSwitch.tsx";
 import AuthModal from "./components/AuthModal";
 import WelcomeManager from "./components/WelcomeManager";
 import AdminLayout from "./components/admin/AdminLayout.tsx";
@@ -54,6 +55,7 @@ const App = () => (
             <CartProvider>
               <WelcomeManager />
               <AuthModal />
+              <FloatingLangSwitch />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/products" element={<Products />} />

@@ -6,7 +6,6 @@ import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 import { useLang } from "@/i18n/LanguageContext";
 import SmartSearchBar from "./SmartSearchBar";
-import LangSwitch from "./LangSwitch";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -45,22 +44,16 @@ const Navbar = () => {
   return (
     <>
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBg}`}>
-        <div className="container mx-auto flex items-center justify-between gap-2 py-2 px-3 sm:px-4">
-          {/* Logo + EN/NE just below brand text (left) */}
-          <div className="flex items-center gap-2 shrink-0 min-w-0">
-            <Link to="/" className="flex items-center gap-2 min-w-0">
-              <img src={logo} alt="eKharayo" className="h-8 sm:h-9 w-auto shrink-0" />
-              <span className="font-display text-sm sm:text-base font-bold leading-tight text-primary min-w-0">
-                eKharayo
-                <span className="font-body text-[8px] sm:text-[9px] font-medium block leading-tight tracking-wide text-muted-foreground truncate max-w-[140px] sm:max-w-none">
-                  Great Sagarmatha Trade Pvt. Ltd.
-                </span>
-                <span className="mt-0.5 block">
-                  <LangSwitch />
-                </span>
+        <div className="container mx-auto flex items-center justify-between gap-2 py-2.5 px-3 sm:px-4">
+          <Link to="/" className="flex items-center gap-2 shrink-0 min-w-0">
+            <img src={logo} alt="eKharayo" className="h-8 sm:h-9 w-auto shrink-0" />
+            <span className="font-display text-sm sm:text-base font-bold leading-tight text-primary min-w-0">
+              eKharayo
+              <span className="font-body text-[8px] sm:text-[9px] font-medium block leading-tight tracking-wide text-muted-foreground truncate max-w-[150px] sm:max-w-none">
+                Great Sagarmatha Trade Pvt. Ltd.
               </span>
-            </Link>
-          </div>
+            </span>
+          </Link>
 
           <div className="hidden md:block flex-1 max-w-xs mx-2">
             <SmartSearchBar variant="navbar" />
@@ -113,7 +106,7 @@ const Navbar = () => {
       {open && (
         <>
           <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden" onClick={() => setOpen(false)} />
-          <div className="fixed top-[58px] right-0 z-50 w-64 max-w-[85vw] bg-card border-l border-b border-border shadow-2xl rounded-bl-2xl lg:hidden">
+          <div className="fixed top-[52px] right-0 z-50 w-64 max-w-[85vw] bg-card border-l border-b border-border shadow-2xl rounded-bl-2xl lg:hidden">
             <div className="p-3 border-b border-border md:hidden">
               <SmartSearchBar variant="navbar" />
             </div>

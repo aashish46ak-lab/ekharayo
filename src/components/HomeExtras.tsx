@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
 import { useLang } from "@/i18n/LanguageContext";
-import { ArrowRight, BadgeCheck, Headset, ShieldCheck, Sparkles, Quote } from "lucide-react";
+import { ArrowRight, BadgeCheck, Headset, ShieldCheck, Sparkles, Quote, MapPin, CheckCircle2 } from "lucide-react";
 
-/** Homepage extras — no product list (products live on /products only) */
 const HomeExtras = () => {
   const { t } = useLang();
 
@@ -19,9 +18,44 @@ const HomeExtras = () => {
     { body: t("c3"), name: t("c3n") },
   ];
 
+  const points = [t("detailPoint1"), t("detailPoint2"), t("detailPoint3"), t("detailPoint4")];
+
   return (
     <div className="bg-background">
-      {/* Why us */}
+      {/* Detail / Morang delivery */}
+      <section className="container mx-auto px-4 py-14 sm:py-16">
+        <div className="max-w-3xl mx-auto rounded-2xl border border-border bg-card/60 p-6 sm:p-8">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
+              <MapPin size={20} />
+            </div>
+            <div>
+              <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground">{t("detailTitle")}</h2>
+              <p className="font-body text-sm text-muted-foreground mt-2 leading-relaxed">{t("detailBody")}</p>
+            </div>
+          </div>
+          <ul className="mt-5 grid sm:grid-cols-2 gap-2">
+            {points.map((p) => (
+              <li key={p} className="flex items-start gap-2 font-body text-sm text-foreground/85">
+                <CheckCircle2 className="text-primary shrink-0 mt-0.5" size={16} />
+                <span>{p}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link to="/products" className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-green-glow transition-colors">
+              {t("shop")} <ArrowRight size={14} />
+            </Link>
+            <Link to="/ownership" className="inline-flex items-center gap-2 border border-border text-foreground font-body text-sm font-semibold px-5 py-2.5 rounded-lg hover:border-primary/40 transition-colors">
+              {t("ownership")}
+            </Link>
+            <Link to="/about" className="inline-flex items-center gap-2 border border-border text-foreground font-body text-sm font-semibold px-5 py-2.5 rounded-lg hover:border-primary/40 transition-colors">
+              {t("about")}
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <section className="border-y border-border bg-card/30 py-14 sm:py-16">
         <div className="container mx-auto px-4">
           <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground text-center mb-10">{t("why")}</h2>
@@ -36,18 +70,9 @@ const HomeExtras = () => {
               </div>
             ))}
           </div>
-          <div className="text-center mt-10">
-            <Link
-              to="/products"
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body font-semibold px-7 py-3.5 rounded-lg hover:bg-green-glow transition-colors"
-            >
-              {t("shop")} <ArrowRight size={16} />
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* Comments / testimonials */}
       <section className="container mx-auto px-4 py-14 sm:py-16">
         <div className="text-center mb-10">
           <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground">{t("commentsTitle")}</h2>
@@ -55,10 +80,7 @@ const HomeExtras = () => {
         </div>
         <div className="grid md:grid-cols-3 gap-4 max-w-5xl mx-auto">
           {comments.map((c) => (
-            <blockquote
-              key={c.name}
-              className="bg-card border border-border rounded-2xl p-5 text-left relative"
-            >
+            <blockquote key={c.name} className="bg-card border border-border rounded-2xl p-5 text-left">
               <Quote className="text-primary/40 mb-2" size={20} />
               <p className="font-body text-sm text-foreground/90 leading-relaxed mb-4">{c.body}</p>
               <footer className="font-body text-xs font-semibold text-primary">{c.name}</footer>
