@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useLang } from "@/i18n/LanguageContext";
-import { ArrowRight, BadgeCheck, Headset, ShieldCheck, Sparkles, Quote, MapPin, CheckCircle2 } from "lucide-react";
+import PublicComments from "@/components/PublicComments";
+import { ArrowRight, BadgeCheck, Headset, ShieldCheck, Sparkles, MapPin, CheckCircle2 } from "lucide-react";
 
 const HomeExtras = () => {
   const { t } = useLang();
@@ -10,12 +11,6 @@ const HomeExtras = () => {
     { icon: ShieldCheck, title: t("quality"), desc: t("qualityDesc") },
     { icon: Headset, title: t("support"), desc: t("supportDesc") },
     { icon: Sparkles, title: t("growing"), desc: t("growingDesc") },
-  ];
-
-  const comments = [
-    { body: t("c1"), name: t("c1n") },
-    { body: t("c2"), name: t("c2n") },
-    { body: t("c3"), name: t("c3n") },
   ];
 
   const points = [t("detailPoint1"), t("detailPoint2"), t("detailPoint3"), t("detailPoint4")];
@@ -72,21 +67,8 @@ const HomeExtras = () => {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 py-14 sm:py-16">
-        <div className="text-center mb-10">
-          <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground">{t("commentsTitle")}</h2>
-          <p className="font-body text-sm text-muted-foreground mt-2">{t("commentsSub")}</p>
-        </div>
-        <div className="grid md:grid-cols-3 gap-4 max-w-5xl mx-auto">
-          {comments.map((c) => (
-            <blockquote key={c.name} className="bg-card border border-border rounded-2xl p-5 text-left">
-              <Quote className="text-primary/40 mb-2" size={20} />
-              <p className="font-body text-sm text-foreground/90 leading-relaxed mb-4">{c.body}</p>
-              <footer className="font-body text-xs font-semibold text-primary">{c.name}</footer>
-            </blockquote>
-          ))}
-        </div>
-      </section>
+      {/* Public comments: star + like + highlights */}
+      <PublicComments />
     </div>
   );
 };
