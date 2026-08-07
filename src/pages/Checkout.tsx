@@ -8,11 +8,12 @@ import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { couponSavings } from "@/lib/commerce";
+import { computeDeliveryFee, DEFAULT_DELIVERY, type DeliveryTierConfig } from "@/lib/delivery";
+import { queueOrderNotification } from "@/lib/notifications";
 import { rs } from "@/lib/media";
 import { toast } from "sonner";
-import { Banknote, Check, Loader2, ShieldCheck, MapPin } from "lucide-react";
+import { Banknote, Check, Loader2, ShieldCheck, MapPin, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-// Transparent official-style SVG brand marks (no white/black rect backgrounds)
 import esewaLogo from "@/assets/payment/esewa.svg";
 import khaltiLogo from "@/assets/payment/khalti.svg";
 import fonepayLogo from "@/assets/payment/fonepay.svg";
@@ -35,9 +36,11 @@ const Checkout = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
-  const [deliveryFee, setDeliveryFee] = useState(0);
   const [tax, setTax] = useState(0);
   const [payments, setPayments] = useState<Record<PaymentId, boolean>>(defaultPayments);
+  const [deliveryCfg, setDeliveryCfg] = useState<DeliveryTierConfig>(DEFAULT_DELIVERY);
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [deliveryInfo, setDeliveryInfo] = useState(() => computeDeliveryFee(0, null, null));
   const [form, setForm] = useState({
     customer_name: "",
     customer_email: user?.email ?? "",
@@ -61,35 +64,46 @@ const Checkout = () => {
   }, [user]);
 
   useEffect(() => {
-    supabase.from("site_settings").select("value").eq("key", "store").maybeSingle().then(({ data }) => {
-      const v = data?.value as { delivery_fee?: number } | undefined;
-      const fee = Number(v?.delivery_fee ?? 0);
-      const taxRate = Number((v as { tax_rate?: number } | undefined)?.tax_rate ?? 0);
-      setDeliveryFee(Number.isFinite(fee) ? Math.max(fee, 0) : 0);
+    supabase.from("site_settings").select("key,value").in("key", ["store", "payments", "delivery_zones"]).then(({ data }) => {
+      const map: Record<string, unknown> = {};
+      (data ?? []).forEach((r) => { map[r.key] = r.value; });
+      const store = map.store as { tax_rate?: number } | undefined;
+      const taxRate = Number(store?.tax_rate ?? 0);
       setTax(Number.isFinite(taxRate) ? Math.max((subtotal * taxRate) / 100, 0) : 0);
+      const pay = map.payments as Partial<Record<PaymentId, boolean>> | undefined;
+      setPayments({ ...defaultPayments, ...(pay ?? {}) });
+      const zones = map.delivery_zones as DeliveryTierConfig | undefined;
+      if (zones?.hq?.lat && zones.tiers?.length) setDeliveryCfg({ ...DEFAULT_DELIVERY, ...zones });
     });
   }, [subtotal]);
 
   useEffect(() => {
-    supabase.from("site_settings").select("value").eq("key", "payments").maybeSingle().then(({ data }) => {
-      const v = data?.value as Partial<Record<PaymentId, boolean>> | undefined;
-      setPayments({ ...defaultPayments, ...(v ?? {}) });
-    });
-  }, []);
+    const info = computeDeliveryFee(subtotal, coords?.lat ?? null, coords?.lng ?? null, deliveryCfg);
+    const savings = couponSavings(coupon, subtotal);
+    if (savings.freeShipping) setDeliveryInfo({ ...info, fee: 0, free: true, label: "Free shipping (coupon)" });
+    else setDeliveryInfo(info);
+  }, [subtotal, coords, deliveryCfg, coupon]);
 
   useEffect(() => {
     if (items.length === 0 && !busy) navigate("/cart", { replace: true });
   }, [items.length, busy, navigate]);
 
   const savings = couponSavings(coupon, subtotal);
-  const effectiveDelivery = savings.freeShipping ? 0 : deliveryFee;
+  const effectiveDelivery = deliveryInfo.fee;
   const discount = Number(savings.discount || 0);
   const total = Math.max(subtotal + effectiveDelivery + tax - discount, 0);
 
   const useCurrentLocation = () => {
     if (!navigator.geolocation) return toast.error("Current location is not supported on this device");
     navigator.geolocation.getCurrentPosition(
-      ({ coords }) => setForm((current) => ({ ...current, address_line: `GPS: ${coords.latitude.toFixed(6)}, ${coords.longitude.toFixed(6)}` })),
+      ({ coords: c }) => {
+        setCoords({ lat: c.latitude, lng: c.longitude });
+        setForm((current) => ({
+          ...current,
+          address_line: current.address_line || `GPS: ${c.latitude.toFixed(6)}, ${c.longitude.toFixed(6)}`,
+        }));
+        toast.success("Location set — delivery fee updated from Morang HQ");
+      },
       (error) => toast.error(error.message || "Could not access your location"),
       { enableHighAccuracy: true, timeout: 10000 },
     );
@@ -136,6 +150,15 @@ const Checkout = () => {
       return toast.error(itemErr.message);
     }
 
+    await queueOrderNotification({
+      orderId: order.id,
+      userId: user.id,
+      email: form.customer_email || user.email,
+      orderNumber: (order as { order_number?: string }).order_number || order.id.slice(0, 8),
+      event: "order_placed",
+      total: Number(total),
+    });
+
     clear();
     navigate(`/order-confirmation/${order.id}`, { replace: true });
   };
@@ -154,10 +177,27 @@ const Checkout = () => {
                 <input required placeholder="Full name" value={form.customer_name} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} className={field} />
                 <input required placeholder="Phone number" value={form.customer_phone} onChange={(e) => setForm({ ...form, customer_phone: e.target.value })} className={field} />
               </div>
+              <input type="email" placeholder="Email (for order updates)" value={form.customer_email} onChange={(e) => setForm({ ...form, customer_email: e.target.value })} className={field} />
               <h2 className="font-display text-xl font-bold text-foreground pt-2">Shipping address</h2>
               <input required placeholder="Street address, tole, ward" value={form.address_line} onChange={(e) => setForm({ ...form, address_line: e.target.value })} className={field} />
+              <div className="grid sm:grid-cols-2 gap-4">
+                <input placeholder="District" value={form.district} onChange={(e) => setForm({ ...form, district: e.target.value })} className={field} />
+                <input placeholder="Municipality / City" value={form.municipality || form.city} onChange={(e) => setForm({ ...form, municipality: e.target.value, city: e.target.value })} className={field} />
+              </div>
               <input placeholder="Nearby landmark (optional)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={field} />
-              <Button type="button" variant="outline" onClick={useCurrentLocation}><MapPin size={16} /> Use Current Location</Button>
+              <Button type="button" variant="outline" onClick={useCurrentLocation}><MapPin size={16} /> Use Current Location (for distance fee)</Button>
+
+              <div className="rounded-xl border border-border bg-muted/40 p-4 flex gap-3">
+                <Truck className="text-primary shrink-0 mt-0.5" size={20} />
+                <div>
+                  <p className="font-body text-sm font-semibold text-foreground">Delivery from Morang HQ</p>
+                  <p className="font-body text-xs text-muted-foreground mt-1">{deliveryInfo.label}</p>
+                  {deliveryInfo.km != null && <p className="font-body text-xs text-primary mt-1">Distance: {deliveryInfo.km} km</p>}
+                  <p className="font-body text-[11px] text-muted-foreground mt-2">
+                    Tiers: 0–10km Rs.50 · 10–25km Rs.100 · 25–50km Rs.150 · 50–100km Rs.250 · farther higher. Free above Rs. {deliveryCfg.free_above}.
+                  </p>
+                </div>
+              </div>
 
               <h2 className="font-display text-xl font-bold text-foreground pt-2">Payment method</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -165,44 +205,24 @@ const Checkout = () => {
                   const available = payments[method.id];
                   const selected = available && form.payment_method === method.id;
                   return (
-                    <button
-                      key={method.id}
-                      type="button"
-                      disabled={!available}
-                      onClick={() => setForm({ ...form, payment_method: method.id })}
+                    <button key={method.id} type="button" disabled={!available} onClick={() => setForm({ ...form, payment_method: method.id })}
                       className={`min-h-[5.5rem] text-left border rounded-lg p-4 transition-all duration-200 ease-out ${
-                        selected
-                          ? "border-primary bg-primary/10 scale-[1.03] shadow-md shadow-primary/10"
-                          : available
-                          ? "border-border bg-card hover:border-primary/40 hover:scale-[1.03] active:scale-[1.03]"
-                          : "border-border bg-muted/40 opacity-65 cursor-not-allowed"
-                      }`}
+                        selected ? "border-primary bg-primary/10 scale-[1.03] shadow-md shadow-primary/10"
+                          : available ? "border-border bg-card hover:border-primary/40 hover:scale-[1.03]"
+                          : "border-border bg-muted/40 opacity-65 cursor-not-allowed"}`}
                     >
                       <div className="flex items-start justify-between gap-2">
                         {method.id === "cod" ? (
-                          <span className="inline-flex items-center gap-1.5 h-10 px-2.5 rounded-lg bg-primary/10 text-primary font-bold text-sm">
-                            <Banknote size={18} /> COD
-                          </span>
+                          <span className="inline-flex items-center gap-1.5 h-10 px-2.5 rounded-lg bg-primary/10 text-primary font-bold text-sm"><Banknote size={18} /> COD</span>
                         ) : (
-                          /* Identical icon containers — transparent logos, 40px height, centered */
                           <span className="inline-flex items-center justify-center h-12 w-[7.5rem] shrink-0 rounded-xl bg-transparent overflow-hidden">
-                            <img
-                              src={method.logo}
-                              alt={`${method.name} logo`}
-                              className="h-10 w-auto max-w-full object-contain object-center"
-                              loading="lazy"
-                              decoding="async"
-                            />
+                            <img src={method.logo} alt={`${method.name} logo`} className="h-10 w-auto max-w-full object-contain object-center" loading="lazy" decoding="async" />
                           </span>
                         )}
                         {available ? (
-                          <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold text-primary">
-                            <Check size={13} /> Available
-                          </span>
+                          <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold text-primary"><Check size={13} /> Available</span>
                         ) : (
-                          <span className="rounded-full bg-accent/15 text-accent px-2 py-1 text-[10px] uppercase font-bold">
-                            Coming Soon
-                          </span>
+                          <span className="rounded-full bg-accent/15 text-accent px-2 py-1 text-[10px] uppercase font-bold">Coming Soon</span>
                         )}
                       </div>
                       <span className="flex items-center gap-2 mt-3 font-semibold text-sm text-foreground">{method.name}</span>
