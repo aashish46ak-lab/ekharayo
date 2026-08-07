@@ -13,13 +13,13 @@ export interface DeliveryTierConfig {
   hq: { name: string; lat: number; lng: number };
   base_fee: number;
   free_above: number;
-  /** Absolute maximum delivery charge (never exceed this). */
   max_fee: number;
   tiers: { max_km: number; fee: number }[];
 }
 
+/** Base: Itahari-20, Sunsari */
 export const DEFAULT_DELIVERY: DeliveryTierConfig = {
-  hq: { name: "Patharishanishchare-5, Morang", lat: 26.6525, lng: 87.5389 },
+  hq: { name: "Itahari-20, Sunsari", lat: 26.755, lng: 87.28 },
   base_fee: 50,
   free_above: 3000,
   max_fee: 350,
@@ -64,6 +64,6 @@ export function computeDeliveryFee(
     fee,
     km: Math.round(km * 10) / 10,
     free: false,
-    label: `${km.toFixed(1)} km from Morang HQ — delivery Rs. ${fee}`,
+    label: `${km.toFixed(1)} km from Itahari HQ — delivery Rs. ${fee}`,
   };
 }

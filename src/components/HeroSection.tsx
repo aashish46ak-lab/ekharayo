@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ChevronDown, ShoppingBasket, Phone, UserCircle, Info } from "lucide-react";
+import { ShoppingBasket, Phone, UserCircle, Image } from "lucide-react";
 import SmartSearchBar from "./SmartSearchBar";
 import { useLang } from "@/i18n/LanguageContext";
 
@@ -7,14 +7,14 @@ const HeroSection = () => {
   const { t } = useLang();
 
   const boxes = [
-    { to: "/products", icon: ShoppingBasket, title: t("shop"), desc: t("buyProductsDesc") },
-    { to: "/contact", icon: Phone, title: t("contact"), desc: t("contactDesc") },
     { to: "/ownership", icon: UserCircle, title: t("ownership"), desc: t("ownershipDesc") },
-    { to: "/about", icon: Info, title: t("about"), desc: t("aboutDesc") },
+    { to: "/gallery", icon: Image, title: t("gallery"), desc: t("galleryDesc") },
+    { to: "/contact", icon: Phone, title: t("contact"), desc: t("contactDesc") },
+    { to: "/products", icon: ShoppingBasket, title: t("shop"), desc: t("buyProductsDesc") },
   ];
 
   return (
-    <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden bg-[#070b12]">
+    <section className="relative min-h-[88vh] flex items-center justify-center overflow-hidden bg-[#070b12]">
       <div className="absolute inset-0 bg-gradient-to-b from-[#05080e] via-[#070b12] to-[#0a0f18]" />
       <div
         className="absolute inset-0 opacity-[0.04]"
@@ -24,9 +24,8 @@ const HeroSection = () => {
           backgroundSize: "48px 48px",
         }}
       />
-      <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-[100px]" />
 
-      <div className="relative z-10 container mx-auto px-4 pt-28 pb-16">
+      <div className="relative z-10 container mx-auto px-4 pt-28 pb-14">
         <div className="max-w-3xl mx-auto text-center">
           <div className="relative z-30 mb-6 opacity-0 animate-fade-in-up">
             <SmartSearchBar variant="hero" />
@@ -57,7 +56,6 @@ const HeroSection = () => {
             {t("heroSub")}
           </p>
 
-          {/* 4 square action boxes */}
           <div
             className="grid grid-cols-2 gap-3 sm:gap-4 max-w-lg mx-auto opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.5s" }}
@@ -81,10 +79,6 @@ const HeroSection = () => {
             ))}
           </div>
         </div>
-      </div>
-
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 animate-bounce pointer-events-none">
-        <ChevronDown className="text-muted-foreground/25" size={26} />
       </div>
     </section>
   );

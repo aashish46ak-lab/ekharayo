@@ -13,6 +13,7 @@ interface Msg {
 
 const STORAGE_KEY = "ekharayo-chat-thread";
 
+/** Single floating message icon (bottom-right) — talks to admin Messages */
 const ChatWidget = () => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
@@ -59,7 +60,7 @@ const ChatWidget = () => {
       .select("id")
       .single();
     if (error || !data) {
-      toast.error(error?.message || "Could not start chat — run chat migration in Supabase");
+      toast.error(error?.message || "Could not start chat");
       return null;
     }
     const id = (data as { id: string }).id;
@@ -98,28 +99,28 @@ const ChatWidget = () => {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="fixed bottom-5 left-5 z-[60] flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-4 py-3 shadow-lg hover:scale-105 transition-transform font-body text-sm font-semibold"
-          aria-label="Chat with us"
+          className="fixed bottom-5 right-5 z-[60] flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-black/30 hover:scale-105 transition-transform"
+          aria-label="Message admin"
         >
-          <MessageCircle size={20} /> Chat with us
+          <MessageCircle size={24} />
         </button>
       )}
 
       {open && (
-        <div className="fixed bottom-5 left-5 z-[60] w-[min(100vw-2rem,22rem)] h-[28rem] flex flex-col rounded-2xl border border-border bg-card shadow-2xl overflow-hidden">
+        <div className="fixed bottom-5 right-5 z-[60] w-[min(100vw-2rem,22rem)] h-[28rem] flex flex-col rounded-2xl border border-border bg-card shadow-2xl overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 bg-primary text-primary-foreground">
             <div>
-              <p className="font-display font-bold text-sm">Chat with eKharayo</p>
-              <p className="font-body text-[10px] opacity-80">We usually reply soon</p>
+              <p className="font-display font-bold text-sm">Message</p>
+              <p className="font-body text-[10px] opacity-80">Admin will reply here</p>
             </div>
-            <button type="button" onClick={() => setOpen(false)} aria-label="Close chat" className="p-1 rounded hover:bg-white/10">
+            <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="p-1 rounded hover:bg-white/10">
               <X size={18} />
             </button>
           </div>
 
           <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-background/50">
             {messages.length === 0 && (
-              <p className="font-body text-xs text-muted-foreground text-center py-6">Say hello — ask about products, orders, or delivery.</p>
+              <p className="font-body text-xs text-muted-foreground text-center py-6">Type a message for the admin team.</p>
             )}
             {messages.map((m) => (
               <div key={m.id} className={`flex ${m.sender === "customer" ? "justify-end" : "justify-start"}`}>

@@ -1,7 +1,6 @@
-/** Morang HQ coordinates (Patharishanishchare-5) */
-export const HQ = { lat: 26.6525, lng: 87.5389, label: "Patharishanishchare-5, Morang" };
+/** Itahari-20, Sunsari HQ */
+export const HQ = { lat: 26.755, lng: 87.28, label: "Itahari-20, Sunsari" };
 
-/** Google Maps directions from HQ to customer address or coordinates */
 export function mapsTrackUrl(opts: {
   addressLine?: string | null;
   city?: string | null;
@@ -20,7 +19,6 @@ export function mapsTrackUrl(opts: {
   return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(HQ.label)}&destination=${encodeURIComponent(dest)}&travelmode=driving`;
 }
 
-/** Parse GPS from address_line like "GPS: 26.12, 87.34" */
 export function parseGpsFromText(text?: string | null): { lat: number; lng: number } | null {
   if (!text) return null;
   const m = text.match(/GPS:\s*(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)/i);
