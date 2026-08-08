@@ -1,52 +1,60 @@
-# eKharayo — Supabase (naya project) setup
+# eKharayo — Supabase setup
 
-Repo already has full app code. You only need **database schema** on your new Supabase + **env** on Vercel.
+## SQL (empty project) — 13 Raw links, order ma Run
 
-## Step 1 — SQL (empty project)
+Supabase → SQL Editor → each link open → copy all → Run
 
-Supabase Dashboard → **SQL Editor** → New query
+0. https://raw.githubusercontent.com/aashish46ak-lab/ekharayo/main/supabase/bootstrap_part1.sql
 
-### Easiest (2 runs)
+1. https://raw.githubusercontent.com/aashish46ak-lab/ekharayo/main/supabase/migrations/20260803130915_29602464-3701-49ca-a729-8c9807f01b63.sql
 
-1. Open and copy-paste **Run**:
-   - [`supabase/bootstrap_part1.sql`](./supabase/bootstrap_part1.sql)
-2. New query → copy-paste **Run**:
-   - [`supabase/bootstrap_part2.sql`](./supabase/bootstrap_part2.sql)
+2. https://raw.githubusercontent.com/aashish46ak-lab/ekharayo/main/supabase/migrations/20260803130945_6a946f10-f33c-44e8-bec3-983473ba3ea8.sql
 
-### Alternative
-Run every file inside `supabase/migrations/` **in filename order** (oldest first).
+3. https://raw.githubusercontent.com/aashish46ak-lab/ekharayo/main/supabase/migrations/20260803131033_61c5325c-f764-418e-a950-162cd0aa6cd4.sql
 
-## Step 2 — Storage
+4. https://raw.githubusercontent.com/aashish46ak-lab/ekharayo/main/supabase/migrations/20260803131109_90e37bdd-a44e-4d06-9207-2ca1a1f5dda7.sql
 
-Bucket **`media`** (public) should exist. Check **Storage** in Supabase.
+5. https://raw.githubusercontent.com/aashish46ak-lab/ekharayo/main/supabase/migrations/20260804000820_cfdd9535-4b02-42b3-8ae0-3675f130b900.sql
 
-## Step 3 — Vercel env
+6. https://raw.githubusercontent.com/aashish46ak-lab/ekharayo/main/supabase/migrations/20260804000954_1bdfd785-c7fa-479a-91a0-d2096467ed08.sql
 
-Project → Settings → Environment Variables:
+7. https://raw.githubusercontent.com/aashish46ak-lab/ekharayo/main/supabase/migrations/20260804001018_0d1271e8-5f3a-4832-98d0-e62f7187f578.sql
+
+8. https://raw.githubusercontent.com/aashish46ak-lab/ekharayo/main/supabase/migrations/20260805024153_d815a5f2-6aa2-482a-88bb-5be46bf47481.sql
+
+9. https://raw.githubusercontent.com/aashish46ak-lab/ekharayo/main/supabase/migrations/20260807030415_f02c8e73-3718-4c49-95a6-98fa639533f5.sql
+
+10. https://raw.githubusercontent.com/aashish46ak-lab/ekharayo/main/supabase/migrations/20260807160000_reviews_delivery_notifications.sql
+
+11. https://raw.githubusercontent.com/aashish46ak-lab/ekharayo/main/supabase/migrations/20260807170000_gallery_chat.sql
+
+12. https://raw.githubusercontent.com/aashish46ak-lab/ekharayo/main/supabase/migrations/20260807180000_site_reviews.sql
+
+### Seed (last)
+
+```sql
+INSERT INTO public.site_settings (key, value) VALUES
+('delivery_zones', '{"hq":{"name":"Itahari-20, Sunsari","lat":26.755,"lng":87.28},"base_fee":50,"free_above":3000,"max_fee":350,"tiers":[{"max_km":10,"fee":50},{"max_km":25,"fee":100},{"max_km":50,"fee":150},{"max_km":100,"fee":250},{"max_km":150,"fee":300},{"max_km":9999,"fee":350}]}'::jsonb)
+ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
+
+INSERT INTO public.site_settings (key, value)
+VALUES ('copy', '{"en":{},"ne":{}}'::jsonb)
+ON CONFLICT (key) DO NOTHING;
+```
+
+## Vercel env
 
 ```
 VITE_SUPABASE_URL=https://YOUR_REF.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJ...your_anon_key
+VITE_SUPABASE_ANON_KEY=your_anon_key
 ```
 
-Then **Redeploy**.
+Redeploy.
 
-## Step 4 — Admin
-
-Sign up once on the live site, then SQL:
+## Admin
 
 ```sql
 INSERT INTO public.user_roles (user_id, role)
-SELECT id, 'super_admin'::public.app_role
-FROM auth.users
-WHERE email = 'YOUR@EMAIL.com'
+SELECT id, 'super_admin' FROM auth.users WHERE email = 'YOUR@EMAIL.com'
 ON CONFLICT DO NOTHING;
 ```
-
-Emails `aashish46ak@gmail.com` / `ghagro2080@gmail.com` may get admin automatically via trigger.
-
-## Notes
-
-- This creates **empty structure + sample categories/products**, not Lovable old data.
-- Old Lovable products/orders need CSV export/import if you still need them.
-- AdSense script is already in `index.html`.
