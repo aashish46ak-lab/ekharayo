@@ -10,7 +10,7 @@ import logo from "@/assets/logo.png";
 type Mode = "login" | "signup" | "verify" | "forgot" | "reset";
 
 const AuthModal = () => {
-  const { user, isAuthModalOpen, closeAuthModal, authNext, setGuest } = useAuth();
+  const { user, isAuthModalOpen, closeAuthModal, authNext, setGuest, refreshRoles } = useAuth();
   const [mode, setMode] = useState<Mode>("login");
   const [otpType, setOtpType] = useState<"signup" | "recovery">("signup");
   const [name, setName] = useState("");
@@ -27,9 +27,19 @@ const AuthModal = () => {
     if (user && isAuthModalOpen) closeAuthModal();
   }, [user, isAuthModalOpen, closeAuthModal]);
 
-  const finish = () => {
+  const finish = async () => {
     closeAuthModal();
-    if (authNext) window.location.assign(authNext);
+    const roles = await refreshRoles();
+    const staff = ["super_admin", "admin", "manager", "staff"];
+    const isStaff = roles.some((r) => staff.includes(r));
+    if (authNext) {
+      window.location.assign(authNext);
+      return;
+    }
+    if (isStaff) {
+      window.location.assign("/admin");
+      return;
+    }
   };
 
   const login = async (event: React.FormEvent) => {
@@ -39,21 +49,16 @@ const AuthModal = () => {
     setBusy(false);
     if (error) {
       if (error.message.toLowerCase().includes("email not confirmed")) {
-        // Always go to the OTP screen — the user already holds a valid code.
         setOtpType("signup");
         setMode("verify");
-        const { error: rErr } = await supabase.auth.resend({
-          type: "signup",
-          email: cleanEmail,
-          options: {},
-        });
-        if (rErr) return toast.error(`Email delivery failed: ${rErr.message}`);
+        const { error: rErr } = await supabase.auth.resend({ type: "signup", email: cleanEmail });
+        if (rErr) return toast.error(`Could not resend: ${rErr.message}`);
         return toast.success("Please verify your email — we sent you a new code");
       }
       return toast.error(error.message === "Invalid login credentials" ? "Incorrect email or password" : error.message);
     }
     toast.success("Welcome back");
-    finish();
+    await finish();
   };
 
   const signup = async (event: React.FormEvent) => {
@@ -105,7 +110,7 @@ const AuthModal = () => {
       return toast.success("Code verified — choose a new password");
     }
     toast.success("Email verified");
-    finish();
+    await finish();
   };
 
   const resetPassword = async (event: React.FormEvent) => {
@@ -116,91 +121,110 @@ const AuthModal = () => {
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Password updated");
-    finish();
+    await finish();
   };
 
-  const resend = async () => {
-    setBusy(true);
-    const { error } =
-      otpType === "signup"
-        ? await supabase.auth.resend({ type: "signup", email: cleanEmail })
-        : await supabase.auth.resetPasswordForEmail(cleanEmail, { redirectTo: `${window.location.origin}/auth` });
-    setBusy(false);
-    if (error) return toast.error(error.message);
-    toast.success("A new code was sent");
-  };
-
-  const field = "w-full h-11 rounded-md border border-border bg-muted pl-10 pr-10 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring";
+  const field =
+    "w-full border border-border rounded-lg px-4 py-3 font-body text-sm bg-muted text-foreground focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground";
 
   const titles: Record<Mode, [string, string]> = {
     login: ["Welcome back", "Secure access to your eKharayo account."],
-    signup: ["Create account", "Secure access to your eKharayo account."],
+    signup: ["Create account", "Join eKharayo to order and track deliveries."],
     verify: otpType === "signup" ? ["Verify your email", `Enter the 6-digit code sent to ${cleanEmail}.`] : ["Reset code sent", `Enter the 6-digit code sent to ${cleanEmail}.`],
-    forgot: ["Reset your password", "We'll email you a 6-digit reset code."],
-    reset: ["Choose a new password", "Your new password must be at least 6 characters."],
+    forgot: ["Forgot password", "We will email you a reset code."],
+    reset: ["New password", "Choose a strong password for your account."],
   };
 
   return (
     <Dialog open={isAuthModalOpen} onOpenChange={(open) => !open && closeAuthModal()}>
-      <DialogContent className="max-w-none h-[100dvh] w-screen rounded-none border-0 p-0 overflow-y-auto bg-background sm:rounded-none">
-        <div className="min-h-full grid lg:grid-cols-2">
-          <div className="hidden lg:flex bg-secondary p-12 items-center justify-center border-r border-border">
-            <div className="max-w-md">
-              <img src={logo} alt="eKharayo" className="h-16 w-auto mb-8" />
-              <p className="font-display text-4xl font-bold text-foreground">A trusted marketplace for quality products.</p>
-              <p className="mt-4 text-muted-foreground">Sign in for secure checkout, order history, wishlist and account services.</p>
-            </div>
-          </div>
-          <div className="flex items-center justify-center p-5 sm:p-10">
-            <div className="w-full max-w-md">
-              <img src={logo} alt="eKharayo" className="h-12 w-auto mx-auto mb-6 lg:hidden" />
-              <DialogTitle className="font-display text-3xl text-center">{titles[mode][0]}</DialogTitle>
-              <DialogDescription className="text-center mt-2 mb-7">{titles[mode][1]}</DialogDescription>
+      <DialogContent className="sm:max-w-md bg-card border-border">
+        <div className="flex flex-col items-center text-center mb-2">
+          <img src={logo} alt="eKharayo" className="h-12 w-auto mb-3" />
+          <DialogTitle className="font-display text-xl font-bold">{titles[mode][0]}</DialogTitle>
+          <DialogDescription className="font-body text-sm text-muted-foreground mt-1">{titles[mode][1]}</DialogDescription>
+        </div>
 
-              {mode === "login" && <form onSubmit={login} className="space-y-4">
-                <div className="relative"><Mail className="absolute left-3 top-3.5 text-muted-foreground" size={16} /><input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email address" className={field} /></div>
-                <div className="relative"><Lock className="absolute left-3 top-3.5 text-muted-foreground" size={16} /><input required type={show ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" className={field} /><button type="button" aria-label="Show password" onClick={() => setShow(!show)} className="absolute right-3 top-3.5 text-muted-foreground">{show ? <EyeOff size={16} /> : <Eye size={16} />}</button></div>
-                <Button className="w-full h-11" disabled={busy}>{busy ? <Loader2 className="animate-spin" /> : <Lock />} Sign in</Button>
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <button type="button" onClick={() => setMode("forgot")} className="hover:text-primary transition-colors">Forgot password?</button>
-                  <button type="button" onClick={() => setMode("signup")} className="text-primary hover:underline">Create a new account</button>
-                </div>
-              </form>}
+        <div className="space-y-4">
+          {mode === "login" && (
+            <form onSubmit={login} className="space-y-4">
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+                <input required type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className={`${field} pl-10`} />
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+                <input required type={show ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className={`${field} pl-10 pr-10`} />
+                <button type="button" onClick={() => setShow(!show)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  {show ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              <button type="button" onClick={() => setMode("forgot")} className="text-xs text-primary hover:underline">Forgot password?</button>
+              <Button disabled={busy} className="w-full h-11">{busy ? <Loader2 className="animate-spin" size={16} /> : null} Sign in</Button>
+              <p className="text-xs text-center text-muted-foreground">
+                No account?{" "}
+                <button type="button" onClick={() => setMode("signup")} className="text-primary font-semibold hover:underline">Sign up</button>
+              </p>
+            </form>
+          )}
 
-              {mode === "signup" && <form onSubmit={signup} className="space-y-4">
-                <div className="relative"><User className="absolute left-3 top-3.5 text-muted-foreground" size={16} /><input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" className={field} /></div>
-                <div className="relative"><Mail className="absolute left-3 top-3.5 text-muted-foreground" size={16} /><input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email address" className={field} /></div>
-                <div className="relative"><Lock className="absolute left-3 top-3.5 text-muted-foreground" size={16} /><input required type={show ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password (6+ characters)" className={field} /></div>
-                <div className="relative"><Lock className="absolute left-3 top-3.5 text-muted-foreground" size={16} /><input required type={show ? "text" : "password"} value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Confirm password" className={field} /></div>
-                <Button className="w-full h-11" disabled={busy}>{busy ? <Loader2 className="animate-spin" /> : <User />} Create account</Button>
-                <Button type="button" variant="link" className="w-full" onClick={() => setMode("login")}>Already have an account? Sign in</Button>
-              </form>}
+          {mode === "signup" && (
+            <form onSubmit={signup} className="space-y-4">
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+                <input required placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} className={`${field} pl-10`} />
+              </div>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+                <input required type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className={`${field} pl-10`} />
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+                <input required type={show ? "text" : "password"} placeholder="Password (min 6)" value={password} onChange={(e) => setPassword(e.target.value)} className={`${field} pl-10 pr-10`} />
+                <button type="button" onClick={() => setShow(!show)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  {show ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              <input required type={show ? "text" : "password"} placeholder="Confirm password" value={confirm} onChange={(e) => setConfirm(e.target.value)} className={field} />
+              <Button disabled={busy} className="w-full h-11">{busy ? <Loader2 className="animate-spin" size={16} /> : <ShieldCheck size={16} />} Create account</Button>
+              <p className="text-xs text-center text-muted-foreground">
+                Have an account?{" "}
+                <button type="button" onClick={() => setMode("login")} className="text-primary font-semibold hover:underline">Sign in</button>
+              </p>
+            </form>
+          )}
 
-              {mode === "forgot" && <form onSubmit={forgot} className="space-y-4">
-                <div className="relative"><Mail className="absolute left-3 top-3.5 text-muted-foreground" size={16} /><input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email address" className={field} /></div>
-                <Button className="w-full h-11" disabled={busy}>{busy ? <Loader2 className="animate-spin" /> : <Mail />} Send reset code</Button>
-                <Button type="button" variant="link" className="w-full" onClick={() => setMode("login")}>Back to sign in</Button>
-              </form>}
+          {mode === "verify" && (
+            <form onSubmit={verify} className="space-y-4">
+              <input required inputMode="numeric" placeholder="6-digit code" value={code} onChange={(e) => setCode(e.target.value)} className={field} />
+              <Button disabled={busy} className="w-full h-11">{busy ? <Loader2 className="animate-spin" size={16} /> : null} Verify</Button>
+            </form>
+          )}
 
-              {mode === "verify" && <form onSubmit={verify} className="space-y-4">
-                <input required inputMode="numeric" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} placeholder="123456" className="w-full h-14 rounded-md border border-border bg-muted text-center text-2xl text-foreground tracking-[0.35em] outline-none focus:ring-2 focus:ring-ring" />
-                <Button className="w-full h-11" disabled={busy || code.length !== 6}>{busy ? <Loader2 className="animate-spin" /> : <ShieldCheck />} Verify and continue</Button>
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <button type="button" onClick={() => setMode(otpType === "signup" ? "signup" : "forgot")} className="hover:text-primary transition-colors">Change email</button>
-                  <button type="button" onClick={resend} disabled={busy} className="text-primary hover:underline">Resend code</button>
-                </div>
-              </form>}
+          {mode === "forgot" && (
+            <form onSubmit={forgot} className="space-y-4">
+              <input required type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className={field} />
+              <Button disabled={busy} className="w-full h-11">{busy ? <Loader2 className="animate-spin" size={16} /> : null} Send code</Button>
+              <button type="button" onClick={() => setMode("login")} className="text-xs text-primary hover:underline w-full text-center">Back to sign in</button>
+            </form>
+          )}
 
-              {mode === "reset" && <form onSubmit={resetPassword} className="space-y-4">
-                <div className="relative"><Lock className="absolute left-3 top-3.5 text-muted-foreground" size={16} /><input required type={show ? "text" : "password"} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="New password (6+ characters)" className={field} /><button type="button" aria-label="Show password" onClick={() => setShow(!show)} className="absolute right-3 top-3.5 text-muted-foreground">{show ? <EyeOff size={16} /> : <Eye size={16} />}</button></div>
-                <Button className="w-full h-11" disabled={busy}>{busy ? <Loader2 className="animate-spin" /> : <ShieldCheck />} Update password</Button>
-              </form>}
+          {mode === "reset" && (
+            <form onSubmit={resetPassword} className="space-y-4">
+              <input required type="password" placeholder="New password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className={field} />
+              <Button disabled={busy} className="w-full h-11">{busy ? <Loader2 className="animate-spin" size={16} /> : null} Update password</Button>
+            </form>
+          )}
 
-              <div className="flex items-center gap-3 my-6"><span className="h-px flex-1 bg-border" /><span className="text-xs text-muted-foreground">OR</span><span className="h-px flex-1 bg-border" /></div>
-              <Button type="button" variant="outline" className="w-full h-11" onClick={() => { setGuest(true); closeAuthModal(); }}>Continue as Guest</Button>
-              <p className="text-xs text-muted-foreground text-center mt-3">Guest browsing is available. Sign in is required for checkout and account features.</p>
-            </div>
-          </div>
+          {(mode === "login" || mode === "signup") && (
+            <>
+              <Button type="button" variant="outline" className="w-full h-11" onClick={() => { setGuest(true); closeAuthModal(); }}>
+                Continue as Guest
+              </Button>
+              <p className="text-xs text-muted-foreground text-center mt-3">
+                Guest browsing is available. Sign in is required for checkout and account features.
+              </p>
+            </>
+          )}
         </div>
       </DialogContent>
     </Dialog>
