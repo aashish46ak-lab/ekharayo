@@ -87,6 +87,20 @@ const Navbar = () => {
           </ul>
 
           <div className="flex items-center gap-1 shrink-0">
+            {isAdmin && (
+              <Link
+                to="/admin"
+                aria-label="Admin dashboard"
+                className="hidden sm:inline-flex items-center gap-1.5 font-body text-xs font-semibold px-2.5 py-1.5 rounded-md bg-primary/15 text-primary hover:bg-primary/25"
+              >
+                <LayoutDashboard size={16} /> Admin
+              </Link>
+            )}
+            {isAdmin && (
+              <Link to="/admin" aria-label="Admin dashboard" className="sm:hidden p-2 rounded-md text-primary hover:bg-primary/10">
+                <LayoutDashboard size={18} />
+              </Link>
+            )}
             <Link to="/wishlist" aria-label={t("wishlist")} className="p-2 rounded-md text-foreground hover:bg-primary/10">
               <Heart size={18} />
             </Link>
