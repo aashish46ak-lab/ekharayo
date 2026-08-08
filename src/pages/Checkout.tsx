@@ -115,6 +115,12 @@ const Checkout = () => {
     e.preventDefault();
     if (!user || items.length === 0 || total <= 0) return toast.error("Please review your cart before placing this order");
     setBusy(true);
+
+    // Only attach product_id when the product still exists (avoids FK errors from old/stale cart)
+    const ids = items.map((i) => i.id).filter(Boolean);
+    const { data: existingRows } = await supabase.from("products").select("id").in("id", ids);
+    const existing = new Set((existingRows ?? []).map((r: { id: string }) => r.id));
+
     const { data: order, error } = await supabase
       .from("orders")
       .insert({
@@ -139,7 +145,7 @@ const Checkout = () => {
     const { error: itemErr } = await supabase.from("order_items").insert(
       items.map((i) => ({
         order_id: order.id,
-        product_id: i.id,
+        product_id: existing.has(i.id) ? i.id : null,
         product_name: i.name,
         image_url: i.image,
         unit_price: i.price,
