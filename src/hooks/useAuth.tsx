@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -14,6 +14,7 @@ interface AuthState {
   banned: boolean;
   loading: boolean;
   signOut: () => Promise<void>;
+  refreshRoles: () => Promise<AppRole[]>;
   isAuthModalOpen: boolean;
   authNext: string | null;
   openAuthModal: (next?: string) => void;
@@ -31,6 +32,7 @@ const AuthContext = createContext<AuthState>({
   banned: false,
   loading: true,
   signOut: async () => {},
+  refreshRoles: async () => [],
   isAuthModalOpen: false,
   authNext: null,
   openAuthModal: () => {},
@@ -54,17 +56,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     else localStorage.removeItem("ekharayo_guest_mode");
   };
 
+  const fetchRoles = async (userId: string): Promise<AppRole[]> => {
+    const { data: roleRows, error } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+    if (error) {
+      console.error("[eKharayo] user_roles load failed", error.message);
+      return [];
+    }
+    const list = ((roleRows ?? []) as { role: AppRole }[]).map((r) => r.role);
+    setRoles(list);
+
+    const { data: profile } = await supabase.from("profiles").select("banned").eq("id", userId).maybeSingle();
+    setBanned(!!(profile as { banned?: boolean } | null)?.banned);
+    return list;
+  };
+
   const loadRole = (userId: string) => {
-    // deferred to avoid deadlocks inside the auth callback
     setTimeout(async () => {
-      const [{ data: roleRows }, { data: profile }] = await Promise.all([
-        supabase.from("user_roles").select("role").eq("user_id", userId),
-        supabase.from("profiles").select("banned").eq("id", userId).maybeSingle(),
-      ]);
-      setRoles(((roleRows ?? []) as { role: AppRole }[]).map((r) => r.role));
-      setBanned(!!(profile as { banned?: boolean } | null)?.banned);
+      await fetchRoles(userId);
       setLoading(false);
     }, 0);
+  };
+
+  const refreshRoles = async () => {
+    const uid = (await supabase.auth.getUser()).data.user?.id;
+    if (!uid) return [];
+    return fetchRoles(uid);
   };
 
   useEffect(() => {
@@ -121,6 +137,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         banned,
         loading,
         signOut,
+        refreshRoles,
         isAuthModalOpen,
         authNext,
         openAuthModal,
@@ -134,5 +151,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext);
