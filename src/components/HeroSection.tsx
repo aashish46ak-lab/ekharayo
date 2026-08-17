@@ -7,14 +7,14 @@ const HeroSection = () => {
   const { t } = useLang();
 
   const boxes = [
-    { to: "/ownership", icon: UserCircle, title: t("ownership"), desc: t("ownershipDesc") },
-    { to: "/gallery", icon: Image, title: t("gallery"), desc: t("galleryDesc") },
-    { to: "/contact", icon: Phone, title: t("contact"), desc: t("contactDesc") },
     { to: "/products", icon: ShoppingBasket, title: t("shop"), desc: t("buyProductsDesc") },
+    { to: "/gallery", icon: Image, title: t("gallery"), desc: t("galleryDesc") },
+    { to: "/ownership", icon: UserCircle, title: t("ownership"), desc: t("ownershipDesc") },
+    { to: "/contact", icon: Phone, title: t("contact"), desc: t("contactDesc") },
   ];
 
   return (
-    <section className="relative min-h-[88vh] flex items-center justify-center overflow-hidden bg-[#070b12]">
+    <section className="relative min-h-[78vh] flex items-center justify-center overflow-hidden bg-[#070b12]">
       <div className="absolute inset-0 bg-gradient-to-b from-[#05080e] via-[#070b12] to-[#0a0f18]" />
       <div
         className="absolute inset-0 opacity-[0.04]"
@@ -25,14 +25,14 @@ const HeroSection = () => {
         }}
       />
 
-      <div className="relative z-10 container mx-auto px-4 pt-28 pb-14">
+      <div className="relative z-10 container mx-auto px-4 pt-24 pb-12">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="relative z-30 mb-6 opacity-0 animate-fade-in-up">
+          <div className="relative z-30 mb-5 opacity-0 animate-fade-in-up">
             <SmartSearchBar variant="hero" />
           </div>
 
           <div
-            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 opacity-0 animate-fade-in-up border border-primary/25"
+            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-5 opacity-0 animate-fade-in-up border border-primary/25"
             style={{ background: "hsla(142, 50%, 38%, 0.1)", animationDelay: "0.1s" }}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
@@ -42,7 +42,7 @@ const HeroSection = () => {
           </div>
 
           <h1
-            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-foreground leading-[1.08] mb-5 opacity-0 animate-fade-in-up"
+            className="font-display text-3xl sm:text-5xl md:text-6xl font-extrabold text-foreground leading-[1.1] mb-4 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.2s" }}
           >
             {t("heroTitle1")}
@@ -50,31 +50,39 @@ const HeroSection = () => {
           </h1>
 
           <p
-            className="font-body text-muted-foreground text-sm sm:text-base max-w-xl mx-auto mb-10 leading-relaxed opacity-0 animate-fade-in-up"
-            style={{ animationDelay: "0.35s" }}
+            className="font-body text-muted-foreground text-sm sm:text-base max-w-xl mx-auto mb-6 leading-relaxed opacity-0 animate-fade-in-up"
+            style={{ animationDelay: "0.3s" }}
           >
-            {t("heroSub")}
+            {t("heroSubtitle")}
           </p>
 
-          <div
-            className="grid grid-cols-2 gap-3 sm:gap-4 max-w-lg mx-auto opacity-0 animate-fade-in-up"
-            style={{ animationDelay: "0.5s" }}
-          >
+          <div className="flex flex-wrap justify-center gap-3 mb-10 opacity-0 animate-fade-in-up" style={{ animationDelay: "0.35s" }}>
+            <Link
+              to="/products"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body text-sm font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition-opacity"
+            >
+              <ShoppingBasket size={16} /> {t("shop")}
+            </Link>
+            <Link
+              to="/contact"
+              className="inline-flex items-center gap-2 border border-border text-foreground font-body text-sm font-semibold px-6 py-3 rounded-lg hover:border-primary/40 transition-colors"
+            >
+              {t("contact")}
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 max-w-lg mx-auto opacity-0 animate-fade-in-up" style={{ animationDelay: "0.45s" }}>
             {boxes.map(({ to, icon: Icon, title, desc }) => (
               <Link
                 key={to}
                 to={to}
-                className="group aspect-square flex flex-col items-center justify-center gap-2 rounded-2xl border border-border/80 bg-card/60 px-3 py-4 hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 shadow-lg shadow-black/20"
+                className="rounded-2xl border border-border bg-card/40 backdrop-blur-sm p-4 text-left hover:border-primary/40 hover:bg-card/70 transition-all"
               >
-                <span className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-primary/15 text-primary group-hover:scale-110 transition-transform">
-                  <Icon size={22} />
-                </span>
-                <span className="font-display text-sm sm:text-base font-bold text-foreground text-center leading-tight">
-                  {title}
-                </span>
-                <span className="font-body text-[10px] sm:text-xs text-muted-foreground text-center leading-snug">
-                  {desc}
-                </span>
+                <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center mb-2">
+                  <Icon className="text-primary" size={20} />
+                </div>
+                <p className="font-display font-bold text-sm text-foreground">{title}</p>
+                <p className="font-body text-[11px] text-muted-foreground mt-0.5 line-clamp-2">{desc}</p>
               </Link>
             ))}
           </div>

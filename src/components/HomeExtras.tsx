@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useLang } from "@/i18n/LanguageContext";
 import PublicComments from "@/components/PublicComments";
+import FeaturedProducts from "@/components/FeaturedProducts";
 import { ArrowRight, BadgeCheck, Headset, ShieldCheck, Sparkles, MapPin, CheckCircle2 } from "lucide-react";
 
 const HomeExtras = () => {
@@ -17,7 +18,9 @@ const HomeExtras = () => {
 
   return (
     <div className="bg-background">
-      <section className="container mx-auto px-4 py-14 sm:py-16">
+      <FeaturedProducts />
+
+      <section className="container mx-auto px-4 pb-14 sm:pb-16">
         <div className="max-w-3xl mx-auto rounded-2xl border border-border bg-card/60 p-6 sm:p-8">
           <div className="flex items-start gap-3 mb-4">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
@@ -67,7 +70,6 @@ const HomeExtras = () => {
         </div>
       </section>
 
-      {/* Public comments: star + like + highlights */}
       <PublicComments />
     </div>
   );
