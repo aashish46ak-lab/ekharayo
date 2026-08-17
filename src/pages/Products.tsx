@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import PageShell from "@/components/PageShell";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -7,16 +7,30 @@ import SiteFooter from "@/components/SiteFooter";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
-import { rs } from "@/lib/media";
-import { Heart, Loader2, PackageX, ShoppingCart } from "lucide-react";
+import { isVideoUrl, rs } from "@/lib/media";
+import { Heart, Loader2, PackageX, ShoppingCart, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 
-interface Category { id: string; name: string; slug: string; image_url: string | null; sort_order: number }
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  image_url: string | null;
+  sort_order: number;
+}
 interface Product {
-  id: string; name: string; description: string | null; price: number; sale_price: number | null;
-  stock: number; unit: string | null; images: string[]; featured: boolean; category_id: string | null;
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  sale_price: number | null;
+  stock: number;
+  unit: string | null;
+  images: string[];
+  featured: boolean;
+  category_id: string | null;
 }
 
 const Products = () => {
@@ -30,6 +44,7 @@ const Products = () => {
   const { add } = useCart();
   const { user, openAuthModal } = useAuth();
   const { has, toggle } = useWishlist();
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -65,88 +80,168 @@ const Products = () => {
     return list;
   }, [products, activeCat, q, inStockOnly, sortBy]);
 
+  const cover = (p: Product) => p.images?.find((u) => !isVideoUrl(u)) ?? p.images?.[0] ?? null;
+
   const addToCart = (p: Product) => {
     if (p.stock <= 0) return toast.error("This product is out of stock");
-    add({ id: p.id, name: p.name, price: Number(p.sale_price ?? p.price), image: p.images?.[0] ?? null, unit: p.unit ?? undefined });
+    add({
+      id: p.id,
+      name: p.name,
+      price: Number(p.sale_price ?? p.price),
+      image: cover(p),
+      unit: p.unit ?? undefined,
+    });
+    toast.success("Added to cart");
   };
 
   const buyNow = (p: Product) => {
     if (p.stock <= 0) return toast.error("This product is out of stock");
-    if (!user) return openAuthModal("/products");
-    localStorage.setItem(
-      "ekharayo-cart",
-      JSON.stringify([{ id: p.id, name: p.name, price: Number(p.sale_price ?? p.price), image: p.images?.[0] ?? null, unit: p.unit, quantity: 1 }]),
-    );
-    window.location.assign("/checkout");
+    if (!user) return openAuthModal("/checkout");
+    add({
+      id: p.id,
+      name: p.name,
+      price: Number(p.sale_price ?? p.price),
+      image: cover(p),
+      unit: p.unit ?? undefined,
+    });
+    navigate("/checkout");
   };
 
   return (
     <div className="min-h-screen pt-14">
       <Navbar />
       <PageShell title="Our Products" subtitle="Farm-fresh dairy, meat, and crops delivered to your doorstep">
-        <div className="container mx-auto px-4 py-12">
-          <div className="flex flex-col md:flex-row gap-3 mb-8">
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter products…" className="flex-1 border border-border rounded-lg px-4 py-2.5 font-body text-sm bg-muted text-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
-            <label className="inline-flex items-center gap-2 font-body text-sm text-muted-foreground px-2">
-              <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} className="rounded border-border" />
-              In stock only
-            </label>
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value as typeof sortBy)} className="border border-border rounded-lg px-3 py-2.5 font-body text-sm bg-muted text-foreground focus:outline-none focus:ring-2 focus:ring-ring" aria-label="Sort products">
-              <option value="newest">Newest</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
-              <option value="name">Name A–Z</option>
-            </select>
+        <div className="container mx-auto px-3 sm:px-4 py-8 sm:py-12">
+          <div className="flex flex-col gap-3 mb-6">
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search by name (e.g. milk, ghee, dahi)…"
+              className="w-full border border-border rounded-lg px-4 py-2.5 font-body text-sm bg-muted text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <div className="flex flex-wrap items-center gap-3">
+              <label className="inline-flex items-center gap-2 font-body text-sm text-muted-foreground">
+                <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} className="rounded border-border" />
+                In stock only
+              </label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                className="border border-border rounded-lg px-3 py-2 font-body text-sm bg-muted text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option value="newest">Newest</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="name">Name A–Z</option>
+              </select>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2 mb-10">
-            <button type="button" onClick={() => setActiveCat("all")} className={`px-3 py-1.5 rounded-full font-body text-xs font-medium border transition-colors ${activeCat === "all" ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/40"}`}>All</button>
+
+          <div className="flex flex-wrap gap-2 mb-8">
+            <button
+              type="button"
+              onClick={() => setActiveCat("all")}
+              className={`px-3 py-1.5 rounded-full font-body text-xs font-medium border transition-colors ${
+                activeCat === "all" ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/40"
+              }`}
+            >
+              All
+            </button>
             {categories.map((c) => (
-              <button key={c.id} type="button" onClick={() => setActiveCat(c.id)} className={`px-3 py-1.5 rounded-full font-body text-xs font-medium border transition-colors ${activeCat === c.id ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/40"}`}>{c.name}</button>
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setActiveCat(c.id)}
+                className={`px-3 py-1.5 rounded-full font-body text-xs font-medium border transition-colors ${
+                  activeCat === c.id ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/40"
+                }`}
+              >
+                {c.name}
+              </button>
             ))}
           </div>
 
           {loading ? (
-            <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary" size={28} /></div>
+            <div className="flex justify-center py-20">
+              <Loader2 className="animate-spin text-primary" size={28} />
+            </div>
           ) : filtered.length === 0 ? (
             <div className="text-center py-16">
               <PackageX className="mx-auto text-muted-foreground mb-3" size={32} />
               <p className="font-body text-muted-foreground">No products match your filters.</p>
             </div>
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((p) => (
-                <div key={p.id} className="bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300 relative">
-                  <button type="button" onClick={() => toggle(p.id)} className={`absolute top-3 right-3 z-10 p-2 rounded-full bg-card/90 border border-border ${has(p.id) ? "text-primary" : "text-muted-foreground hover:text-primary"}`} aria-label="Wishlist">
-                    <Heart size={16} className={has(p.id) ? "fill-current" : ""} />
-                  </button>
-                  <Link to={`/products/${p.id}`}>
-                    {p.images?.[0] ? (
-                      <img src={p.images[0]} alt={p.name} loading="lazy" className="w-full h-44 object-cover" />
-                    ) : (
-                      <div className="w-full h-44 bg-muted flex items-center justify-center"><PackageX className="text-muted-foreground" size={28} /></div>
-                    )}
-                  </Link>
-                  <div className="p-6">
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                      <Link to={`/products/${p.id}`} className="font-display text-lg font-bold text-foreground hover:text-primary">{p.name}</Link>
-                      {p.featured && <span className="font-body text-[10px] uppercase tracking-wide bg-accent/15 text-accent px-2 py-1 rounded-full shrink-0">Featured</span>}
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-3xl mx-auto lg:max-w-4xl">
+              {filtered.map((p) => {
+                const price = Number(p.sale_price ?? p.price);
+                const hasSale = p.sale_price != null && Number(p.sale_price) < Number(p.price);
+                const img = cover(p);
+                return (
+                  <div
+                    key={p.id}
+                    className="bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg hover:border-primary/30 transition-all duration-200 flex flex-col"
+                  >
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => toggle(p.id)}
+                        className={`absolute top-2 right-2 z-10 p-1.5 rounded-full bg-card/90 border border-border ${
+                          has(p.id) ? "text-primary" : "text-muted-foreground"
+                        }`}
+                        aria-label="Wishlist"
+                      >
+                        <Heart size={14} className={has(p.id) ? "fill-current" : ""} />
+                      </button>
+                      {p.featured && (
+                        <span className="absolute top-2 left-2 z-10 rounded-full bg-amber-500/90 text-white text-[9px] font-bold px-1.5 py-0.5 uppercase">
+                          Featured
+                        </span>
+                      )}
+                      <Link to={`/products/${p.id}`} className="block aspect-square bg-muted">
+                        {img && !isVideoUrl(img) ? (
+                          <img src={img} alt={p.name} loading="lazy" className="w-full h-full object-cover" />
+                        ) : img && isVideoUrl(img) ? (
+                          <video src={img} muted playsInline className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <PackageX className="text-muted-foreground/50" size={28} />
+                          </div>
+                        )}
+                      </Link>
                     </div>
-                    <p className="font-body text-sm text-muted-foreground mb-2 line-clamp-2">{p.description}</p>
-                    <p className="font-body text-xs mb-3">
-                      {p.stock > 0 ? (p.stock <= 5 ? <span className="text-accent">Only {p.stock} left</span> : <span className="text-primary">In stock</span>) : <span className="text-destructive">Out of stock</span>}
-                    </p>
-                    <div className="flex items-baseline gap-2 mb-4">
-                      <span className="font-body text-lg font-bold text-primary">{rs(Number(p.sale_price ?? p.price))}</span>
-                      {p.sale_price != null && <span className="font-body text-sm text-muted-foreground line-through">{rs(Number(p.price))}</span>}
-                      {p.unit && <span className="font-body text-xs text-muted-foreground">/ {p.unit}</span>}
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <Button variant="outline" onClick={() => addToCart(p)} disabled={p.stock <= 0}><ShoppingCart size={16} /> {p.stock > 0 ? "Add to Cart" : "Out of stock"}</Button>
-                      <Button onClick={() => buyNow(p)} disabled={p.stock <= 0}>Buy Now</Button>
+
+                    <div className="p-2.5 sm:p-3 flex flex-col flex-1 gap-1.5">
+                      <Link to={`/products/${p.id}`} className="font-display font-semibold text-xs sm:text-sm text-foreground line-clamp-2 hover:text-primary leading-snug">
+                        {p.name}
+                      </Link>
+                      <p className="font-body text-[10px] sm:text-xs text-muted-foreground line-clamp-1">{p.unit ? `Per ${p.unit}` : " "}</p>
+                      <div className="flex items-baseline gap-1.5 flex-wrap">
+                        <span className="font-display text-sm sm:text-base font-bold text-primary">{rs(price)}</span>
+                        {hasSale && <span className="text-[10px] text-muted-foreground line-through">{rs(Number(p.price))}</span>}
+                      </div>
+                      <p className={`font-body text-[10px] ${p.stock > 0 ? "text-primary" : "text-destructive"}`}>
+                        {p.stock > 0 ? "In stock" : "Out of stock"}
+                      </p>
+
+                      <div className="mt-auto grid grid-cols-1 gap-1.5 pt-1">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          disabled={p.stock <= 0}
+                          onClick={() => addToCart(p)}
+                          className="h-8 text-[11px] sm:text-xs w-full"
+                        >
+                          <ShoppingCart size={13} /> Add to cart
+                        </Button>
+                        <Button type="button" size="sm" disabled={p.stock <= 0} onClick={() => buyNow(p)} className="h-8 text-[11px] sm:text-xs w-full">
+                          <Zap size={13} /> Buy now
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

@@ -1,45 +1,56 @@
 import { useEffect, useState } from "react";
-import { Download, X } from "lucide-react";
+import { Download } from "lucide-react";
 
 type BIPEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
 
-const InstallPrompt = () => {
-  const [deferred, setDeferred] = useState<BIPEvent | null>(null);
-  const [hidden, setHidden] = useState(false);
+let sharedDeferred: BIPEvent | null = null;
+const listeners = new Set<() => void>();
 
+function setDeferred(e: BIPEvent | null) {
+  sharedDeferred = e;
+  listeners.forEach((fn) => fn());
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    setDeferred(e as BIPEvent);
+  });
+  window.addEventListener("appinstalled", () => setDeferred(null));
+}
+
+/** Compact install control for navbar (beside brand). */
+export function InstallButton({ className = "" }: { className?: string }) {
+  const [, tick] = useState(0);
   useEffect(() => {
-    const onPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferred(e as BIPEvent);
+    const fn = () => tick((n) => n + 1);
+    listeners.add(fn);
+    return () => {
+      listeners.delete(fn);
     };
-    window.addEventListener("beforeinstallprompt", onPrompt);
-    window.addEventListener("appinstalled", () => setDeferred(null));
-    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
   }, []);
 
-  if (!deferred || hidden) return null;
+  if (!sharedDeferred) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 z-[60] flex items-center gap-3 rounded-xl border border-border bg-card/95 px-4 py-3 shadow-lg backdrop-blur-md">
-      <div className="text-sm">
-        <p className="font-semibold text-foreground">Install eKharayo</p>
-        <p className="text-xs text-muted-foreground">Add the app to your home screen</p>
-      </div>
-      <button
-        onClick={async () => {
-          await deferred.prompt();
-          await deferred.userChoice;
-          setDeferred(null);
-        }}
-        className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5"
-      >
-        <Download className="h-4 w-4" /> Install
-      </button>
-      <button aria-label="Dismiss install prompt" onClick={() => setHidden(true)} className="text-muted-foreground hover:text-foreground">
-        <X className="h-4 w-4" />
-      </button>
-    </div>
+    <button
+      type="button"
+      title="Install eKharayo app"
+      onClick={async () => {
+        if (!sharedDeferred) return;
+        await sharedDeferred.prompt();
+        await sharedDeferred.userChoice;
+        setDeferred(null);
+      }}
+      className={`inline-flex items-center gap-1 rounded-md bg-primary/15 px-2 py-1 text-[10px] sm:text-xs font-semibold text-primary hover:bg-primary/25 transition-colors shrink-0 ${className}`}
+    >
+      <Download size={12} />
+      <span className="hidden xs:inline sm:inline">Install</span>
+    </button>
   );
-};
+}
+
+/** Bottom bar removed — install lives in navbar to reduce clutter. */
+const InstallPrompt = () => null;
 
 export default InstallPrompt;
