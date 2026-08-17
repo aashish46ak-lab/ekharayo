@@ -7,7 +7,8 @@ import SiteFooter from "@/components/SiteFooter";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
-import { isVideoUrl, rs } from "@/lib/media";
+import { productCover } from "@/lib/productImages";
+import { rs } from "@/lib/media";
 import { Heart, Loader2, PackageX, ShoppingCart, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -61,6 +62,8 @@ const Products = () => {
     })();
   }, []);
 
+  const catName = (id: string | null) => categories.find((c) => c.id === id)?.name ?? "";
+
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
     let list = products.filter((p) => {
@@ -80,30 +83,18 @@ const Products = () => {
     return list;
   }, [products, activeCat, q, inStockOnly, sortBy]);
 
-  const cover = (p: Product) => p.images?.find((u) => !isVideoUrl(u)) ?? p.images?.[0] ?? null;
-
   const addToCart = (p: Product) => {
     if (p.stock <= 0) return toast.error("This product is out of stock");
-    add({
-      id: p.id,
-      name: p.name,
-      price: Number(p.sale_price ?? p.price),
-      image: cover(p),
-      unit: p.unit ?? undefined,
-    });
+    const img = productCover(p.images, p.name, catName(p.category_id));
+    add({ id: p.id, name: p.name, price: Number(p.sale_price ?? p.price), image: img, unit: p.unit ?? undefined });
     toast.success("Added to cart");
   };
 
   const buyNow = (p: Product) => {
     if (p.stock <= 0) return toast.error("This product is out of stock");
     if (!user) return openAuthModal("/checkout");
-    add({
-      id: p.id,
-      name: p.name,
-      price: Number(p.sale_price ?? p.price),
-      image: cover(p),
-      unit: p.unit ?? undefined,
-    });
+    const img = productCover(p.images, p.name, catName(p.category_id));
+    add({ id: p.id, name: p.name, price: Number(p.sale_price ?? p.price), image: img, unit: p.unit ?? undefined });
     navigate("/checkout");
   };
 
@@ -175,7 +166,7 @@ const Products = () => {
               {filtered.map((p) => {
                 const price = Number(p.sale_price ?? p.price);
                 const hasSale = p.sale_price != null && Number(p.sale_price) < Number(p.price);
-                const img = cover(p);
+                const img = productCover(p.images, p.name, catName(p.category_id));
                 return (
                   <div
                     key={p.id}
@@ -197,41 +188,25 @@ const Products = () => {
                           Featured
                         </span>
                       )}
-                      <Link to={`/products/${p.id}`} className="block aspect-square bg-muted">
-                        {img && !isVideoUrl(img) ? (
-                          <img src={img} alt={p.name} loading="lazy" className="w-full h-full object-cover" />
-                        ) : img && isVideoUrl(img) ? (
-                          <video src={img} muted playsInline className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <PackageX className="text-muted-foreground/50" size={28} />
-                          </div>
-                        )}
+                      <Link to={`/products/${p.id}`} className="block aspect-[4/3] bg-muted">
+                        <img src={img} alt={p.name} loading="lazy" className="w-full h-full object-cover" />
                       </Link>
                     </div>
 
-                    <div className="p-2.5 sm:p-3 flex flex-col flex-1 gap-1.5">
+                    <div className="p-2.5 sm:p-3 flex flex-col flex-1 gap-1">
                       <Link to={`/products/${p.id}`} className="font-display font-semibold text-xs sm:text-sm text-foreground line-clamp-2 hover:text-primary leading-snug">
                         {p.name}
                       </Link>
-                      <p className="font-body text-[10px] sm:text-xs text-muted-foreground line-clamp-1">{p.unit ? `Per ${p.unit}` : " "}</p>
                       <div className="flex items-baseline gap-1.5 flex-wrap">
                         <span className="font-display text-sm sm:text-base font-bold text-primary">{rs(price)}</span>
                         {hasSale && <span className="text-[10px] text-muted-foreground line-through">{rs(Number(p.price))}</span>}
+                        {p.unit && <span className="text-[10px] text-muted-foreground">/ {p.unit}</span>}
                       </div>
                       <p className={`font-body text-[10px] ${p.stock > 0 ? "text-primary" : "text-destructive"}`}>
                         {p.stock > 0 ? "In stock" : "Out of stock"}
                       </p>
-
                       <div className="mt-auto grid grid-cols-1 gap-1.5 pt-1">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          disabled={p.stock <= 0}
-                          onClick={() => addToCart(p)}
-                          className="h-8 text-[11px] sm:text-xs w-full"
-                        >
+                        <Button type="button" variant="outline" size="sm" disabled={p.stock <= 0} onClick={() => addToCart(p)} className="h-8 text-[11px] sm:text-xs w-full">
                           <ShoppingCart size={13} /> Add to cart
                         </Button>
                         <Button type="button" size="sm" disabled={p.stock <= 0} onClick={() => buyNow(p)} className="h-8 text-[11px] sm:text-xs w-full">

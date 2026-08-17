@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
-import { X, ZoomIn, Loader2, ImageOff } from "lucide-react";
+import { X, Loader2, ImageOff, ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import gallery1 from "@/assets/gallery1.jpg";
+import gallery2 from "@/assets/gallery2.jpg";
+import gallery3 from "@/assets/gallery3.jpg";
+import gallery4 from "@/assets/gallery4.jpg";
+import gallery5 from "@/assets/gallery5.jpg";
+import gallery6 from "@/assets/gallery6.jpg";
 
 interface GalleryImage {
   id: string;
@@ -8,12 +14,19 @@ interface GalleryImage {
   caption: string | null;
 }
 
+const FALLBACK: GalleryImage[] = [
+  { id: "f1", image_url: gallery1, caption: "Farm work" },
+  { id: "f2", image_url: gallery2, caption: "Fresh produce" },
+  { id: "f3", image_url: gallery3, caption: "Local livestock" },
+  { id: "f4", image_url: gallery4, caption: "Field harvest" },
+  { id: "f5", image_url: gallery5, caption: "Quality check" },
+  { id: "f6", image_url: gallery6, caption: "Ready to deliver" },
+];
+
 const GallerySection = () => {
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<number | null>(null);
-  const [zoomed, setZoomed] = useState(false);
-  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     supabase
@@ -22,7 +35,8 @@ const GallerySection = () => {
       .eq("is_active", true)
       .order("sort_order")
       .then(({ data }) => {
-        setImages((data as unknown as GalleryImage[]) ?? []);
+        const rows = (data as unknown as GalleryImage[]) ?? [];
+        setImages(rows.length ? rows : FALLBACK);
         setLoading(false);
       });
   }, []);
@@ -45,59 +59,76 @@ const GallerySection = () => {
   }
 
   return (
-    <section className="py-12">
+    <section className="py-10 sm:py-14">
       <div className="container mx-auto px-4">
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={() => setShowAll(true)}
-            className="relative group overflow-hidden rounded-2xl border border-border shadow-lg w-72 md:w-96 aspect-[4/3]"
-          >
-            <img src={images[0].image_url} alt={images[0].caption || "Gallery"} loading="lazy" className="w-full h-full object-cover blur-sm scale-105" />
-            <div className="absolute inset-0 bg-foreground/40 flex flex-col items-center justify-center gap-2">
-              <ZoomIn className="text-primary-foreground" size={36} />
-              <span className="font-display text-lg font-bold text-primary-foreground">Click to View</span>
-              <span className="font-body text-sm text-primary-foreground/70">{images.length} photos</span>
-            </div>
-          </button>
+        <div className="text-center mb-8">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">From our farms</h2>
+          <p className="font-body text-sm text-muted-foreground max-w-md mx-auto">Real work, real produce — tap any photo to view full size</p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 max-w-5xl mx-auto">
+          {images.map((img, i) => (
+            <button
+              key={img.id}
+              type="button"
+              onClick={() => setSelected(i)}
+              className={`group relative overflow-hidden rounded-xl border border-border bg-muted focus:outline-none focus:ring-2 focus:ring-primary ${
+                i === 0 ? "md:col-span-2 md:row-span-2 aspect-[4/3] md:aspect-auto md:min-h-[280px]" : "aspect-[4/3]"
+              }`}
+            >
+              <img
+                src={img.image_url}
+                alt={img.caption || "Gallery"}
+                loading="lazy"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              {img.caption && (
+                <span className="absolute bottom-2 left-2 right-2 text-left font-body text-[11px] sm:text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity line-clamp-1">
+                  {img.caption}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
       </div>
 
-      {showAll && (
-        <div className="fixed inset-0 z-[100] bg-foreground/90 overflow-y-auto p-4" onClick={() => setShowAll(false)}>
-          <button type="button" onClick={() => setShowAll(false)} className="fixed top-4 right-4 text-primary-foreground bg-foreground/50 rounded-full p-2 z-10" aria-label="Close">
-            <X size={24} />
-          </button>
-          <div className="max-w-4xl mx-auto pt-12 grid grid-cols-2 md:grid-cols-3 gap-3" onClick={(e) => e.stopPropagation()}>
-            {images.map((img, i) => (
-              <button
-                key={img.id}
-                type="button"
-                onClick={() => { setShowAll(false); setSelected(i); setZoomed(false); }}
-                className="group relative overflow-hidden rounded-xl border border-border/30 aspect-[4/3]"
-              >
-                <img src={img.image_url} alt={img.caption || ""} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {selected !== null && (
-        <div className="fixed inset-0 z-[110] bg-foreground/90 flex items-center justify-center p-4" onClick={() => setSelected(null)}>
-          <button type="button" onClick={() => setSelected(null)} className="absolute top-4 right-4 text-primary-foreground bg-foreground/50 rounded-full p-2 z-10" aria-label="Close">
-            <X size={24} />
+        <div className="fixed inset-0 z-[110] bg-black/90 flex items-center justify-center p-4" onClick={() => setSelected(null)}>
+          <button type="button" onClick={() => setSelected(null)} className="absolute top-4 right-4 text-white bg-white/10 rounded-full p-2 z-10" aria-label="Close">
+            <X size={22} />
           </button>
-          <div className="flex items-center gap-4 max-w-5xl w-full">
-            <button type="button" onClick={(e) => { e.stopPropagation(); setSelected((selected - 1 + images.length) % images.length); setZoomed(false); }} className="text-primary-foreground text-3xl font-bold shrink-0">‹</button>
-            <img
-              src={images[selected].image_url}
-              alt={images[selected].caption || ""}
-              onClick={(e) => { e.stopPropagation(); setZoomed(!zoomed); }}
-              className={`max-h-[80vh] w-full object-contain rounded-lg cursor-zoom-in transition-transform ${zoomed ? "scale-150 cursor-zoom-out" : ""}`}
-            />
-            <button type="button" onClick={(e) => { e.stopPropagation(); setSelected((selected + 1) % images.length); setZoomed(false); }} className="text-primary-foreground text-3xl font-bold shrink-0">›</button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelected((selected - 1 + images.length) % images.length);
+            }}
+            className="absolute left-3 sm:left-6 text-white bg-white/10 rounded-full p-2"
+            aria-label="Previous"
+          >
+            <ChevronLeft size={22} />
+          </button>
+          <div className="max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
+            <img src={images[selected].image_url} alt={images[selected].caption || ""} className="max-h-[80vh] w-full object-contain rounded-lg" />
+            {images[selected].caption && (
+              <p className="text-center text-white/80 font-body text-sm mt-3">{images[selected].caption}</p>
+            )}
+            <p className="text-center text-white/40 text-xs mt-1">
+              {selected + 1} / {images.length}
+            </p>
           </div>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelected((selected + 1) % images.length);
+            }}
+            className="absolute right-3 sm:right-6 text-white bg-white/10 rounded-full p-2"
+            aria-label="Next"
+          >
+            <ChevronRight size={22} />
+          </button>
         </div>
       )}
     </section>
