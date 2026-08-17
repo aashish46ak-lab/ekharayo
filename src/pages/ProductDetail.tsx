@@ -7,11 +7,10 @@ import ProductReviews from "@/components/ProductReviews";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
-import { useWishlist } from "@/hooks/useWishlist";
-import { rs } from "@/lib/media";
-import { ArrowLeft, Heart, Loader2, Minus, PackageX, Plus, ShoppingCart } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { isVideoUrl, rs } from "@/lib/media";
+import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, Minus, PackageX, Plus, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 interface Product {
   id: string;
@@ -31,20 +30,18 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { add } = useCart();
   const { user, openAuthModal } = useAuth();
-  const { has, toggle } = useWishlist();
   const [product, setProduct] = useState<Product | null>(null);
   const [related, setRelated] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [qty, setQty] = useState(1);
   const [imgIdx, setImgIdx] = useState(0);
+  const [qty, setQty] = useState(1);
 
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    setQty(1);
     setImgIdx(0);
     (async () => {
-      const { data } = await supabase.from("products").select("*").eq("id", id).eq("is_active", true).maybeSingle();
+      const { data } = await supabase.from("products").select("*").eq("id", id).maybeSingle();
       const p = data as unknown as Product | null;
       setProduct(p);
       if (p?.category_id) {
@@ -56,27 +53,32 @@ const ProductDetail = () => {
           .neq("id", p.id)
           .limit(4);
         setRelated((rel as unknown as Product[]) ?? []);
-      } else {
-        setRelated([]);
-      }
+      } else setRelated([]);
       setLoading(false);
     })();
   }, [id]);
 
+  const media = product?.images?.filter(Boolean) ?? [];
+  const current = media[imgIdx] ?? null;
   const price = Number(product?.sale_price ?? product?.price ?? 0);
 
   const addToCart = () => {
-    if (!product) return;
-    if (product.stock <= 0) return toast.error("Out of stock");
-    add({ id: product.id, name: product.name, price, image: product.images?.[0] ?? null, unit: product.unit }, qty);
+    if (!product || product.stock <= 0) return toast.error("Out of stock");
+    const cover = media.find((u) => !isVideoUrl(u)) ?? media[0] ?? null;
+    add({ id: product.id, name: product.name, price, image: cover, unit: product.unit ?? undefined }, qty);
+    toast.success("Added to cart");
   };
 
   const buyNow = () => {
     if (!product || product.stock <= 0) return toast.error("Out of stock");
     if (!user) return openAuthModal(`/products/${product.id}`);
-    add({ id: product.id, name: product.name, price, image: product.images?.[0] ?? null, unit: product.unit }, qty);
+    const cover = media.find((u) => !isVideoUrl(u)) ?? media[0] ?? null;
+    add({ id: product.id, name: product.name, price, image: cover, unit: product.unit ?? undefined }, qty);
     navigate("/checkout");
   };
+
+  const prev = () => setImgIdx((i) => (media.length ? (i - 1 + media.length) % media.length : 0));
+  const next = () => setImgIdx((i) => (media.length ? (i + 1) % media.length : 0));
 
   return (
     <div className="min-h-screen pt-14">
@@ -87,29 +89,61 @@ const ProductDetail = () => {
         </button>
 
         {loading ? (
-          <div className="flex justify-center py-24"><Loader2 className="animate-spin text-primary" size={28} /></div>
+          <div className="flex justify-center py-24">
+            <Loader2 className="animate-spin text-primary" size={28} />
+          </div>
         ) : !product ? (
           <div className="text-center py-24">
             <PackageX className="mx-auto text-muted-foreground mb-3" size={36} />
             <p className="font-body text-muted-foreground mb-4">Product not found</p>
-            <Link to="/products" className="text-primary font-semibold hover:underline">Browse products</Link>
+            <Link to="/products" className="text-primary font-semibold hover:underline">
+              Browse products
+            </Link>
           </div>
         ) : (
           <>
             <div className="grid md:grid-cols-2 gap-8 mb-16">
               <div>
-                <div className="rounded-2xl border border-border overflow-hidden bg-muted aspect-square">
-                  {product.images?.[imgIdx] ? (
-                    <img src={product.images[imgIdx]} alt={product.name} className="w-full h-full object-cover" />
+                <div className="relative rounded-2xl border border-border overflow-hidden bg-muted aspect-square group">
+                  {current ? (
+                    isVideoUrl(current) ? (
+                      <video key={current} src={current} controls playsInline className="w-full h-full object-contain bg-black" />
+                    ) : (
+                      <img src={current} alt={product.name} className="w-full h-full object-cover" />
+                    )
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center"><PackageX className="text-muted-foreground" size={40} /></div>
+                    <div className="w-full h-full flex items-center justify-center">
+                      <PackageX className="text-muted-foreground" size={40} />
+                    </div>
+                  )}
+                  {media.length > 1 && (
+                    <>
+                      <button type="button" onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-card/90 border border-border text-foreground opacity-80 hover:opacity-100" aria-label="Previous">
+                        <ChevronLeft size={18} />
+                      </button>
+                      <button type="button" onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-card/90 border border-border text-foreground opacity-80 hover:opacity-100" aria-label="Next">
+                        <ChevronRight size={18} />
+                      </button>
+                    </>
                   )}
                 </div>
-                {product.images && product.images.length > 1 && (
-                  <div className="flex gap-2 mt-3 overflow-x-auto">
-                    {product.images.map((src, i) => (
-                      <button key={src} type="button" onClick={() => setImgIdx(i)} className={`w-16 h-16 rounded-lg overflow-hidden border shrink-0 ${i === imgIdx ? "border-primary ring-2 ring-primary/30" : "border-border"}`}>
-                        <img src={src} alt="" className="w-full h-full object-cover" />
+                {media.length > 1 && (
+                  <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
+                    {media.map((src, i) => (
+                      <button
+                        key={`${src}-${i}`}
+                        type="button"
+                        onClick={() => setImgIdx(i)}
+                        className={`w-16 h-16 rounded-lg overflow-hidden border shrink-0 relative ${i === imgIdx ? "border-primary ring-2 ring-primary/30" : "border-border"}`}
+                      >
+                        {isVideoUrl(src) ? (
+                          <>
+                            <video src={src} muted className="w-full h-full object-cover" />
+                            <span className="absolute inset-0 flex items-center justify-center bg-black/30 text-[10px] font-bold text-white">VIDEO</span>
+                          </>
+                        ) : (
+                          <img src={src} alt="" className="w-full h-full object-cover" />
+                        )}
                       </button>
                     ))}
                   </div>
@@ -118,34 +152,41 @@ const ProductDetail = () => {
 
               <div className="flex flex-col">
                 <div className="flex items-start justify-between gap-3 mb-2">
-                  <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">{product.name}</h1>
-                  <button type="button" onClick={() => toggle(product.id)} className={`p-2 rounded-full border transition-colors ${has(product.id) ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:text-primary"}`} aria-label="Wishlist">
-                    <Heart size={18} className={has(product.id) ? "fill-current" : ""} />
-                  </button>
+                  <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">{product.name}</h1>
+                  {product.featured && <span className="shrink-0 rounded-full bg-amber-500/15 text-amber-500 text-[10px] font-bold px-2 py-1 uppercase">Featured</span>}
                 </div>
-                {product.featured && <span className="w-fit font-body text-[10px] uppercase tracking-wide bg-accent/15 text-accent px-2 py-1 rounded-full mb-3">Featured</span>}
-                <div className="flex items-baseline gap-2 mb-4">
+                <div className="flex items-baseline gap-2 mb-1">
                   <span className="font-display text-2xl font-bold text-primary">{rs(price)}</span>
-                  {product.sale_price != null && <span className="font-body text-sm text-muted-foreground line-through">{rs(Number(product.price))}</span>}
-                  {product.unit && <span className="font-body text-sm text-muted-foreground">/ {product.unit}</span>}
+                  {product.sale_price != null && Number(product.sale_price) < Number(product.price) && (
+                    <span className="text-sm text-muted-foreground line-through">{rs(Number(product.price))}</span>
+                  )}
+                  {product.unit && <span className="text-sm text-muted-foreground">/ {product.unit}</span>}
                 </div>
-                <p className="font-body text-sm text-muted-foreground mb-2">
-                  {product.stock > 0 ? (product.stock <= 5 ? <span className="text-accent font-medium">Only {product.stock} left in stock</span> : <span className="text-primary">In stock ({product.stock} available)</span>) : <span className="text-destructive">Out of stock</span>}
+                <p className={`font-body text-sm mb-4 ${product.stock > 0 ? "text-primary" : "text-destructive"}`}>
+                  {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
                 </p>
                 {product.description && <p className="font-body text-sm text-foreground/80 leading-relaxed mb-6 whitespace-pre-line">{product.description}</p>}
 
                 <div className="flex items-center gap-3 mb-4">
                   <span className="font-body text-sm text-muted-foreground">Qty</span>
                   <div className="flex items-center gap-2 border border-border rounded-lg">
-                    <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} className="p-2 hover:bg-muted" aria-label="Decrease"><Minus size={14} /></button>
+                    <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} className="p-2 hover:bg-muted" aria-label="Decrease">
+                      <Minus size={14} />
+                    </button>
                     <span className="font-body text-sm w-8 text-center">{qty}</span>
-                    <button type="button" onClick={() => setQty((q) => Math.min(product.stock || 99, q + 1))} className="p-2 hover:bg-muted" aria-label="Increase"><Plus size={14} /></button>
+                    <button type="button" onClick={() => setQty((q) => Math.min(product.stock || 99, q + 1))} className="p-2 hover:bg-muted" aria-label="Increase">
+                      <Plus size={14} />
+                    </button>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 mt-auto">
-                  <Button variant="outline" onClick={addToCart} disabled={product.stock <= 0}><ShoppingCart size={16} /> Add to Cart</Button>
-                  <Button onClick={buyNow} disabled={product.stock <= 0}>Buy Now</Button>
+                  <Button variant="outline" onClick={addToCart} disabled={product.stock <= 0}>
+                    <ShoppingCart size={16} /> Add to Cart
+                  </Button>
+                  <Button onClick={buyNow} disabled={product.stock <= 0}>
+                    Buy Now
+                  </Button>
                 </div>
               </div>
             </div>
@@ -153,16 +194,23 @@ const ProductDetail = () => {
             {related.length > 0 && (
               <section className="mb-8">
                 <h2 className="font-display text-xl font-bold text-foreground mb-6">Related products</h2>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {related.map((r) => (
-                    <Link key={r.id} to={`/products/${r.id}`} className="bg-card border border-border rounded-xl overflow-hidden hover:border-primary/40 hover:-translate-y-0.5 transition-all">
-                      {r.images?.[0] ? <img src={r.images[0]} alt={r.name} className="w-full h-32 object-cover" /> : <div className="w-full h-32 bg-muted" />}
-                      <div className="p-3">
-                        <p className="font-display font-semibold text-sm text-foreground truncate">{r.name}</p>
-                        <p className="font-body text-sm text-primary font-bold">{rs(Number(r.sale_price ?? r.price))}</p>
-                      </div>
-                    </Link>
-                  ))}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                  {related.map((r) => {
+                    const thumb = r.images?.find((u) => !isVideoUrl(u)) ?? r.images?.[0];
+                    return (
+                      <Link key={r.id} to={`/products/${r.id}`} className="bg-card border border-border rounded-xl overflow-hidden hover:border-primary/40 transition-all">
+                        {thumb && !isVideoUrl(thumb) ? (
+                          <img src={thumb} alt={r.name} className="w-full h-28 object-cover" />
+                        ) : (
+                          <div className="w-full h-28 bg-muted" />
+                        )}
+                        <div className="p-3">
+                          <p className="font-display font-semibold text-sm text-foreground truncate">{r.name}</p>
+                          <p className="font-body text-sm text-primary font-bold">{rs(Number(r.sale_price ?? r.price))}</p>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </section>
             )}

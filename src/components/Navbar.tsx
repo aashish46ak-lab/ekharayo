@@ -6,6 +6,7 @@ import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 import { useLang } from "@/i18n/LanguageContext";
 import SmartSearchBar from "./SmartSearchBar";
+import { InstallButton } from "./InstallPrompt";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -45,15 +46,18 @@ const Navbar = () => {
     <>
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBg}`}>
         <div className="container mx-auto flex items-center justify-between gap-2 py-2.5 px-3 sm:px-4">
-          <Link to="/" className="flex items-center gap-2 shrink-0 min-w-0">
-            <img src={logo} alt="eKharayo" className="h-8 sm:h-9 w-auto shrink-0" />
-            <span className="font-display text-sm sm:text-base font-bold leading-tight text-primary min-w-0">
-              eKharayo
-              <span className="font-body text-[8px] sm:text-[9px] font-medium block leading-tight tracking-wide text-muted-foreground truncate max-w-[150px] sm:max-w-none">
-                Great Sagarmatha Trade Pvt. Ltd.
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
+            <Link to="/" className="flex items-center gap-2 min-w-0">
+              <img src={logo} alt="eKharayo" className="h-8 sm:h-9 w-auto shrink-0" />
+              <span className="font-display text-sm sm:text-base font-bold leading-tight text-primary min-w-0">
+                eKharayo
+                <span className="font-body text-[8px] sm:text-[9px] font-medium block leading-tight tracking-wide text-muted-foreground truncate max-w-[120px] sm:max-w-[180px]">
+                  Great Sagarmatha Trade Pvt. Ltd.
+                </span>
               </span>
-            </span>
-          </Link>
+            </Link>
+            <InstallButton />
+          </div>
 
           <div className="hidden md:block flex-1 max-w-xs mx-2">
             <SmartSearchBar variant="navbar" />
