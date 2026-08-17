@@ -17,10 +17,10 @@ const HomeExtras = () => {
   const points = [t("detailPoint1"), t("detailPoint2"), t("detailPoint3"), t("detailPoint4")];
 
   return (
-    <div className="bg-background">
+    <div className="bg-background text-foreground">
       <FeaturedProducts />
 
-      <section className="container mx-auto px-4 pb-14 sm:pb-16">
+      <section className="container mx-auto px-4 py-14 sm:py-16">
         <div className="max-w-3xl mx-auto rounded-2xl border border-border bg-card/60 p-6 sm:p-8">
           <div className="flex items-start gap-3 mb-4">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">

@@ -14,7 +14,7 @@ const HeroSection = () => {
   ];
 
   return (
-    <section className="relative min-h-[78vh] flex items-center justify-center overflow-hidden bg-[#070b12]">
+    <section className="relative min-h-[88vh] flex items-center justify-center overflow-hidden bg-[#070b12]">
       <div className="absolute inset-0 bg-gradient-to-b from-[#05080e] via-[#070b12] to-[#0a0f18]" />
       <div
         className="absolute inset-0 opacity-[0.04]"
@@ -25,14 +25,14 @@ const HeroSection = () => {
         }}
       />
 
-      <div className="relative z-10 container mx-auto px-4 pt-24 pb-12">
+      <div className="relative z-10 container mx-auto px-4 pt-28 pb-14">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="relative z-30 mb-5 opacity-0 animate-fade-in-up">
+          <div className="relative z-30 mb-6 opacity-0 animate-fade-in-up">
             <SmartSearchBar variant="hero" />
           </div>
 
           <div
-            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-5 opacity-0 animate-fade-in-up border border-primary/25"
+            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 opacity-0 animate-fade-in-up border border-primary/25"
             style={{ background: "hsla(142, 50%, 38%, 0.1)", animationDelay: "0.1s" }}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
@@ -42,7 +42,7 @@ const HeroSection = () => {
           </div>
 
           <h1
-            className="font-display text-3xl sm:text-5xl md:text-6xl font-extrabold text-foreground leading-[1.1] mb-4 opacity-0 animate-fade-in-up"
+            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-foreground leading-[1.08] mb-5 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.2s" }}
           >
             {t("heroTitle1")}
@@ -50,10 +50,10 @@ const HeroSection = () => {
           </h1>
 
           <p
-            className="font-body text-muted-foreground text-sm sm:text-base max-w-xl mx-auto mb-6 leading-relaxed opacity-0 animate-fade-in-up"
+            className="font-body text-muted-foreground text-sm sm:text-base max-w-xl mx-auto mb-8 leading-relaxed opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.3s" }}
           >
-            {t("heroSubtitle")}
+            {t("heroSub")}
           </p>
 
           <div className="flex flex-wrap justify-center gap-3 mb-10 opacity-0 animate-fade-in-up" style={{ animationDelay: "0.35s" }}>
