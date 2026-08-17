@@ -2,36 +2,66 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { rs } from "@/lib/media";
-import { ShoppingBag, Clock, CheckCircle2, XCircle, DollarSign, Package, Tags, Users, Plus, AlertTriangle } from "lucide-react";
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import {
+  ShoppingBag,
+  Clock,
+  CheckCircle2,
+  DollarSign,
+  Package,
+  Users,
+  Plus,
+  AlertTriangle,
+  MessageSquare,
+  ArrowRight,
+  Truck,
+} from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 
-interface Order { id: string; order_number: string; customer_name: string; total: number; status: string; created_at: string }
-interface Product { id: string; name: string; stock: number; price: number }
-interface Item { product_name: string; quantity: number; line_total: number }
+interface Order {
+  id: string;
+  order_number: string;
+  customer_name: string;
+  total: number;
+  status: string;
+  created_at: string;
+  payment_method?: string;
+}
+interface Product {
+  id: string;
+  name: string;
+  stock: number;
+  price: number;
+}
+
+const statusColor: Record<string, string> = {
+  pending: "bg-amber-100 text-amber-800",
+  confirmed: "bg-sky-100 text-sky-800",
+  processing: "bg-blue-100 text-blue-800",
+  packed: "bg-indigo-100 text-indigo-800",
+  shipped: "bg-violet-100 text-violet-800",
+  out_for_delivery: "bg-purple-100 text-purple-800",
+  delivered: "bg-emerald-100 text-emerald-800",
+  cancelled: "bg-red-100 text-red-800",
+  refunded: "bg-slate-100 text-slate-700",
+};
 
 const Dashboard = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
-  const [items, setItems] = useState<Item[]>([]);
-  const [categories, setCategories] = useState(0);
   const [customers, setCustomers] = useState(0);
-  const [activity, setActivity] = useState<{ id: string; title: string; created_at: string }[]>([]);
+  const [openThreads, setOpenThreads] = useState(0);
 
   const load = async () => {
-    const [o, p, c, cu, it, n] = await Promise.all([
-      supabase.from("orders").select("*").order("created_at", { ascending: false }),
+    const [o, p, cu, t] = await Promise.all([
+      supabase.from("orders").select("id,order_number,customer_name,total,status,created_at,payment_method").order("created_at", { ascending: false }).limit(50),
       supabase.from("products").select("id,name,stock,price"),
-      supabase.from("categories").select("*", { count: "exact", head: true }),
       supabase.from("profiles").select("*", { count: "exact", head: true }),
-      supabase.from("order_items").select("product_name,quantity,line_total"),
-      supabase.from("notifications").select("id,title,created_at").order("created_at", { ascending: false }).limit(6),
+      supabase.from("chat_threads" as never).select("*", { count: "exact", head: true }).neq("status", "closed"),
     ]);
     setOrders((o.data as unknown as Order[]) ?? []);
     setProducts((p.data as unknown as Product[]) ?? []);
-    setCategories(c.count ?? 0);
     setCustomers(cu.count ?? 0);
-    setItems((it.data as unknown as Item[]) ?? []);
-    setActivity((n.data as unknown as { id: string; title: string; created_at: string }[]) ?? []);
+    setOpenThreads(t.count ?? 0);
   };
 
   useEffect(() => {
@@ -40,24 +70,17 @@ const Dashboard = () => {
       .channel("dashboard-live")
       .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, load)
       .on("postgres_changes", { event: "*", schema: "public", table: "products" }, load)
+      .on("postgres_changes", { event: "*", schema: "public", table: "chat_threads" }, load)
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
-  const byStatus = (s: string) => orders.filter((o) => o.status === s).length;
+  const pending = orders.filter((o) => ["pending", "confirmed", "processing"].includes(o.status)).length;
+  const delivered = orders.filter((o) => o.status === "delivered").length;
   const revenue = orders.filter((o) => o.status !== "cancelled").reduce((s, o) => s + Number(o.total), 0);
   const lowStock = products.filter((p) => p.stock <= 5);
-
-  const stats = [
-    { label: "Total Orders", value: orders.length, icon: ShoppingBag },
-    { label: "Pending", value: byStatus("pending"), icon: Clock },
-    { label: "Delivered", value: byStatus("delivered"), icon: CheckCircle2 },
-    { label: "Cancelled", value: byStatus("cancelled"), icon: XCircle },
-    { label: "Total Revenue", value: rs(revenue), icon: DollarSign },
-    { label: "Products", value: products.length, icon: Package },
-    { label: "Categories", value: categories, icon: Tags },
-    { label: "Customers", value: customers, icon: Users },
-  ];
 
   const last7 = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
@@ -71,110 +94,156 @@ const Dashboard = () => {
     };
   });
 
-  const topSelling = Object.values(
-    items.reduce<Record<string, { name: string; qty: number; total: number }>>((acc, i) => {
-      acc[i.product_name] = acc[i.product_name] || { name: i.product_name, qty: 0, total: 0 };
-      acc[i.product_name].qty += i.quantity;
-      acc[i.product_name].total += Number(i.line_total);
-      return acc;
-    }, {}),
-  ).sort((a, b) => b.qty - a.qty).slice(0, 5);
-
-  const card = "bg-card border border-border rounded-xl p-5";
+  const kpis = [
+    { label: "Orders to fulfill", value: pending, icon: Clock, tone: "border-l-[#f90]", href: "/admin/orders" },
+    { label: "Open messages", value: openThreads, icon: MessageSquare, tone: "border-l-sky-500", href: "/admin/messages" },
+    { label: "Revenue (listed)", value: rs(revenue), icon: DollarSign, tone: "border-l-emerald-500", href: "/admin/analytics" },
+    { label: "Customers", value: customers, icon: Users, tone: "border-l-violet-500", href: "/admin/customers" },
+  ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">Dashboard</h1>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#0f1111]">Dashboard</h1>
+          <p className="text-sm text-slate-600">Manage orders, catalog, and customer chats</p>
+        </div>
         <div className="flex flex-wrap gap-2">
-          <Link to="/admin/products" className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-body text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-green-glow transition-colors"><Plus size={16} /> Add product</Link>
-          <Link to="/admin/categories" className="inline-flex items-center gap-2 border border-border text-foreground font-body text-sm font-semibold px-4 py-2.5 rounded-lg hover:border-primary/40 transition-colors"><Plus size={16} /> Add category</Link>
-          <Link to="/admin/orders" className="inline-flex items-center gap-2 border border-border text-foreground font-body text-sm font-semibold px-4 py-2.5 rounded-lg hover:border-primary/40 transition-colors">Manage orders</Link>
+          <Link to="/admin/products" className="inline-flex items-center gap-1.5 rounded-md bg-[#ffd814] hover:bg-[#f7ca00] text-[#0f1111] text-sm font-semibold px-3 py-2 border border-[#fcd200] shadow-sm">
+            <Plus size={15} /> Add product
+          </Link>
+          <Link to="/admin/orders" className="inline-flex items-center gap-1.5 rounded-md bg-white hover:bg-slate-50 text-[#0f1111] text-sm font-semibold px-3 py-2 border border-slate-300 shadow-sm">
+            <Truck size={15} /> Manage orders
+          </Link>
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((s) => (
-          <div key={s.label} className={card}>
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {kpis.map((k) => (
+          <Link key={k.label} to={k.href} className={`bg-white rounded-lg border border-slate-200 border-l-4 ${k.tone} p-4 shadow-sm hover:shadow transition-shadow`}>
             <div className="flex items-center justify-between mb-2">
-              <span className="font-body text-xs uppercase tracking-wide text-muted-foreground">{s.label}</span>
-              <s.icon size={16} className="text-primary" />
+              <span className="text-xs font-medium uppercase tracking-wide text-slate-500">{k.label}</span>
+              <k.icon size={16} className="text-slate-400" />
             </div>
-            <p className="font-display text-2xl font-bold text-foreground">{s.value}</p>
-          </div>
+            <p className="text-2xl font-bold text-[#0f1111]">{k.value}</p>
+          </Link>
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className={card}>
-          <h2 className="font-display font-bold text-foreground mb-4">Sales analytics (7 days)</h2>
+      {(pending > 0 || openThreads > 0 || lowStock.length > 0) && (
+        <div className="bg-[#fff8e7] border border-[#fcd200] rounded-lg p-4">
+          <h2 className="font-semibold text-[#0f1111] mb-2 flex items-center gap-2">
+            <AlertTriangle size={16} className="text-[#f90]" /> Needs attention
+          </h2>
+          <ul className="space-y-1.5 text-sm text-slate-700">
+            {pending > 0 && (
+              <li>
+                <Link to="/admin/orders" className="text-[#007185] hover:underline font-medium">
+                  {pending} order(s) awaiting fulfillment
+                </Link>
+              </li>
+            )}
+            {openThreads > 0 && (
+              <li>
+                <Link to="/admin/messages" className="text-[#007185] hover:underline font-medium">
+                  {openThreads} open customer conversation(s)
+                </Link>
+              </li>
+            )}
+            {lowStock.length > 0 && (
+              <li>
+                <Link to="/admin/products" className="text-[#007185] hover:underline font-medium">
+                  {lowStock.length} product(s) low on stock
+                </Link>
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
+
+      <div className="grid gap-4 lg:grid-cols-5">
+        <div className="lg:col-span-3 bg-white rounded-lg border border-slate-200 shadow-sm p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold text-[#0f1111]">Orders (7 days)</h2>
+            <Link to="/admin/analytics" className="text-xs text-[#007185] hover:underline inline-flex items-center gap-0.5">
+              Analytics <ArrowRight size={12} />
+            </Link>
+          </div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={last7}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} allowDecimals={false} />
-              <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
-              <Bar dataKey="orders" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="day" stroke="#6b7280" fontSize={12} />
+              <YAxis stroke="#6b7280" fontSize={12} allowDecimals={false} />
+              <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid #e5e7eb" }} />
+              <Bar dataKey="orders" fill="#f90" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div className={card}>
-          <h2 className="font-display font-bold text-foreground mb-4">Revenue analytics (7 days)</h2>
-          <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={last7}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-              <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
-              <Line type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} />
-            </LineChart>
-          </ResponsiveContainer>
+
+        <div className="lg:col-span-2 bg-white rounded-lg border border-slate-200 shadow-sm p-4">
+          <h2 className="font-semibold text-[#0f1111] mb-3">Snapshot</h2>
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between border-b border-slate-100 pb-2">
+              <span className="text-slate-600 flex items-center gap-2"><ShoppingBag size={14} /> Total orders</span>
+              <span className="font-semibold">{orders.length}</span>
+            </div>
+            <div className="flex justify-between border-b border-slate-100 pb-2">
+              <span className="text-slate-600 flex items-center gap-2"><CheckCircle2 size={14} /> Delivered</span>
+              <span className="font-semibold">{delivered}</span>
+            </div>
+            <div className="flex justify-between border-b border-slate-100 pb-2">
+              <span className="text-slate-600 flex items-center gap-2"><Package size={14} /> Active SKUs</span>
+              <span className="font-semibold">{products.length}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-600 flex items-center gap-2"><AlertTriangle size={14} /> Low stock</span>
+              <span className="font-semibold text-amber-700">{lowStock.length}</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className={card}>
-          <h2 className="font-display font-bold text-foreground mb-4">Recent orders</h2>
-          {orders.slice(0, 6).map((o) => (
-            <div key={o.id} className="flex items-center justify-between py-2 border-b border-border last:border-0 font-body text-sm">
-              <div><p className="text-foreground">{o.order_number}</p><p className="text-xs text-muted-foreground">{o.customer_name}</p></div>
-              <div className="text-right"><p className="text-primary font-semibold">{rs(Number(o.total))}</p><p className="text-xs text-muted-foreground">{o.status}</p></div>
-            </div>
-          ))}
-          {orders.length === 0 && <p className="font-body text-sm text-muted-foreground">No orders yet.</p>}
+      <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
+          <h2 className="font-semibold text-[#0f1111]">Recent orders</h2>
+          <Link to="/admin/orders" className="text-xs text-[#007185] hover:underline">
+            View all
+          </Link>
         </div>
-
-        <div className={card}>
-          <h2 className="font-display font-bold text-foreground mb-4">Top selling products</h2>
-          {topSelling.map((t) => (
-            <div key={t.name} className="flex items-center justify-between py-2 border-b border-border last:border-0 font-body text-sm">
-              <span className="text-foreground">{t.name}</span>
-              <span className="text-muted-foreground">{t.qty} sold · {rs(t.total)}</span>
-            </div>
-          ))}
-          {topSelling.length === 0 && <p className="font-body text-sm text-muted-foreground">No sales data yet.</p>}
-        </div>
-
-        <div className={card}>
-          <h2 className="font-display font-bold text-foreground mb-4 flex items-center gap-2"><AlertTriangle size={16} className="text-accent" /> Low stock products</h2>
-          {lowStock.map((p) => (
-            <div key={p.id} className="flex items-center justify-between py-2 border-b border-border last:border-0 font-body text-sm">
-              <span className="text-foreground">{p.name}</span>
-              <span className="text-accent">{p.stock} left</span>
-            </div>
-          ))}
-          {lowStock.length === 0 && <p className="font-body text-sm text-muted-foreground">All products are well stocked.</p>}
-        </div>
-
-        <div className={card}>
-          <h2 className="font-display font-bold text-foreground mb-4">Recent activity</h2>
-          {activity.map((a) => (
-            <div key={a.id} className="py-2 border-b border-border last:border-0 font-body text-sm">
-              <p className="text-foreground">{a.title}</p>
-              <p className="text-xs text-muted-foreground">{new Date(a.created_at).toLocaleString()}</p>
-            </div>
-          ))}
-          {activity.length === 0 && <p className="font-body text-sm text-muted-foreground">Nothing yet.</p>}
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 text-slate-600 text-left">
+              <tr>
+                <th className="px-4 py-2.5 font-medium">Order</th>
+                <th className="px-4 py-2.5 font-medium">Customer</th>
+                <th className="px-4 py-2.5 font-medium">Total</th>
+                <th className="px-4 py-2.5 font-medium">Status</th>
+                <th className="px-4 py-2.5 font-medium">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.slice(0, 8).map((o) => (
+                <tr key={o.id} className="border-t border-slate-100 hover:bg-slate-50/80">
+                  <td className="px-4 py-2.5 font-medium text-[#007185]">{o.order_number || o.id.slice(0, 8)}</td>
+                  <td className="px-4 py-2.5">{o.customer_name}</td>
+                  <td className="px-4 py-2.5">{rs(Number(o.total))}</td>
+                  <td className="px-4 py-2.5">
+                    <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold capitalize ${statusColor[o.status] || "bg-slate-100 text-slate-700"}`}>
+                      {o.status.replace(/_/g, " ")}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2.5 text-slate-500">{new Date(o.created_at).toLocaleString()}</td>
+                </tr>
+              ))}
+              {!orders.length && (
+                <tr>
+                  <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
+                    No orders yet
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
