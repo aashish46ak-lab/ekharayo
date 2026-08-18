@@ -70,9 +70,7 @@ const AdminMessages = () => {
         const row = payload.new as Msg;
         loadThreads();
         if (row.sender !== "admin") {
-          toast.message("New customer message", {
-            description: (row.body || "").slice(0, 80),
-          });
+          toast.message("New customer message", { description: (row.body || "").slice(0, 80) });
         }
         if (activeRef.current && row.thread_id === activeRef.current) {
           loadMessages(activeRef.current);
@@ -116,11 +114,11 @@ const AdminMessages = () => {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#0f1111]">Buyer messages</h1>
-          <p className="text-sm text-slate-600">Realtime inbox — reply opens on the customer chat widget</p>
+          <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground">Buyer messages</h1>
+          <p className="text-sm text-muted-foreground">Realtime inbox — replies show in the customer chat</p>
         </div>
         {waitingCount > 0 && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f90] text-[#111] text-xs font-bold px-3 py-1">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/15 text-accent text-xs font-bold px-3 py-1">
             <Circle size={8} className="fill-current" /> {waitingCount} awaiting reply
           </span>
         )}
@@ -128,17 +126,17 @@ const AdminMessages = () => {
 
       {loading ? (
         <div className="flex justify-center py-16">
-          <Loader2 className="animate-spin text-[#f90]" size={28} />
+          <Loader2 className="animate-spin text-primary" size={28} />
         </div>
       ) : (
         <div className="grid lg:grid-cols-[280px_1fr] gap-3 min-h-[32rem]">
-          <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
-            <div className="px-3 py-2.5 border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+          <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden flex flex-col">
+            <div className="px-3 py-2.5 border-b border-border bg-secondary/40 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
               Conversations ({threads.length})
             </div>
             {threads.length === 0 ? (
-              <div className="p-6 text-center text-sm text-slate-500 flex flex-col items-center gap-2">
-                <MessageSquare size={28} className="text-slate-300" />
+              <div className="p-6 text-center text-sm text-muted-foreground flex flex-col items-center gap-2">
+                <MessageSquare size={28} className="text-muted-foreground/50" />
                 No messages yet
               </div>
             ) : (
@@ -150,17 +148,17 @@ const AdminMessages = () => {
                       <button
                         type="button"
                         onClick={() => setActive(t.id)}
-                        className={`w-full text-left px-3 py-3 border-b border-slate-100 text-sm transition-colors ${
-                          active === t.id ? "bg-[#eef6f6] border-l-4 border-l-[#f90]" : "hover:bg-slate-50 border-l-4 border-l-transparent"
+                        className={`w-full text-left px-3 py-3 border-b border-border text-sm transition-colors ${
+                          active === t.id ? "bg-secondary border-l-4 border-l-primary" : "hover:bg-secondary/50 border-l-4 border-l-transparent"
                         }`}
                       >
                         <div className="flex items-center gap-2">
-                          {needsReply && <span className="w-2 h-2 rounded-full bg-[#f90] shrink-0" />}
-                          <p className={`truncate flex-1 ${needsReply ? "font-bold text-[#0f1111]" : "font-medium text-slate-800"}`}>
+                          {needsReply && <span className="w-2 h-2 rounded-full bg-accent shrink-0" />}
+                          <p className={`truncate flex-1 ${needsReply ? "font-bold text-foreground" : "font-medium text-foreground/90"}`}>
                             {t.guest_name || "Guest"}
                           </p>
                         </div>
-                        <p className="text-[11px] text-slate-500 mt-0.5">{new Date(t.last_message_at).toLocaleString()}</p>
+                        <p className="text-[11px] text-muted-foreground mt-0.5">{new Date(t.last_message_at).toLocaleString()}</p>
                       </button>
                     </li>
                   );
@@ -169,25 +167,27 @@ const AdminMessages = () => {
             )}
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-lg shadow-sm flex flex-col min-h-[28rem]">
+          <div className="bg-card border border-border rounded-xl shadow-sm flex flex-col min-h-[28rem]">
             {!active ? (
-              <p className="m-auto text-sm text-slate-500">Select a conversation to reply</p>
+              <p className="m-auto text-sm text-muted-foreground">Select a conversation to reply</p>
             ) : (
               <>
-                <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
-                  <p className="font-semibold text-[#0f1111]">{threads.find((t) => t.id === active)?.guest_name || "Guest"}</p>
-                  <p className="text-xs text-slate-500">{threads.find((t) => t.id === active)?.guest_email || "No email"}</p>
+                <div className="px-4 py-3 border-b border-border bg-secondary/30">
+                  <p className="font-semibold text-foreground">{threads.find((t) => t.id === active)?.guest_name || "Guest"}</p>
+                  <p className="text-xs text-muted-foreground">{threads.find((t) => t.id === active)?.guest_email || "No email"}</p>
                 </div>
-                <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-[#f6f7f8]">
+                <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-background">
                   {messages.map((m) => (
                     <div key={m.id} className={`flex ${m.sender === "admin" ? "justify-end" : "justify-start"}`}>
                       <div
                         className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm shadow-sm ${
-                          m.sender === "admin" ? "bg-[#232f3e] text-white" : "bg-white text-[#0f1111] border border-slate-200"
+                          m.sender === "admin"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-card text-foreground border border-border"
                         }`}
                       >
                         <p className="whitespace-pre-wrap">{m.body}</p>
-                        <p className={`text-[10px] mt-1 ${m.sender === "admin" ? "text-white/60" : "text-slate-400"}`}>
+                        <p className={`text-[10px] mt-1 ${m.sender === "admin" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
                           {new Date(m.created_at).toLocaleString()}
                         </p>
                       </div>
@@ -195,14 +195,14 @@ const AdminMessages = () => {
                   ))}
                   <div ref={bottomRef} />
                 </div>
-                <form onSubmit={send} className="border-t border-slate-200 p-3 flex gap-2 bg-white">
+                <form onSubmit={send} className="border-t border-border p-3 flex gap-2 bg-card">
                   <input
                     value={reply}
                     onChange={(e) => setReply(e.target.value)}
                     placeholder="Type your reply to the customer…"
-                    className="flex-1 border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#f90]/40"
+                    className="flex-1 border border-border rounded-lg px-3 py-2.5 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   />
-                  <Button type="submit" disabled={busy || !reply.trim()} className="bg-[#ffd814] hover:bg-[#f7ca00] text-[#0f1111] border border-[#fcd200]">
+                  <Button type="submit" disabled={busy || !reply.trim()}>
                     {busy ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />} Send
                   </Button>
                 </form>
