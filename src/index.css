@@ -4,74 +4,54 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Premium olive + warm cream design system
+  Rule: light surfaces + dark readable text everywhere on the storefront.
+*/
 @layer base {
   :root {
-    /* Viewer storefront: cream + forest green (light) */
-    --background: 42 45% 96%;
-    --foreground: 160 25% 14%;
+    --background: 40 33% 97%;
+    --foreground: 150 18% 16%;
 
-    --card: 40 50% 98%;
-    --card-foreground: 160 25% 14%;
+    --card: 40 40% 99%;
+    --card-foreground: 150 18% 16%;
 
-    --popover: 40 50% 99%;
-    --popover-foreground: 160 25% 14%;
+    --popover: 40 40% 99%;
+    --popover-foreground: 150 18% 16%;
 
-    --primary: 152 48% 32%;
+    --primary: 148 28% 32%;
     --primary-foreground: 40 40% 98%;
 
-    --secondary: 140 22% 90%;
-    --secondary-foreground: 160 22% 18%;
+    --secondary: 140 18% 92%;
+    --secondary-foreground: 150 18% 18%;
 
-    --muted: 42 25% 92%;
-    --muted-foreground: 160 10% 38%;
+    --muted: 40 20% 93%;
+    --muted-foreground: 150 8% 38%;
 
-    --accent: 38 70% 48%;
+    --accent: 36 55% 48%;
     --accent-foreground: 40 40% 98%;
 
-    --destructive: 0 72% 48%;
+    --destructive: 0 70% 46%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 140 16% 82%;
-    --input: 140 16% 86%;
-    --ring: 152 48% 32%;
+    --border: 140 14% 84%;
+    --input: 140 14% 88%;
+    --ring: 148 28% 32%;
 
-    --radius: 0.75rem;
+    --radius: 0.85rem;
 
-    --hero-overlay: 145 30% 92%;
-    --surface-warm: 40 40% 94%;
-    --green-glow: 152 50% 38%;
+    --hero-overlay: 140 20% 94%;
+    --surface-warm: 40 28% 95%;
+    --green-glow: 148 30% 38%;
 
-    --sidebar-background: 150 18% 16%;
-    --sidebar-foreground: 40 30% 94%;
-    --sidebar-primary: 152 48% 42%;
+    --sidebar-background: 150 16% 18%;
+    --sidebar-foreground: 40 30% 96%;
+    --sidebar-primary: 148 32% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 150 14% 22%;
-    --sidebar-accent-foreground: 40 30% 94%;
-    --sidebar-border: 150 12% 24%;
-    --sidebar-ring: 152 48% 42%;
-  }
-
-  /* Optional dark — not forced on viewers */
-  .dark {
-    --background: 160 18% 9%;
-    --foreground: 40 30% 94%;
-    --card: 160 16% 12%;
-    --card-foreground: 40 30% 94%;
-    --popover: 160 16% 12%;
-    --popover-foreground: 40 30% 94%;
-    --primary: 152 50% 42%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 160 12% 16%;
-    --secondary-foreground: 40 25% 90%;
-    --muted: 160 12% 16%;
-    --muted-foreground: 40 10% 60%;
-    --accent: 38 70% 50%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 72% 48%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 160 10% 20%;
-    --input: 160 10% 20%;
-    --ring: 152 50% 42%;
+    --sidebar-accent: 150 12% 24%;
+    --sidebar-accent-foreground: 40 30% 96%;
+    --sidebar-border: 150 10% 26%;
+    --sidebar-ring: 148 32% 48%;
   }
 }
 
@@ -84,16 +64,20 @@
     color-scheme: light;
   }
 
-  html,
-  body,
-  #root {
-    min-height: 100%;
-  }
-
   body {
     @apply bg-background text-foreground font-body antialiased;
-    background-color: hsl(42 45% 96%);
-    color: hsl(160 25% 14%);
+    background-color: hsl(40 33% 97%);
+    color: hsl(150 18% 16%);
+    min-height: 100vh;
+  }
+
+  /* Readable defaults */
+  h1, h2, h3, h4 {
+    @apply text-foreground;
+  }
+
+  a {
+    @apply text-foreground;
   }
 }
 
@@ -110,12 +94,15 @@
   .animate-fade-in-up {
     animation: fade-in-up 0.7s ease-out forwards;
   }
+  .surface-card {
+    @apply bg-card text-card-foreground border border-border rounded-xl shadow-sm;
+  }
 }
 
 @keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;

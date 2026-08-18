@@ -17,14 +17,14 @@ const Navbar = () => {
   const { t } = useLang();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
+    const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const navBg = scrolled
-    ? "bg-card/95 backdrop-blur-xl border-b border-border shadow-md shadow-primary/5"
-    : "bg-[#f7f3e8]/90 backdrop-blur-md border-b border-border/60";
+    ? "bg-card/95 backdrop-blur-xl border-b border-border shadow-sm"
+    : "bg-background/90 backdrop-blur-md border-b border-border/70";
 
   const navLinks = [
     { label: t("home"), href: "/", icon: Home },
@@ -69,7 +69,7 @@ const Navbar = () => {
                 <Link
                   to={l.href}
                   className={`flex items-center gap-1.5 font-body text-xs font-medium px-2 py-1.5 rounded-md transition-all ${
-                    location.pathname === l.href ? "text-primary bg-primary/15" : "text-foreground/75 hover:text-primary hover:bg-primary/10"
+                    location.pathname === l.href ? "text-primary bg-secondary" : "text-foreground/80 hover:text-primary hover:bg-secondary/70"
                   }`}
                 >
                   <l.icon size={14} />
@@ -79,11 +79,11 @@ const Navbar = () => {
             ))}
             <li>
               {user ? (
-                <button type="button" onClick={() => signOut()} className="flex items-center gap-1.5 font-body text-xs font-medium px-2 py-1.5 rounded-md text-foreground/75 hover:text-primary hover:bg-primary/10">
+                <button type="button" onClick={() => signOut()} className="flex items-center gap-1.5 font-body text-xs font-medium px-2 py-1.5 rounded-md text-foreground/80 hover:text-primary hover:bg-secondary/70">
                   <LogOut size={14} /> {t("signOut")}
                 </button>
               ) : (
-                <button type="button" onClick={() => openAuthModal()} className="flex items-center gap-1.5 font-body text-xs font-medium px-2 py-1.5 rounded-md text-foreground/75 hover:text-primary hover:bg-primary/10">
+                <button type="button" onClick={() => openAuthModal()} className="flex items-center gap-1.5 font-body text-xs font-medium px-2 py-1.5 rounded-md text-foreground/80 hover:text-primary hover:bg-secondary/70">
                   <LogIn size={14} /> {t("signIn")}
                 </button>
               )}
@@ -92,29 +92,25 @@ const Navbar = () => {
 
           <div className="flex items-center gap-1 shrink-0">
             {isAdmin && (
-              <Link
-                to="/admin"
-                aria-label="Admin dashboard"
-                className="hidden sm:inline-flex items-center gap-1.5 font-body text-xs font-semibold px-2.5 py-1.5 rounded-md bg-primary/15 text-primary hover:bg-primary/25"
-              >
+              <Link to="/admin" className="hidden sm:inline-flex items-center gap-1.5 font-body text-xs font-semibold px-2.5 py-1.5 rounded-md bg-secondary text-primary hover:bg-primary/15">
                 <LayoutDashboard size={16} /> Admin
               </Link>
             )}
             {isAdmin && (
-              <Link to="/admin" aria-label="Admin dashboard" className="sm:hidden p-2 rounded-md text-primary hover:bg-primary/10">
+              <Link to="/admin" className="sm:hidden p-2 rounded-md text-primary hover:bg-secondary" aria-label="Admin">
                 <LayoutDashboard size={18} />
               </Link>
             )}
-            <Link to="/wishlist" aria-label={t("wishlist")} className="p-2 rounded-md text-foreground hover:bg-primary/10">
+            <Link to="/wishlist" aria-label={t("wishlist")} className="p-2 rounded-md text-foreground hover:bg-secondary">
               <Heart size={18} />
             </Link>
-            <Link to="/cart" aria-label={t("cart")} className="relative p-2 rounded-md text-foreground hover:bg-primary/10">
+            <Link to="/cart" aria-label={t("cart")} className="relative p-2 rounded-md text-foreground hover:bg-secondary">
               <ShoppingCart size={18} />
               {count > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground font-body text-[10px] font-bold rounded-full h-4 min-w-4 px-1 flex items-center justify-center">{count}</span>
               )}
             </Link>
-            <button type="button" onClick={() => setOpen(!open)} className="lg:hidden text-foreground p-1" aria-label="Toggle menu">
+            <button type="button" onClick={() => setOpen(!open)} className="lg:hidden text-foreground p-1" aria-label="Menu">
               {open ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
@@ -123,15 +119,15 @@ const Navbar = () => {
 
       {open && (
         <>
-          <div className="fixed inset-0 z-40 bg-foreground/30 backdrop-blur-sm lg:hidden" onClick={() => setOpen(false)} />
-          <div className="fixed top-[52px] right-0 z-50 w-64 max-w-[85vw] bg-card border-l border-b border-border shadow-2xl rounded-bl-2xl lg:hidden">
+          <div className="fixed inset-0 z-40 bg-foreground/25 backdrop-blur-sm lg:hidden" onClick={() => setOpen(false)} />
+          <div className="fixed top-[52px] right-0 z-50 w-64 max-w-[85vw] bg-card border-l border-b border-border shadow-xl rounded-bl-2xl lg:hidden">
             <div className="p-3 border-b border-border md:hidden">
               <SmartSearchBar variant="navbar" />
             </div>
             <ul className="flex flex-col gap-1 p-3 max-h-[70vh] overflow-y-auto">
               {[...navLinks, ...accountLinks].map((l) => (
                 <li key={l.href}>
-                  <Link to={l.href} onClick={() => setOpen(false)} className={`flex items-center gap-2.5 font-body text-[12px] font-medium rounded-lg px-3 py-2.5 ${location.pathname === l.href ? "text-primary bg-primary/15" : "text-foreground/75 hover:text-primary hover:bg-primary/10"}`}>
+                  <Link to={l.href} onClick={() => setOpen(false)} className={`flex items-center gap-2.5 font-body text-[12px] font-medium rounded-lg px-3 py-2.5 ${location.pathname === l.href ? "text-primary bg-secondary" : "text-foreground/80 hover:text-primary hover:bg-secondary/70"}`}>
                     <l.icon size={15} className="text-primary shrink-0" />
                     {l.label}
                   </Link>
@@ -139,11 +135,11 @@ const Navbar = () => {
               ))}
               <li>
                 {user ? (
-                  <button type="button" onClick={() => { setOpen(false); signOut(); }} className="w-full flex items-center gap-2.5 font-body text-[12px] font-medium rounded-lg px-3 py-2.5 text-foreground/75 hover:text-primary hover:bg-primary/10">
+                  <button type="button" onClick={() => { setOpen(false); signOut(); }} className="w-full flex items-center gap-2.5 font-body text-[12px] font-medium rounded-lg px-3 py-2.5 text-foreground/80 hover:bg-secondary/70">
                     <LogOut size={15} className="text-primary shrink-0" /> {t("signOut")}
                   </button>
                 ) : (
-                  <button type="button" onClick={() => { setOpen(false); openAuthModal(); }} className="w-full flex items-center gap-2.5 font-body text-[12px] font-medium rounded-lg px-3 py-2.5 text-foreground/75 hover:text-primary hover:bg-primary/10">
+                  <button type="button" onClick={() => { setOpen(false); openAuthModal(); }} className="w-full flex items-center gap-2.5 font-body text-[12px] font-medium rounded-lg px-3 py-2.5 text-foreground/80 hover:bg-secondary/70">
                     <LogIn size={15} className="text-primary shrink-0" /> {t("signIn")}
                   </button>
                 )}
