@@ -145,12 +145,12 @@ const SmartSearchBar = ({ variant = "hero" }: SmartSearchBarProps) => {
       <div
         className={`flex items-center gap-2 rounded-xl border transition-all duration-300 ${
           isHero
-            ? `px-4 py-3 ${focused ? "border-primary/50 shadow-lg shadow-primary/10" : "border-white/15"}`
+            ? `px-4 py-3 ${focused ? "border-primary/50 shadow-lg shadow-primary/10" : "border-border"}`
             : `px-3 py-1.5 ${focused ? "border-primary/50" : "border-border/60"}`
         }`}
         style={{
-          background: isHero ? "rgba(255,255,255,0.08)" : "hsl(var(--card) / 0.85)",
-          backdropFilter: isHero ? "blur(16px)" : "blur(8px)",
+          background: isHero ? "hsl(var(--card) / 0.95)" : "hsl(var(--card) / 0.9)",
+          backdropFilter: isHero ? "blur(12px)" : "blur(8px)",
         }}
       >
         <Search className={`shrink-0 ${isHero ? "text-primary" : "text-muted-foreground"}`} size={isHero ? 20 : 14} />
@@ -163,7 +163,7 @@ const SmartSearchBar = ({ variant = "hero" }: SmartSearchBarProps) => {
           onKeyDown={handleKeyDown}
           placeholder={isHero ? "Search products, pages… (English, नेपाली)" : "Search…"}
           className={`w-full bg-transparent outline-none font-body ${
-            isHero ? "text-white placeholder:text-white/40 text-sm" : "text-foreground placeholder:text-muted-foreground text-xs"
+            isHero ? "text-foreground placeholder:text-muted-foreground text-sm" : "text-foreground placeholder:text-muted-foreground text-xs"
           }`}
           autoComplete="off"
         />
@@ -174,7 +174,7 @@ const SmartSearchBar = ({ variant = "hero" }: SmartSearchBarProps) => {
               setQuery("");
               inputRef.current?.focus();
             }}
-            className={`text-xs font-body shrink-0 ${isHero ? "text-white/40 hover:text-white/70" : "text-muted-foreground"}`}
+            className="text-xs font-body shrink-0 text-muted-foreground hover:text-foreground"
           >
             ✕
           </button>
@@ -220,7 +220,7 @@ const SmartSearchBar = ({ variant = "hero" }: SmartSearchBarProps) => {
                 No results for "<span className="text-foreground">{query}</span>"
               </p>
               {didYouMean && (
-                <button type="button" onClick={() => setQuery(didYouMean)} className="mt-2 font-body text-sm text-primary hover:underline">
+                <button type="button" onClick={() => setDidYouMean} className="mt-2 font-body text-sm text-primary hover:underline">
                   Did you mean: <span className="font-semibold">{didYouMean}</span>?
                 </button>
               )}
