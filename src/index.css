@@ -1,10 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Cream + forest green (light-first) */
+    /* Viewer storefront: cream + forest green (light) */
     --background: 42 45% 96%;
     --foreground: 160 25% 14%;
 
@@ -49,6 +51,7 @@
     --sidebar-ring: 152 48% 42%;
   }
 
+  /* Optional dark — not forced on viewers */
   .dark {
     --background: 160 18% 9%;
     --foreground: 40 30% 94%;
@@ -81,10 +84,16 @@
     color-scheme: light;
   }
 
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
   body {
     @apply bg-background text-foreground font-body antialiased;
     background-color: hsl(42 45% 96%);
-    min-height: 100vh;
+    color: hsl(160 25% 14%);
   }
 }
 

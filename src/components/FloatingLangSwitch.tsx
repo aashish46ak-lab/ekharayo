@@ -19,7 +19,7 @@ const FloatingLangSwitch = () => {
       style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
     >
       <div
-        className="inline-flex items-center gap-0.5 rounded-full border border-white/10 bg-[#0c121c]/90 px-1 py-1 shadow-lg shadow-black/40 backdrop-blur-xl"
+        className="inline-flex items-center gap-0.5 rounded-full border border-border bg-card/95 px-1 py-1 shadow-md shadow-primary/10 backdrop-blur-xl"
         role="group"
         aria-label="Language"
       >
@@ -29,7 +29,7 @@ const FloatingLangSwitch = () => {
           className={`min-w-[2.25rem] rounded-full px-2.5 py-1 font-body text-[11px] font-bold tracking-wide transition-all ${
             lang === "en"
               ? "bg-primary text-primary-foreground shadow-sm"
-              : "text-white/55 hover:text-white"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
           EN
@@ -40,7 +40,7 @@ const FloatingLangSwitch = () => {
           className={`min-w-[2.25rem] rounded-full px-2.5 py-1 font-body text-[11px] font-bold tracking-wide transition-all ${
             lang === "ne"
               ? "bg-primary text-primary-foreground shadow-sm"
-              : "text-white/55 hover:text-white"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
           नेप
