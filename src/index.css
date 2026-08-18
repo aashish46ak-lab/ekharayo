@@ -4,12 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
-  Premium olive + warm cream design system
-  Rule: light surfaces + dark readable text everywhere on the storefront.
-*/
 @layer base {
   :root {
+    /* Premium olive + warm cream — light surfaces, dark text */
     --background: 40 33% 97%;
     --foreground: 150 18% 16%;
 
@@ -71,12 +68,7 @@
     min-height: 100vh;
   }
 
-  /* Readable defaults */
   h1, h2, h3, h4 {
-    @apply text-foreground;
-  }
-
-  a {
     @apply text-foreground;
   }
 }
@@ -93,9 +85,6 @@
   }
   .animate-fade-in-up {
     animation: fade-in-up 0.7s ease-out forwards;
-  }
-  .surface-card {
-    @apply bg-card text-card-foreground border border-border rounded-xl shadow-sm;
   }
 }
 
