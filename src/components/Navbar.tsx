@@ -23,8 +23,8 @@ const Navbar = () => {
   }, []);
 
   const navBg = scrolled
-    ? "bg-card/95 backdrop-blur-xl border-b border-border shadow-lg shadow-black/30"
-    : "bg-[#070b12]/90 backdrop-blur-md border-b border-border/50";
+    ? "bg-card/95 backdrop-blur-xl border-b border-border shadow-md shadow-primary/5"
+    : "bg-[#f7f3e8]/90 backdrop-blur-md border-b border-border/60";
 
   const navLinks = [
     { label: t("home"), href: "/", icon: Home },
@@ -69,7 +69,7 @@ const Navbar = () => {
                 <Link
                   to={l.href}
                   className={`flex items-center gap-1.5 font-body text-xs font-medium px-2 py-1.5 rounded-md transition-all ${
-                    location.pathname === l.href ? "text-primary bg-primary/15" : "text-foreground/70 hover:text-primary hover:bg-primary/10"
+                    location.pathname === l.href ? "text-primary bg-primary/15" : "text-foreground/75 hover:text-primary hover:bg-primary/10"
                   }`}
                 >
                   <l.icon size={14} />
@@ -79,11 +79,11 @@ const Navbar = () => {
             ))}
             <li>
               {user ? (
-                <button type="button" onClick={() => signOut()} className="flex items-center gap-1.5 font-body text-xs font-medium px-2 py-1.5 rounded-md text-foreground/70 hover:text-primary hover:bg-primary/10">
+                <button type="button" onClick={() => signOut()} className="flex items-center gap-1.5 font-body text-xs font-medium px-2 py-1.5 rounded-md text-foreground/75 hover:text-primary hover:bg-primary/10">
                   <LogOut size={14} /> {t("signOut")}
                 </button>
               ) : (
-                <button type="button" onClick={() => openAuthModal()} className="flex items-center gap-1.5 font-body text-xs font-medium px-2 py-1.5 rounded-md text-foreground/70 hover:text-primary hover:bg-primary/10">
+                <button type="button" onClick={() => openAuthModal()} className="flex items-center gap-1.5 font-body text-xs font-medium px-2 py-1.5 rounded-md text-foreground/75 hover:text-primary hover:bg-primary/10">
                   <LogIn size={14} /> {t("signIn")}
                 </button>
               )}
@@ -123,7 +123,7 @@ const Navbar = () => {
 
       {open && (
         <>
-          <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden" onClick={() => setOpen(false)} />
+          <div className="fixed inset-0 z-40 bg-foreground/30 backdrop-blur-sm lg:hidden" onClick={() => setOpen(false)} />
           <div className="fixed top-[52px] right-0 z-50 w-64 max-w-[85vw] bg-card border-l border-b border-border shadow-2xl rounded-bl-2xl lg:hidden">
             <div className="p-3 border-b border-border md:hidden">
               <SmartSearchBar variant="navbar" />
@@ -131,7 +131,7 @@ const Navbar = () => {
             <ul className="flex flex-col gap-1 p-3 max-h-[70vh] overflow-y-auto">
               {[...navLinks, ...accountLinks].map((l) => (
                 <li key={l.href}>
-                  <Link to={l.href} onClick={() => setOpen(false)} className={`flex items-center gap-2.5 font-body text-[12px] font-medium rounded-lg px-3 py-2.5 ${location.pathname === l.href ? "text-primary bg-primary/15" : "text-foreground/70 hover:text-primary hover:bg-primary/10"}`}>
+                  <Link to={l.href} onClick={() => setOpen(false)} className={`flex items-center gap-2.5 font-body text-[12px] font-medium rounded-lg px-3 py-2.5 ${location.pathname === l.href ? "text-primary bg-primary/15" : "text-foreground/75 hover:text-primary hover:bg-primary/10"}`}>
                     <l.icon size={15} className="text-primary shrink-0" />
                     {l.label}
                   </Link>
@@ -139,11 +139,11 @@ const Navbar = () => {
               ))}
               <li>
                 {user ? (
-                  <button type="button" onClick={() => { setOpen(false); signOut(); }} className="w-full flex items-center gap-2.5 font-body text-[12px] font-medium rounded-lg px-3 py-2.5 text-foreground/70 hover:text-primary hover:bg-primary/10">
+                  <button type="button" onClick={() => { setOpen(false); signOut(); }} className="w-full flex items-center gap-2.5 font-body text-[12px] font-medium rounded-lg px-3 py-2.5 text-foreground/75 hover:text-primary hover:bg-primary/10">
                     <LogOut size={15} className="text-primary shrink-0" /> {t("signOut")}
                   </button>
                 ) : (
-                  <button type="button" onClick={() => { setOpen(false); openAuthModal(); }} className="w-full flex items-center gap-2.5 font-body text-[12px] font-medium rounded-lg px-3 py-2.5 text-foreground/70 hover:text-primary hover:bg-primary/10">
+                  <button type="button" onClick={() => { setOpen(false); openAuthModal(); }} className="w-full flex items-center gap-2.5 font-body text-[12px] font-medium rounded-lg px-3 py-2.5 text-foreground/75 hover:text-primary hover:bg-primary/10">
                     <LogIn size={15} className="text-primary shrink-0" /> {t("signIn")}
                   </button>
                 )}
